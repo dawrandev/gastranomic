@@ -16,7 +16,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = $this->userRepository->getAll($request->all());
-        return $users;
+
         return view('pages.users.index', compact('users'));
     }
 }

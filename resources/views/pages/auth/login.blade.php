@@ -31,7 +31,7 @@
                 <div class="login-card">
                     <div>
                         <div class="login-main">
-                            <form class="theme-form" action="{{ route('login') }}" method="POST">
+                            <form class="theme-form" action="{{ route('login.submit') }}" method="POST">
                                 @csrf
                                 <h4>{{ __('Войти в аккаунт') }}</h4>
                                 <p>{{ __('Введите ваш логин и пароль для входа') }}</p>

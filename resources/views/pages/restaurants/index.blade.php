@@ -16,11 +16,11 @@
             </div>
             <div class="col-6">
                 <ol class="breadcrumb">
-                    @if(auth()->user()->role === 'superadmin')
+                    @role('superadmin')
                     <li class="breadcrumb-item"><a href="{{ route('dashboard.superadmin.index') }}"><i data-feather="home"></i></a></li>
                     @else
                     <li class="breadcrumb-item"><a href="{{ route('dashboard.admin.index') }}"><i data-feather="home"></i></a></li>
-                    @endif
+                    @endrole
                     <li class="breadcrumb-item active">Рестораны</li>
                 </ol>
             </div>

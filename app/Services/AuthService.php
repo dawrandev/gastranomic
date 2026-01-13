@@ -35,7 +35,7 @@ class AuthService
         }
 
         if ($user->hasRole('admin')) {
-            if (!$user->restaurant_id) {
+            if (!$user->restaurant) {
                 Auth::logout();
                 throw ValidationException::withMessages([
                     'login' => __('К вам не прикреплен ресторан.'),

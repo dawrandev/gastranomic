@@ -18,11 +18,18 @@ class UserSeeder extends Seeder
         ]);
         $superAdminUser->assignRole('superadmin');
 
-        $adminUser = User::create([
+        $adminOsh = User::create([
             'name' => 'Osh Markazi Admini',
             'login' => 'osh_admin',
             'password' => Hash::make('password'),
         ]);
-        $adminUser->assignRole('admin');
+        $adminOsh->assignRole('admin');
+
+        $adminCity = User::create([
+            'name' => 'City Cafe Admini',
+            'login' => 'city_admin',
+            'password' => Hash::make('password'),
+        ]);
+        $adminCity->assignRole('admin');
     }
 }

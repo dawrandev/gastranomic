@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/', [AuthController::class, 'showLoginForm'])->middleware('guest')->name('login.form');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/', [AuthController::class, 'showLoginForm'])->middleware('guest')->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::prefix('superadmin/dashboard')->middleware(['auth', 'role:superadmin'])->name('dashboard.superadmin.')->group(function () {
@@ -29,4 +29,7 @@ Route::prefix('/restaurants')->middleware(['auth'])->name('restaurants.')->group
 
 Route::prefix('/users')->middleware(['auth', 'role:superadmin'])->name('users.')->group(function () {
     Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\UserController::class, 'create'])->name('create');
+    Route::get('/{user}/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('edit');
+    Route::post('/{user}/destroy', [App\Http\Controllers\UserController::class, 'destroy'])->name('destroy');
 });
