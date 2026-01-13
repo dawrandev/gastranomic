@@ -1,16 +1,27 @@
 @extends('layouts.main')
 
+@section('title', 'Рестораны')
+
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid"
+    data-can-edit="{{ auth()->user()->hasPermissionTo('restaurant-edit') ? '1' : '0' }}"
+    data-can-delete="{{ auth()->user()->hasPermissionTo('restaurant-delete') ? '1' : '0' }}"
+    data-can-view="{{ auth()->user()->hasPermissionTo('restaurant-view') ? '1' : '0' }}"
+    data-can-create="{{ auth()->user()->hasPermissionTo('restaurant-create') ? '1' : '0' }}">
+
     <div class="page-title">
         <div class="row">
             <div class="col-6">
-                <h3>Restoranlar</h3>
+                <h3>Рестораны</h3>
             </div>
             <div class="col-6">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('dashboard') }}"><i data-feather="home"></i></a></li>
-                    <li class="breadcrumb-item active">Restoranlar</li>
+                    @if(auth()->user()->role === 'superadmin')
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard.superadmin.index') }}"><i data-feather="home"></i></a></li>
+                    @else
+                    <li class="breadcrumb-item"><a href="{{ route('dashboard.admin.index') }}"><i data-feather="home"></i></a></li>
+                    @endif
+                    <li class="breadcrumb-item active">Рестораны</li>
                 </ol>
             </div>
         </div>
@@ -23,14 +34,13 @@
             <div class="card">
                 <div class="card-header pb-0">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h5>Restoranlar Ro'yxati</h5>
+                        <h5>Список ресторанов</h5>
 
-                        {{-- Faqat superadmin yangi restoran qo'sha oladi --}}
-                        @role('superadmin')
-                        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#createRestaurantModal">
-                            <i class="fa fa-plus"></i> Yangi Restoran
+                        @if(auth()->user()->hasPermissionTo('restaurant-create'))
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createRestaurantModal">
+                            <i class="fa fa-plus"></i> Добавить ресторан
                         </button>
-                        @endrole
+                        @endif
                     </div>
                 </div>
                 <div class="card-body">
@@ -48,87 +58,140 @@
                     </div>
                     @endif
 
-                    @if($restaurants->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nomi</th>
-                                    <th>Manzil</th>
-                                    <th>Telefon</th>
-                                    <th>Email</th>
-                                    <th>Qo'shilgan</th>
-                                    <th class="text-end">Harakatlar</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($restaurants as $restaurant)
-                                <tr>
-                                    <td>{{ $restaurant->id }}</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-0">{{ $restaurant->name }}</h6>
-                                                @role('admin')
-                                                <span class="badge badge-info">Sizning restoraningiz</span>
-                                                @endrole
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>{{ Str::limit($restaurant->address, 30) }}</td>
-                                    <td>{{ $restaurant->phone }}</td>
-                                    <td>{{ $restaurant->email ?? 'N/A' }}</td>
-                                    <td>{{ $restaurant->created_at->format('d.m.Y') }}</td>
-                                    <td class="text-end">
-                                        <div class="btn-group" role="group">
-                                            {{-- Ko'rish - Admin va Superadmin --}}
-                                            <button class="btn btn-info btn-sm" type="button"
-                                                onclick="viewRestaurant({{ $restaurant->id }})"
-                                                data-bs-toggle="tooltip" title="Ko'rish">
-                                                <i class="fa fa-eye"></i>
-                                            </button>
-
-                                            {{-- Tahrirlash - Faqat Superadmin --}}
-                                            @role('superadmin')
-                                            <button class="btn btn-warning btn-sm" type="button"
-                                                onclick="editRestaurant({{ $restaurant }})"
-                                                data-bs-toggle="tooltip" title="Tahrirlash">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-
-                                            {{-- O'chirish - Faqat Superadmin --}}
-                                            <button class="btn btn-danger btn-sm" type="button"
-                                                onclick="deleteRestaurant({{ $restaurant->id }}, '{{ $restaurant->name }}')"
-                                                data-bs-toggle="tooltip" title="O'chirish">
-                                                <i class="fa fa-trash"></i>
-                                            </button>
-                                            @endrole
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                    <input type="text" class="form-control" placeholder="Поиск ресторанов...">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="btn-group float-end" role="group">
+                                <button type="button" class="btn btn-outline-primary active">Все</button>
+                                <button type="button" class="btn btn-outline-primary">Новые</button>
+                                <button type="button" class="btn btn-outline-primary">Популярные</button>
+                                <button type="button" class="btn btn-outline-primary">Рекомендуемые</button>
+                            </div>
+                        </div>
                     </div>
 
-                    {{-- Pagination --}}
-                    <div class="mt-3">
+                    @if($restaurants->count() > 0)
+                    <div class="row">
+                        @foreach($restaurants as $restaurant)
+                        <div class="col-xl-4 col-md-6">
+                            <div class="card o-hidden border-0 shadow-sm mb-4">
+                                <div class="card-header p-0">
+
+                                    <img src="https://picsum.photos/seed/{{ $restaurant->id }}/800/400.jpg" class="card-img-top" alt="{{ $restaurant->name }}">
+                                    @if($restaurant->is_active)
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-2">Активен</span>
+                                    @else
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">Неактивен</span>
+                                    @endif
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">{{ $restaurant->name }}</h5>
+                                        @if(auth()->user()->role === 'admin')
+                                        <span class="badge bg-info">Ваш ресторан</span>
+                                        @endif
+                                    </div>
+                                    <div class="d-flex align-items-center mb-3">
+                                        <div class="text-warning me-2">
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star"></i>
+                                            <i class="fa fa-star-half-alt"></i>
+                                        </div>
+                                        <span class="text-muted">4.5 (120 отзывов)</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fa fa-phone me-2 text-primary"></i>
+                                        <span class="text-muted">{{ $restaurant->phone ?? 'N/A' }}</span>
+                                    </div>
+                                    <div class="mb-3">
+                                        <i class="fa fa-map-marker-alt me-2 text-primary"></i>
+                                        <span class="text-muted">{{ Str::limit($restaurant->address, 40) }}</span>
+                                    </div>
+                                    <div class="mb-2">
+                                        <small class="text-muted">Добавлен: {{ $restaurant->created_at->format('d.m.Y') }}</small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent border-top-0 text-center">
+                                    <div class="btn-group" role="group">
+                                        @if(auth()->user()->hasPermissionTo('restaurant-view'))
+                                        <button type="button"
+                                            class="btn btn-outline-info btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#showRestaurantModal"
+                                            data-id="{{ $restaurant->id }}"
+                                            data-name="{{ $restaurant->name }}"
+                                            data-phone="{{ $restaurant->phone ?? '' }}"
+                                            data-description="{{ $restaurant->description ?? '' }}"
+                                            data-address="{{ $restaurant->address ?? '' }}"
+                                            data-longitude="{{ $restaurant->longitude ?? '' }}"
+                                            data-latitude="{{ $restaurant->latitude ?? '' }}"
+                                            data-is-active="{{ $restaurant->is_active ? '1' : '0' }}"
+                                            data-qr-code="{{ $restaurant->qr_code ?? '' }}"
+                                            title="Просмотр">
+                                            <i class="fa fa-eye"></i>
+                                        </button>
+                                        @endif
+
+                                        @if(auth()->user()->hasPermissionTo('restaurant-edit'))
+                                        <button type="button"
+                                            class="btn btn-outline-warning btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editRestaurantModal"
+                                            data-id="{{ $restaurant->id }}"
+                                            data-name="{{ $restaurant->name }}"
+                                            data-phone="{{ $restaurant->phone ?? '' }}"
+                                            data-address="{{ $restaurant->address ?? '' }}"
+                                            data-is-active="{{ $restaurant->is_active ? '1' : '0' }}"
+                                            title="Редактировать">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        @endif
+
+                                        @if(auth()->user()->hasPermissionTo('restaurant-delete'))
+                                        <form action="{{ route('restaurants.destroy', $restaurant) }}"
+                                            method="POST"
+                                            class="d-inline"
+                                            onsubmit="return confirm('Вы действительно хотите удалить ресторан {{ $restaurant->name }}?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                class="btn btn-outline-danger btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="Удалить">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </form>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+
+                    <div class="mt-4">
                         {{ $restaurants->links() }}
                     </div>
                     @else
                     <div class="alert alert-light text-center" role="alert">
                         <i class="fa fa-info-circle fa-2x mb-3 d-block"></i>
-                        @role('superadmin')
-                        <p>Hozircha birorta ham restoran qo'shilmagan.</p>
-                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="modal" data-bs-target="#createRestaurantModal">
-                            <i class="fa fa-plus"></i> Birinchi Restoranni Qo'shish
+                        @if(auth()->user()->hasPermissionTo('restaurant-create'))
+                        <p>Пока не добавлено ни одного ресторана.</p>
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createRestaurantModal">
+                            <i class="fa fa-plus"></i> Добавить первый ресторан
                         </button>
-                        @endrole
-
-                        @role('admin')
-                        <p>Sizga hali restoran biriktirilmagan. Administrator bilan bog'laning.</p>
-                        @endrole
+                        @else
+                        <p>Вам еще не назначен ресторан. Свяжитесь с администратором.</p>
+                        @endif
                     </div>
                     @endif
                 </div>
@@ -137,74 +200,12 @@
     </div>
 </div>
 
-{{-- Create Modal --}}
-@role('superadmin')
-@include('restaurants.modals.create')
-@endrole
+@include('pages.restaurants.modals.create')
+@include('pages.restaurants.modals.show')
+@include('pages.restaurants.modals.edit')
 
-{{-- Edit Modal --}}
-@role('superadmin')
-@include('restaurants.modals.edit')
-@endrole
-
-{{-- View Modal --}}
-@include('restaurants.modals.view')
-
-{{-- Delete Form (hidden) --}}
-<form id="deleteRestaurantForm" method="POST" style="display: none;">
-    @csrf
-    @method('DELETE')
-</form>
 @endsection
 
 @push('scripts')
-<script>
-    // Tooltip'larni faollashtirish
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl)
-    });
-
-    // Restoranni ko'rish
-    function viewRestaurant(id) {
-        fetch(`/restaurants/${id}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('view_name').textContent = data.name;
-                document.getElementById('view_address').textContent = data.address;
-                document.getElementById('view_phone').textContent = data.phone;
-                document.getElementById('view_email').textContent = data.email || 'N/A';
-                document.getElementById('view_description').textContent = data.description || 'Tavsif yo\'q';
-                document.getElementById('view_created').textContent = new Date(data.created_at).toLocaleDateString('uz-UZ');
-
-                new bootstrap.Modal(document.getElementById('viewRestaurantModal')).show();
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    @role('superadmin')
-    // Restoranni tahrirlash
-    function editRestaurant(restaurant) {
-        document.getElementById('edit_restaurant_id').value = restaurant.id;
-        document.getElementById('edit_name').value = restaurant.name;
-        document.getElementById('edit_address').value = restaurant.address;
-        document.getElementById('edit_phone').value = restaurant.phone;
-        document.getElementById('edit_email').value = restaurant.email || '';
-        document.getElementById('edit_description').value = restaurant.description || '';
-
-        document.getElementById('editRestaurantForm').action = `/restaurants/${restaurant.id}`;
-
-        new bootstrap.Modal(document.getElementById('editRestaurantModal')).show();
-    }
-
-    // Restoranni o'chirish
-    function deleteRestaurant(id, name) {
-        if (confirm(`Rostdan ham "${name}" restoranini o'chirmoqchimisiz?`)) {
-            const form = document.getElementById('deleteRestaurantForm');
-            form.action = `/restaurants/${id}`;
-            form.submit();
-        }
-    }
-    @endrole
-</script>
+<script src="{{ asset('js/restaurants/index.js') }}"></script>
 @endpush

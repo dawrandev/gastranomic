@@ -30,15 +30,15 @@ class AuthService
 
     protected function determineRedirect($user): string
     {
-        if ($user->isSuperAdmin()) {
+        if ($user->hasRole('superadmin')) {
             return route('dashboard.superadmin.index');
         }
 
-        if ($user->isAdmin()) {
+        if ($user->hasRole('admin')) {
             if (!$user->restaurant_id) {
                 Auth::logout();
                 throw ValidationException::withMessages([
-                    'login' => __('К вам не прикреплен ресторан. Пожалуйста, свяжитесь с администратором'),
+                    'login' => __('К вам не прикреплен ресторан.'),
                 ]);
             }
             return route('dashboard.admin.index');
@@ -46,7 +46,7 @@ class AuthService
 
         Auth::logout();
         throw ValidationException::withMessages([
-            'login' => __('У вас нет разрешения на доступ к системе.'),
+            'login' => __('У вас нет разрешения на доступ.'),
         ]);
     }
 }

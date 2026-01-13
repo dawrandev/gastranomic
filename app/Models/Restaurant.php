@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Restaurant extends Model
 {
     protected $fillable = [
+        'user_id',
         'name',
         'description',
         'address',
@@ -17,9 +18,9 @@ class Restaurant extends Model
         'qr_code'
     ];
 
-    public function users()
+    public function admin()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     protected $casts = [

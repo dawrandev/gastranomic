@@ -7,25 +7,26 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->middleware('guest')->name('login.form');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-
-Route::middleware(['auth', 'role:superadmin'])
-    ->prefix('superadmin')
-    ->name('dashboard.superadmin.')
-    ->group(function () {
-
-        Route::get('/dashboard', function () {
-            return view('pages.dashboard.superadmin.index');
-        })->name('index');
-    });
-
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('admin')
-    ->name('dashboard.admin.')
-    ->group(function () {
-
-        Route::get('/dashboard', function () {
-            return view('pages.dashboard.admin.index');
-        })->name('index');
-    });
-
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::prefix('superadmin/dashboard')->middleware(['auth', 'role:superadmin'])->name('dashboard.superadmin.')->group(function () {
+    Route::get('/', [App\Http\Controllers\SuperAdmin\DashboardController::class, 'index'])->name('index');
+});
+
+Route::prefix('admin/dashboard')->middleware(['auth', 'role:admin'])->name('dashboard.admin.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('index');
+});
+
+Route::prefix('/restaurants')->middleware(['auth'])->name('restaurants.')->group(function () {
+    Route::get('/', [App\Http\Controllers\RestaurantController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\RestaurantController::class, 'create'])->name('create');
+    Route::get('/{restaurant}/show', [App\Http\Controllers\RestaurantController::class, 'show'])->name('show');
+    Route::post('/store', [App\Http\Controllers\RestaurantController::class, 'store'])->name('store');
+    Route::get('/{restaurant}/edit', [App\Http\Controllers\RestaurantController::class, 'edit'])->name('edit');
+    Route::put('/{restaurant}/update', [App\Http\Controllers\RestaurantController::class, 'update'])->name('update');
+    Route::delete('/{restaurant}/delete', [App\Http\Controllers\RestaurantController::class, 'destroy'])->name('destroy');
+});
+
+Route::prefix('/users')->middleware(['auth', 'role:superadmin'])->name('users.')->group(function () {
+    Route::get('/', [App\Http\Controllers\UserController::class, 'index'])->name('index');
+});

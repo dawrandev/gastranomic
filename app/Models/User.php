@@ -21,24 +21,21 @@ class User extends Authenticatable
         'name',
         'login',
         'password',
-        'restaurant_id',
     ];
 
     public function restaurant()
     {
-        return $this->belongsTo(Restaurant::class);
+        return $this->hasOne(Restaurant::class);
     }
 
-    public function isSuperAdmin()
+    public function isSuperAdmin(): bool
     {
-        // Prefer Spatie roles; fall back to DB 'role' column for compatibility
-        return $this->hasRole('superadmin') || $this->role === 'superadmin';
+        return $this->hasRole('superadmin');
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
-        // Prefer Spatie roles; fall back to DB 'role' column for compatibility
-        return $this->hasRole('admin') || $this->role === 'admin';
+        return $this->hasRole('admin');
     }
 
     /**

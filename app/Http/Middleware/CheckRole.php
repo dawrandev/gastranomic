@@ -16,7 +16,6 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        // Use Spatie's role check instead of direct property access
         if (!$request->user() || !$request->user()->hasRole($role)) {
             abort(403, 'Sizda bu sahifaga kirish huquqi yo‘q.');
         }

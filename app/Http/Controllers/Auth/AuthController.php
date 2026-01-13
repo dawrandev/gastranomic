@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use App\Repositories\AuthRepository;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -29,9 +30,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        return $request;
-        return $this->authRepository->logout($request);
-
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         return redirect()->route('login.form');
     }
 }

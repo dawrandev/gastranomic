@@ -16,8 +16,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('login')->unique();
             $table->string('password');
-            $table->enum('role', ['superadmin', 'admin']);
-            $table->foreignId('restaurant_id')->nullable()->constrained('restaurants');
             $table->rememberToken();
             $table->timestamps();
         });
