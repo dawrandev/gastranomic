@@ -28,6 +28,7 @@ class UserRepository
     public function create(array $data)
     {
         return User::create([
+            'brand_id' => $data['brand_id'],
             'name' => $data['name'],
             'login' => $data['login'],
             'password' => Hash::make($data['password']),

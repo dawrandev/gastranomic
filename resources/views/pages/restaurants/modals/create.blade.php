@@ -10,62 +10,92 @@
                 @csrf
                 <div class="modal-body">
                     <div class="row">
+                        {{-- Brand tanlash --}}
                         <div class="col-md-6 mb-3">
-                            <label for="name" class="form-label">Название ресторана <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}" required>
-                            @error('name')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <label for="brand_id" class="form-label">Бренд <span class="text-danger">*</span></label>
+                            <select class="form-select @error('brand_id') is-invalid @enderror" id="brand_id" name="brand_id" required>
+                                <option value="">Выберите бренд</option>
+                                @foreach(getBrands() as $brand)
+                                <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="phone" class="form-label">Телефон</label>
-                            <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone') }}">
-                            @error('phone')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Адрес <span class="text-danger">*</span></label>
-                        <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3" required>{{ old('address') }}</textarea>
-                        @error('address')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        {{-- Branch Name --}}
+                        <div class="col-md-6 mb-3">
+                            <label for="branch_name" class="form-label">Название филиала <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control @error('branch_name') is-invalid @enderror" id="branch_name" name="branch_name" value="{{ old('branch_name') }}" placeholder="Например: Чиланзар" required>
+                        </div>
                     </div>
 
                     <div class="row">
+                        {{-- City tanlash --}}
                         <div class="col-md-6 mb-3">
-                            <label for="image" class="form-label">Изображение</label>
-                            <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
-                            @error('image')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                            <div class="form-text">Допустимые форматы: JPG, PNG, GIF. Максимальный размер: 2MB.</div>
+                            <label for="city_id" class="form-label">Город <span class="text-danger">*</span></label>
+                            <select class="form-select @error('city_id') is-invalid @enderror" id="city_id" name="city_id" required>
+                                <option value="">Выберите город</option>
+                                @foreach(getCities() as $city)
+                                <option value="{{ $city->id }}" {{ old('city_id') == $city->id ? 'selected' : '' }}>{{ $city->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        {{-- Categories (Multiple) --}}
+                        <div class="col-md-6 mb-3">
+                            <label for="categories" class="form-label">Категории</label>
+                            <select class="form-select @error('categories') is-invalid @enderror" id="categories" name="categories[]" multiple>
+                                @foreach(getCategories() as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">Удерживайте Ctrl, чтобы выбрать несколько</small>
+                        </div>
+                    </div>
+
+                    {{-- Phone and Status --}}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Телефон</label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="{{ old('phone') }}">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="is_active" class="form-label">Статус</label>
-                            <select class="form-select @error('is_active') is-invalid @enderror" id="is_active" name="is_active">
-                                <option value="1" {{ old('is_active') == '1' ? 'selected' : '' }}>Активен</option>
-                                <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Неактивен</option>
+                            <select class="form-select" name="is_active">
+                                <option value="1">Активен</option>
+                                <option value="0">Неактивен</option>
                             </select>
-                            @error('is_active')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
                         </div>
+                    </div>
+
+                    {{-- Address --}}
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Адрес (текст) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="address" name="address" required>
+                    </div>
+
+                    {{-- Leaflet Map --}}
+                    <div class="mb-3">
+                        <label class="form-label">Укажите локацию на карте <span class="text-danger">*</span></label>
+                        <div id="map" style="height: 300px; border-radius: 8px; border: 1px solid #ddd;"></div>
+                        {{-- Yashirin inputlar koordinatalar uchun --}}
+                        <input type="hidden" name="latitude" id="lat">
+                        <input type="hidden" name="longitude" id="lng">
+                    </div>
+
+                    {{-- Multiple Images --}}
+                    <div class="mb-3">
+                        <label for="images" class="form-label">Галерея фотографий</label>
+                        <input type="file" class="form-control" id="images" name="images[]" multiple accept="image/*">
+                        <div class="form-text">Первое выбранное фото будет обложкой (Cover).</div>
                     </div>
 
                     <div class="mb-3">
                         <label for="description" class="form-label">Описание</label>
-                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3">{{ old('description') }}</textarea>
-                        @error('description')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        <textarea class="form-control" id="description" name="description" rows="2"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Отмена</button>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="submit" class="btn btn-primary w-100">Создать ресторан</button>
                 </div>
             </form>
         </div>

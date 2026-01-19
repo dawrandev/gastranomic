@@ -17,6 +17,21 @@
                     </div>
 
                     <div class="form-group mb-3">
+                        <label for="brand_id">Бренд <span class="text-danger">*</span></label>
+                        <select class="form-select @error('brand_id') is-invalid @enderror" id="brand_id" name="brand_id" required>
+                            <option value="" selected disabled>Выберите бренд...</option>
+                            @foreach(getBrands() as $brand)
+                            <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                {{ $brand->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('brand_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group mb-3">
                         <label for="login">Логин <span class="text-danger">*</span></label>
                         <input type="text" class="form-control @error('login') is-invalid @enderror" id="login" name="login" value="{{ old('login') }}" required>
                         @error('login')

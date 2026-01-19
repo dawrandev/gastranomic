@@ -4,10 +4,10 @@
 
 @section('content')
 <div class="container-fluid"
-    data-can-edit="{{ auth()->user()->hasPermissionTo('restaurant-edit') ? '1' : '0' }}"
-    data-can-delete="{{ auth()->user()->hasPermissionTo('restaurant-delete') ? '1' : '0' }}"
-    data-can-view="{{ auth()->user()->hasPermissionTo('restaurant-view') ? '1' : '0' }}"
-    data-can-create="{{ auth()->user()->hasPermissionTo('restaurant-create') ? '1' : '0' }}">
+    data-can-edit="{{ auth()->user()->hasPermissionTo('edit_restaurant') ? '1' : '0' }}"
+    data-can-delete="{{ auth()->user()->hasPermissionTo('delete_restaurant') ? '1' : '0' }}"
+    data-can-view="{{ auth()->user()->hasPermissionTo('view_restaurant') ? '1' : '0' }}"
+    data-can-create="{{ auth()->user()->hasPermissionTo('create_restaurant') ? '1' : '0' }}">
 
     <div class="page-title">
         <div class="row">
@@ -36,7 +36,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <h5>Список ресторанов</h5>
 
-                        @if(auth()->user()->hasPermissionTo('restaurant-create'))
+                        @if(auth()->user()->hasPermissionTo('create_restaurant'))
                         <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createRestaurantModal">
                             <i class="fa fa-plus"></i> Добавить ресторан
                         </button>
@@ -123,7 +123,7 @@
                                 </div>
                                 <div class="card-footer bg-transparent border-top-0 text-center">
                                     <div class="btn-group" role="group">
-                                        @if(auth()->user()->hasPermissionTo('restaurant-view'))
+                                        @if(auth()->user()->hasPermissionTo('view_restaurant'))
                                         <button type="button"
                                             class="btn btn-outline-info btn-sm"
                                             data-bs-toggle="modal"
@@ -142,7 +142,7 @@
                                         </button>
                                         @endif
 
-                                        @if(auth()->user()->hasPermissionTo('restaurant-edit'))
+                                        @if(auth()->user()->hasPermissionTo('edit_restaurant'))
                                         <button type="button"
                                             class="btn btn-outline-warning btn-sm"
                                             data-bs-toggle="modal"
@@ -157,7 +157,7 @@
                                         </button>
                                         @endif
 
-                                        @if(auth()->user()->hasPermissionTo('restaurant-delete'))
+                                        @if(auth()->user()->hasPermissionTo('delete_restaurant'))
                                         <form action="{{ route('restaurants.destroy', $restaurant) }}"
                                             method="POST"
                                             class="d-inline"
@@ -209,6 +209,51 @@
 @endsection
 
 @push('scripts')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    let map, marker;
+
+    // Modal ochilganda xaritani render qilish (muhim!)
+    $('#createRestaurantModal').on('shown.bs.modal', function() {
+        if (!map) {
+            // Toshkent markazi
+            map = L.map('map').setView([41.3111, 69.2797], 12);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            marker = L.marker([41.3111, 69.2797], {
+                draggable: true
+            }).addTo(map);
+
+            // Koordinatalarni yangilash funksiyasi
+            function updateCoords(lat, lng) {
+                document.getElementById('lat').value = lat;
+                document.getElementById('lng').value = lng;
+            }
+
+            // Marker surilganda
+            marker.on('dragend', function(e) {
+                let pos = marker.getLatLng();
+                updateCoords(pos.lat, pos.lng);
+            });
+
+            // Xaritaga bosilganda
+            map.on('click', function(e) {
+                marker.setLatLng(e.latlng);
+                updateCoords(e.latlng.lat, e.latlng.lng);
+            });
+
+            // Dastlabki qiymat
+            updateCoords(41.3111, 69.2797);
+        } else {
+            map.invalidateSize();
+        }
+    });
+</script>
 <script src="{{ asset('js/restaurants/index.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

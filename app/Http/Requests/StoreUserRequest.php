@@ -22,6 +22,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'brand_id' => 'required|exists:brands,id',
             'name' => 'required|string|max:255',
             'login' => 'required|string|unique:users|max:255',
             'password' => 'required|string|min:8|confirmed',
@@ -31,6 +32,8 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'brand_id.required' => 'Поле "Бренд" обязательно для заполнения.',
+            'brand_id.exists' => 'Выбранный бренд не существует.',
             'name.required' => 'Поле "Имя" обязательно для заполнения.',
             'name.string' => 'Поле "Имя" должно быть строкой.',
             'name.max' => 'Поле "Имя" не должно превышать 255 символов.',

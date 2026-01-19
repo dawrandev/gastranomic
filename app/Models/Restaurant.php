@@ -23,6 +23,26 @@ class Restaurant extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function brand()
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    public function operatingHours()
+    {
+        return $this->hasMany(OperatingHour::class);
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class, 'restaurant_category');
+    }
+
     protected $casts = [
         'is_active' => 'boolean',
         'created_at' => 'datetime',

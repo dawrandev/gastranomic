@@ -64,7 +64,7 @@
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Закрыть</button>
 
                 {{-- Tahrirlash tugmasi - 'restaurant-edit' ruhsati talab qilinadi --}}
-                @if(auth()->user()->hasPermissionTo('restaurant-edit'))
+                @if(auth()->user()->hasPermissionTo('edit_restaurant'))
                 <button type="button"
                     id="show-edit-button"
                     class="btn btn-outline-warning"
@@ -76,7 +76,7 @@
                 @endif
 
                 {{-- O'chirish tugmasi - 'restaurant-delete' ruhsati talab qilinadi --}}
-                @if(auth()->user()->hasPermissionTo('restaurant-delete'))
+                @if(auth()->user()->hasPermissionTo('delete_restaurant'))
                 <form id="show-delete-form" action="" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')

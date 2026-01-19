@@ -16,18 +16,33 @@ class RolePermissionSeeder extends Seeder
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        foreach (\App\Permissions\RestaurantPermissions::all() as $permission) {
-            Permission::firstOrCreate(['name' => $permission]);
+        $allPermissions = array_merge(
+            \App\Permissions\RestaurantPermissions::all(),
+            \App\Permissions\BrandPermissions::all(),
+            \App\Permissions\CategoryPermissions::all()
+        );
+
+        foreach ($allPermissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
         $superadmin = Role::firstOrCreate(['name' => 'superadmin']);
         $superadmin->syncPermissions(Permission::all());
 
         $admin = Role::firstOrCreate(['name' => 'admin']);
-        $admin->syncPermissions([
+
+        $adminPermissions = [
             \App\Permissions\RestaurantPermissions::VIEW,
             \App\Permissions\RestaurantPermissions::UPDATE,
+            \App\Permissions\RestaurantPermissions::EDIT,
             \App\Permissions\RestaurantPermissions::CREATE,
-        ]);
+            \App\Permissions\RestaurantPermissions::DELETE,
+            \App\Permissions\BrandPermissions::VIEW,
+            \App\Permissions\BrandPermissions::VIEW_ANY,
+            \App\Permissions\CategoryPermissions::VIEW,
+            \App\Permissions\CategoryPermissions::VIEW_ANY
+        ];
+
+        $admin->syncPermissions($adminPermissions);
     }
 }

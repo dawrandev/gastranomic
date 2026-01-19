@@ -17,6 +17,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'brand_id',
         'name',
         'login',
         'password',
@@ -25,6 +26,11 @@ class User extends Authenticatable
     public function restaurant()
     {
         return $this->hasOne(Restaurant::class);
+    }
+
+    public function brands()
+    {
+        return $this->hasMany(Brand::class);
     }
 
     public function isSuperAdmin(): bool
