@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Category;
 use App\Models\User;
+use App\Permissions\CategoryPermissions;
 use Illuminate\Auth\Access\Response;
 
 class CategoryPolicy
@@ -13,7 +14,7 @@ class CategoryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_category');
+        return false;
     }
 
     /**
@@ -21,7 +22,7 @@ class CategoryPolicy
      */
     public function view(User $user, Category $category): bool
     {
-        return $user->can('view_category');
+        return $user->can(CategoryPermissions::VIEW);
     }
 
     /**

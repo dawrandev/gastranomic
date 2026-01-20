@@ -15,8 +15,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RolePermissionSeeder::class,
-            BrandSeeder::class,    // Qo'shildi
-            CitySeeder::class,     // Qo'shildi
+            BrandSeeder::class,
+            LanguageSeeder::class,
+            CitySeeder::class,
             UserSeeder::class,
             RestaurantSeeder::class,
         ]);

@@ -5,11 +5,11 @@ namespace App\Permissions;
 
 class BrandPermissions
 {
-    public const VIEW_ANY = 'brand-view';
-    public const CREATE = 'brand-create';
-    public const UPDATE = 'brand-update';
-    public const DELETE = 'brand-delete';
-    public const VIEW = 'view';
+    public const VIEW_ANY = 'view_any_brand';
+    public const VIEW = 'view_brand';
+    public const CREATE = 'create_brand';
+    public const UPDATE = 'update_brand';
+    public const DELETE = 'delete_brand';
 
     public static function all(): array
     {

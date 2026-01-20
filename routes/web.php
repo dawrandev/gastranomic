@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -34,4 +35,15 @@ Route::prefix('/users')->middleware(['auth', 'role:superadmin'])->name('users.')
     Route::delete('/destroy/{user}', [App\Http\Controllers\UserController::class, 'destroy'])->name('destroy');
     Route::post('/store', [App\Http\Controllers\UserController::class, 'store'])->name('store');
     Route::put('/{user}/update', [App\Http\Controllers\UserController::class, 'update'])->name('update');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('categories', CategoryController::class);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('brands', App\Http\Controllers\BrandController::class);
+});
+Route::middleware(['auth'])->group(function () {
+    Route::resource('cities', App\Http\Controllers\CityController::class);
 });

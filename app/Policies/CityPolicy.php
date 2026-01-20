@@ -2,12 +2,12 @@
 
 namespace App\Policies;
 
-use App\Models\Brand;
+use App\Models\City;
 use App\Models\User;
-use App\Permissions\BrandPermissions;
+use App\Permissions\CityPermissions;
 use Illuminate\Auth\Access\Response;
 
-class BrandPolicy
+class CityPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -20,9 +20,9 @@ class BrandPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Brand $brand): bool
+    public function view(User $user, City $city): bool
     {
-        return $user->can(BrandPermissions::VIEW);
+        return $user->can(CityPermissions::VIEW);
     }
 
     /**
@@ -36,7 +36,7 @@ class BrandPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Brand $brand): bool
+    public function update(User $user, City $city): bool
     {
         return false;
     }
@@ -44,7 +44,7 @@ class BrandPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Brand $brand): bool
+    public function delete(User $user, City $city): bool
     {
         return false;
     }
@@ -52,7 +52,7 @@ class BrandPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Brand $brand): bool
+    public function restore(User $user, City $city): bool
     {
         return false;
     }
@@ -60,7 +60,7 @@ class BrandPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Brand $brand): bool
+    public function forceDelete(User $user, City $city): bool
     {
         return false;
     }
