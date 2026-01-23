@@ -84,7 +84,7 @@
                                             </div>
 
                                             <div class="mb-1">
-                                                <small class="text-muted"><i class="fa fa-map-marker-alt me-1"></i> {{ $restaurant->city->translations->first()->name ?? 'N/A' }}</small>
+                                                <small class="text-muted"><i class="fa fa-map-marker text-primary me-1"></i> {{ $restaurant->city->translations->first()->name ?? 'N/A' }}</small>
                                             </div>
 
                                             @if($restaurant->phone)
@@ -605,7 +605,8 @@
                 $('#show-delete-form').attr('action', deleteUrl);
 
                 // Show modal
-                $('#showRestaurantModal').modal('show');
+                var showModal = new bootstrap.Modal(document.getElementById('showRestaurantModal'));
+                showModal.show();
 
                 // Initialize map after modal is shown
                 setTimeout(function() {
@@ -712,7 +713,8 @@
                 let updateUrl = "{{ route('restaurants.update', ':id') }}".replace(':id', data.id);
                 $('#editRestaurantForm').attr('action', updateUrl);
 
-                $('#editRestaurantModal').modal('show');
+                var editModal = new bootstrap.Modal(document.getElementById('editRestaurantModal'));
+                editModal.show();
             },
             error: function(xhr) {
                 console.error('Error:', xhr);
@@ -799,7 +801,8 @@
     };
     if (needsRestaurant) {
         $(document).ready(function() {
-            $('#createRestaurantModal').modal('show');
+            var createModal = new bootstrap.Modal(document.getElementById('createRestaurantModal'));
+            createModal.show();
         });
     }
 </script>
