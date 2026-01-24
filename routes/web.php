@@ -48,3 +48,31 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth'])->group(function () {
     Route::resource('cities', App\Http\Controllers\CityController::class);
 });
+
+Route::middleware(['auth'])->prefix('menu')->name('menu-sections.')->group(function () {
+    Route::get('/sections', [App\Http\Controllers\MenuSectionController::class, 'index'])->name('index');
+    Route::post('/sections', [App\Http\Controllers\MenuSectionController::class, 'store'])->name('store');
+    Route::get('/sections/{menuSection}/edit', [App\Http\Controllers\MenuSectionController::class, 'edit'])->name('edit');
+    Route::put('/sections/{menuSection}', [App\Http\Controllers\MenuSectionController::class, 'update'])->name('update');
+    Route::delete('/sections/{menuSection}', [App\Http\Controllers\MenuSectionController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware(['auth'])->prefix('menu')->name('menu-items.')->group(function () {
+    Route::get('/items', [App\Http\Controllers\MenuItemController::class, 'index'])->name('index');
+    Route::post('/items', [App\Http\Controllers\MenuItemController::class, 'store'])->name('store');
+    Route::get('/items/{menuItem}/edit', [App\Http\Controllers\MenuItemController::class, 'edit'])->name('edit');
+    Route::put('/items/{menuItem}', [App\Http\Controllers\MenuItemController::class, 'update'])->name('update');
+    Route::delete('/items/{menuItem}', [App\Http\Controllers\MenuItemController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware(['auth'])->name('restaurant-menu-items.')->group(function () {
+    Route::get('/restaurants/{restaurant}/menu', [App\Http\Controllers\RestaurantMenuItemController::class, 'index'])->name('index');
+    Route::post('/restaurant-menu-items', [App\Http\Controllers\RestaurantMenuItemController::class, 'store'])->name('store');
+    Route::get('/restaurant-menu-items/{restaurantMenuItem}/edit', [App\Http\Controllers\RestaurantMenuItemController::class, 'edit'])->name('edit');
+    Route::put('/restaurant-menu-items/{restaurantMenuItem}', [App\Http\Controllers\RestaurantMenuItemController::class, 'update'])->name('update');
+    Route::delete('/restaurant-menu-items/{restaurantMenuItem}', [App\Http\Controllers\RestaurantMenuItemController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/switch-language', [App\Http\Controllers\LanguageController::class, 'switch'])->name('language.switch');
+});

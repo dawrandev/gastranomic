@@ -3,7 +3,7 @@
 @section('title', 'Рестораны')
 
 @section('content')
-<div class="content-wrapper">
+<div class="content-wrapper restaurants-page">
     <div class="content-header">
         <div class="container-fluid">
             <div class="page-title">
@@ -48,12 +48,13 @@
                         <div class="card-header pb-0">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h5>Список ресторанов</h5>
-
+                                @if(!auth()->user()->hasRole('superadmin'))
                                 @can(\App\Permissions\RestaurantPermissions::CREATE)
                                 <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#createRestaurantModal">
                                     <i class="fa fa-plus"></i> Добавить ресторан
                                 </button>
                                 @endcan
+                                @endif
                             </div>
                         </div>
 
@@ -126,6 +127,15 @@
                                                 </button>
                                                 @endcan
 
+                                                @role('admin')
+                                                @can(\App\Permissions\RestaurantMenuItemPermissions::VIEW_ANY)
+                                                <a href="{{ route('restaurant-menu-items.index', $restaurant->id) }}" class="btn btn-outline-success btn-xs d-flex align-items-center justify-content-center"
+                                                    style="width: 35px; height: 35px; padding: 0;" title="Menyu">
+                                                    <i class="fa fa-cutlery"></i>
+                                                </a>
+                                                @endcan
+                                                @endrole
+
                                                 @can('update', $restaurant)
                                                 <button type="button" class="btn btn-outline-warning btn-xs d-flex align-items-center justify-content-center edit-btn"
                                                     data-id="{{ $restaurant->id }}"
@@ -194,372 +204,378 @@
 
 @push('scripts')
 <script>
-    // IMPORTANT: Disable Dropzone auto-discover BEFORE any modal opens
-    Dropzone.autoDiscover = false;
-
     let createMap, createMarker;
     let editMap, editMarker;
     let createDropzone, editDropzone;
 
     // CREATE MODAL
-    $('#createRestaurantModal').on('shown.bs.modal', function() {
-        // Initialize Select2 for create modal
-        $('#create_categories').select2({
-            placeholder: 'Выберите категории',
-            allowClear: true,
-            dropdownParent: $('#createRestaurantModal')
-        });
-
-        // Initialize Map
-        if (!createMap) {
-            createMap = L.map('createMap').setView([42.4653, 59.6112], 12);
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(createMap);
-
-            createMarker = L.marker([42.4653, 59.6112], {
-                draggable: true
-            }).addTo(createMap);
-
-            function updateCreateCoords(lat, lng) {
-                document.getElementById('create_latitude').value = lat;
-                document.getElementById('create_longitude').value = lng;
+    $(document).ready(function() {
+        $('#createRestaurantModal').on('shown.bs.modal', function() {
+            // Initialize Select2 for create modal
+            if ($.fn.select2) {
+                $('#create_categories').select2({
+                    placeholder: 'Выберите категории',
+                    allowClear: true,
+                    dropdownParent: $('#createRestaurantModal')
+                });
             }
 
-            createMarker.on('dragend', function(e) {
-                let pos = createMarker.getLatLng();
-                updateCreateCoords(pos.lat, pos.lng);
-            });
-
-            createMap.on('click', function(e) {
-                createMarker.setLatLng(e.latlng);
-                updateCreateCoords(e.latlng.lat, e.latlng.lng);
-            });
-
-            updateCreateCoords(42.4653, 59.6112);
-        } else {
-            createMap.invalidateSize();
-        }
-
-        // Initialize Dropzone
-        if (!createDropzone) {
-            createDropzone = new Dropzone("#restaurantImagesDropzone", {
-                url: "{{ route('restaurants.store') }}",
-                autoProcessQueue: false,
-                uploadMultiple: true,
-                parallelUploads: 5,
-                maxFiles: 5,
-                maxFilesize: 5,
-                acceptedFiles: 'image/*',
-                addRemoveLinks: true,
-                dictDefaultMessage: "Перетащите файлы сюда или нажмите для загрузки",
-                dictRemoveFile: "Удалить",
-                dictMaxFilesExceeded: "Максимум 5 фотографий",
-                dictInvalidFileType: "Допустимы только изображения (JPG, PNG)",
-
-                init: function() {
-                    let myDropzone = this;
-
-                    $('#createRestaurantForm').on('submit', function(e) {
-                        e.preventDefault();
-
-                        let formData = new FormData(this);
-
-                        let files = myDropzone.getAcceptedFiles();
-                        files.forEach(function(file, index) {
-                            formData.append('images[' + index + ']', file);
-                        });
-
-                        $.ajax({
-                            url: $(this).attr('action'),
-                            method: 'POST',
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-                            success: function(response, textStatus, xhr) {
-                                console.log('Success response:', response);
-
-                                // Parse response if it's a string
-                                if (typeof response === 'string') {
-                                    try {
-                                        response = JSON.parse(response);
-                                    } catch (e) {
-                                        console.log('Response is not JSON, treating as success');
-                                        response = { success: true };
-                                    }
-                                }
-
-                                if (response.success || response.message || response.restaurant || xhr.status === 201 || xhr.status === 200) {
-                                    swal({
-                                        title: "Успешно!",
-                                        text: response.message || "Ресторан успешно создан",
-                                        icon: "success",
-                                        button: "ОК",
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                } else {
-                                    swal({
-                                        title: "Внимание",
-                                        text: "Ресторан создан, но получен неожиданный ответ",
-                                        icon: "warning",
-                                        button: "ОК",
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                }
-                            },
-                            error: function(xhr) {
-                                console.error('Error response:', xhr);
-
-                                if (xhr.status === 422) {
-                                    let errors = xhr.responseJSON.errors;
-                                    let errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
-                                    Object.keys(errors).forEach(function(key) {
-                                        errors[key].forEach(function(error) {
-                                            errorList += '<li>' + error + '</li>';
-                                        });
-                                    });
-                                    errorList += '</ul>';
-
-                                    swal({
-                                        title: "Ошибка валидации",
-                                        content: {
-                                            element: "div",
-                                            attributes: {
-                                                innerHTML: errorList
-                                            }
-                                        },
-                                        icon: "error",
-                                        button: "Закрыть",
-                                    });
-                                } else if (xhr.status === 201 || xhr.status === 200) {
-                                    // Sometimes 201 goes to error handler
-                                    swal({
-                                        title: "Успешно!",
-                                        text: "Ресторан успешно создан",
-                                        icon: "success",
-                                        button: "ОК",
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                } else {
-                                    let errorMessage = "Произошла ошибка при создании ресторана";
-                                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                                        errorMessage = xhr.responseJSON.message;
-                                    }
-
-                                    swal({
-                                        title: "Ошибка!",
-                                        text: errorMessage,
-                                        icon: "error",
-                                        button: "Закрыть",
-                                    });
-                                }
-                            }
-                        });
-                    });
-                }
-            });
-        }
-    });
-
-    $('#createRestaurantModal').on('hidden.bs.modal', function() {
-        if (createDropzone) {
-            createDropzone.removeAllFiles(true);
-        }
-    });
-
-    // EDIT MODAL
-    $('#editRestaurantModal').on('shown.bs.modal', function() {
-        // Initialize Select2 for edit modal
-        $('#edit_categories').select2({
-            placeholder: 'Выберите категории',
-            allowClear: true,
-            dropdownParent: $('#editRestaurantModal')
-        });
-
-        setTimeout(function() {
-            if (!editMap) {
-                let lat = parseFloat($('#edit_latitude').val()) || 42.4653;
-                let lng = parseFloat($('#edit_longitude').val()) || 59.6112;
-
-                editMap = L.map('editMap').setView([lat, lng], 12);
+            // Initialize Map
+            if (!createMap) {
+                createMap = L.map('createMap').setView([42.4653, 59.6112], 12);
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap'
-                }).addTo(editMap);
+                }).addTo(createMap);
 
-                editMarker = L.marker([lat, lng], {
+                createMarker = L.marker([42.4653, 59.6112], {
                     draggable: true
-                }).addTo(editMap);
+                }).addTo(createMap);
 
-                function updateEditCoords(lat, lng) {
-                    document.getElementById('edit_latitude').value = lat;
-                    document.getElementById('edit_longitude').value = lng;
+                function updateCreateCoords(lat, lng) {
+                    document.getElementById('create_latitude').value = lat;
+                    document.getElementById('create_longitude').value = lng;
                 }
 
-                editMarker.on('dragend', function(e) {
-                    let pos = editMarker.getLatLng();
-                    updateEditCoords(pos.lat, pos.lng);
+                createMarker.on('dragend', function(e) {
+                    let pos = createMarker.getLatLng();
+                    updateCreateCoords(pos.lat, pos.lng);
                 });
 
-                editMap.on('click', function(e) {
-                    editMarker.setLatLng(e.latlng);
-                    updateEditCoords(e.latlng.lat, e.latlng.lng);
+                createMap.on('click', function(e) {
+                    createMarker.setLatLng(e.latlng);
+                    updateCreateCoords(e.latlng.lat, e.latlng.lng);
+                });
+
+                updateCreateCoords(42.4653, 59.6112);
+            } else {
+                createMap.invalidateSize();
+            }
+
+            // Initialize Dropzone
+            if (!createDropzone) {
+                createDropzone = new Dropzone("#restaurantImagesDropzone", {
+                    url: "{{ route('restaurants.store') }}",
+                    autoProcessQueue: false,
+                    uploadMultiple: true,
+                    parallelUploads: 5,
+                    maxFiles: 5,
+                    maxFilesize: 5,
+                    acceptedFiles: 'image/*',
+                    addRemoveLinks: true,
+                    dictDefaultMessage: "Перетащите файлы сюда или нажмите для загрузки",
+                    dictRemoveFile: "Удалить",
+                    dictMaxFilesExceeded: "Максимум 5 фотографий",
+                    dictInvalidFileType: "Допустимы только изображения (JPG, PNG)",
+
+                    init: function() {
+                        let myDropzone = this;
+
+                        $('#createRestaurantForm').on('submit', function(e) {
+                            e.preventDefault();
+
+                            let formData = new FormData(this);
+
+                            let files = myDropzone.getAcceptedFiles();
+                            files.forEach(function(file, index) {
+                                formData.append('images[' + index + ']', file);
+                            });
+
+                            $.ajax({
+                                url: $(this).attr('action'),
+                                method: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function(response, textStatus, xhr) {
+                                    console.log('Success response:', response);
+
+                                    // Parse response if it's a string
+                                    if (typeof response === 'string') {
+                                        try {
+                                            response = JSON.parse(response);
+                                        } catch (e) {
+                                            console.log('Response is not JSON, treating as success');
+                                            response = {
+                                                success: true
+                                            };
+                                        }
+                                    }
+
+                                    if (response.success || response.message || response.restaurant || xhr.status === 201 || xhr.status === 200) {
+                                        swal({
+                                            title: "Успешно!",
+                                            text: response.message || "Ресторан успешно создан",
+                                            icon: "success",
+                                            button: "ОК",
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else {
+                                        swal({
+                                            title: "Внимание",
+                                            text: "Ресторан создан, но получен неожиданный ответ",
+                                            icon: "warning",
+                                            button: "ОК",
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    }
+                                },
+                                error: function(xhr) {
+                                    console.error('Error response:', xhr);
+
+                                    if (xhr.status === 422) {
+                                        let errors = xhr.responseJSON.errors;
+                                        let errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
+                                        Object.keys(errors).forEach(function(key) {
+                                            errors[key].forEach(function(error) {
+                                                errorList += '<li>' + error + '</li>';
+                                            });
+                                        });
+                                        errorList += '</ul>';
+
+                                        swal({
+                                            title: "Ошибка валидации",
+                                            content: {
+                                                element: "div",
+                                                attributes: {
+                                                    innerHTML: errorList
+                                                }
+                                            },
+                                            icon: "error",
+                                            button: "Закрыть",
+                                        });
+                                    } else if (xhr.status === 201 || xhr.status === 200) {
+                                        // Sometimes 201 goes to error handler
+                                        swal({
+                                            title: "Успешно!",
+                                            text: "Ресторан успешно создан",
+                                            icon: "success",
+                                            button: "ОК",
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else {
+                                        let errorMessage = "Произошла ошибка при создании ресторана";
+                                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                                            errorMessage = xhr.responseJSON.message;
+                                        }
+
+                                        swal({
+                                            title: "Ошибка!",
+                                            text: errorMessage,
+                                            icon: "error",
+                                            button: "Закрыть",
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                    }
+                });
+            }
+        });
+
+        $('#createRestaurantModal').on('hidden.bs.modal', function() {
+            if (createDropzone) {
+                createDropzone.removeAllFiles(true);
+            }
+        });
+
+        // EDIT MODAL
+        $('#editRestaurantModal').on('shown.bs.modal', function() {
+            // Initialize Select2 for edit modal
+            $('#edit_categories').select2({
+                placeholder: 'Выберите категории',
+                allowClear: true,
+                dropdownParent: $('#editRestaurantModal')
+            });
+
+            setTimeout(function() {
+                if (!editMap) {
+                    let lat = parseFloat($('#edit_latitude').val()) || 42.4653;
+                    let lng = parseFloat($('#edit_longitude').val()) || 59.6112;
+
+                    editMap = L.map('editMap').setView([lat, lng], 12);
+
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '© OpenStreetMap'
+                    }).addTo(editMap);
+
+                    editMarker = L.marker([lat, lng], {
+                        draggable: true
+                    }).addTo(editMap);
+
+                    function updateEditCoords(lat, lng) {
+                        document.getElementById('edit_latitude').value = lat;
+                        document.getElementById('edit_longitude').value = lng;
+                    }
+
+                    editMarker.on('dragend', function(e) {
+                        let pos = editMarker.getLatLng();
+                        updateEditCoords(pos.lat, pos.lng);
+                    });
+
+                    editMap.on('click', function(e) {
+                        editMarker.setLatLng(e.latlng);
+                        updateEditCoords(e.latlng.lat, e.latlng.lng);
+                    });
+                } else {
+                    editMap.invalidateSize();
+                    let lat = parseFloat($('#edit_latitude').val()) || 42.4653;
+                    let lng = parseFloat($('#edit_longitude').val()) || 59.6112;
+                    editMap.setView([lat, lng], 12);
+                    editMarker.setLatLng([lat, lng]);
+                }
+            }, 300);
+
+            if (!editDropzone) {
+                editDropzone = new Dropzone("#editRestaurantImagesDropzone", {
+                    url: "{{ route('restaurants.store') }}",
+                    autoProcessQueue: false,
+                    uploadMultiple: true,
+                    parallelUploads: 5,
+                    maxFiles: 5,
+                    maxFilesize: 5,
+                    acceptedFiles: 'image/*',
+                    addRemoveLinks: true,
+                    dictDefaultMessage: "Добавить новые фотографии",
+                    dictRemoveFile: "Удалить",
+                    dictMaxFilesExceeded: "Максимум 5 новых фотографий",
+                    dictInvalidFileType: "Допустимы только изображения (JPG, PNG)",
+
+                    init: function() {
+                        let myDropzone = this;
+
+                        $('#editRestaurantForm').on('submit', function(e) {
+                            e.preventDefault();
+
+                            let formData = new FormData(this);
+
+                            let files = myDropzone.getAcceptedFiles();
+                            files.forEach(function(file, index) {
+                                formData.append('images[' + index + ']', file);
+                            });
+
+                            $.ajax({
+                                url: $(this).attr('action'),
+                                method: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function(response, textStatus, xhr) {
+                                    console.log('Success response:', response);
+
+                                    // Parse response if it's a string
+                                    if (typeof response === 'string') {
+                                        try {
+                                            response = JSON.parse(response);
+                                        } catch (e) {
+                                            console.log('Response is not JSON, treating as success');
+                                            response = {
+                                                success: true
+                                            };
+                                        }
+                                    }
+
+                                    if (response.success || response.message || response.restaurant || xhr.status === 200) {
+                                        swal({
+                                            title: "Успешно!",
+                                            text: response.message || "Ресторан успешно обновлен",
+                                            icon: "success",
+                                            button: "ОК",
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else {
+                                        swal({
+                                            title: "Внимание",
+                                            text: "Ресторан обновлен, но получен неожиданный ответ",
+                                            icon: "warning",
+                                            button: "ОК",
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    }
+                                },
+                                error: function(xhr) {
+                                    console.error('Error response:', xhr);
+
+                                    // Try to parse responseText if responseJSON is not available
+                                    let errors = null;
+                                    if (xhr.status === 422) {
+                                        try {
+                                            errors = xhr.responseJSON ? xhr.responseJSON.errors : JSON.parse(xhr.responseText).errors;
+                                        } catch (e) {
+                                            errors = null;
+                                        }
+                                    }
+
+                                    if (errors) {
+                                        let errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
+                                        Object.keys(errors).forEach(function(key) {
+                                            errors[key].forEach(function(error) {
+                                                errorList += '<li>' + error + '</li>';
+                                            });
+                                        });
+                                        errorList += '</ul>';
+
+                                        swal({
+                                            title: "Ошибка валидации",
+                                            content: {
+                                                element: "div",
+                                                attributes: {
+                                                    innerHTML: errorList
+                                                }
+                                            },
+                                            icon: "error",
+                                            button: "Закрыть",
+                                        });
+                                    } else if (xhr.status === 200) {
+                                        // Sometimes 200 goes to error handler
+                                        swal({
+                                            title: "Успешно!",
+                                            text: "Ресторан успешно обновлен",
+                                            icon: "success",
+                                            button: "ОК",
+                                        }).then(() => {
+                                            window.location.reload();
+                                        });
+                                    } else {
+                                        let errorMessage = "Произошла ошибка при обновлении ресторана";
+                                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                                            errorMessage = xhr.responseJSON.message;
+                                        }
+
+                                        swal({
+                                            title: "Ошибка!",
+                                            text: errorMessage,
+                                            icon: "error",
+                                            button: "Закрыть",
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                    }
                 });
             } else {
-                editMap.invalidateSize();
-                let lat = parseFloat($('#edit_latitude').val()) || 42.4653;
-                let lng = parseFloat($('#edit_longitude').val()) || 59.6112;
-                editMap.setView([lat, lng], 12);
-                editMarker.setLatLng([lat, lng]);
+                editDropzone.removeAllFiles(true);
             }
-        }, 300);
+        });
 
-        if (!editDropzone) {
-            editDropzone = new Dropzone("#editRestaurantImagesDropzone", {
-                url: "{{ route('restaurants.store') }}",
-                autoProcessQueue: false,
-                uploadMultiple: true,
-                parallelUploads: 5,
-                maxFiles: 5,
-                maxFilesize: 5,
-                acceptedFiles: 'image/*',
-                addRemoveLinks: true,
-                dictDefaultMessage: "Добавить новые фотографии",
-                dictRemoveFile: "Удалить",
-                dictMaxFilesExceeded: "Максимум 5 новых фотографий",
-                dictInvalidFileType: "Допустимы только изображения (JPG, PNG)",
+        $('#editRestaurantModal').on('hidden.bs.modal', function() {
+            if (editDropzone) {
+                editDropzone.removeAllFiles(true);
+            }
+        });
 
-                init: function() {
-                    let myDropzone = this;
-
-                    $('#editRestaurantForm').on('submit', function(e) {
-                        e.preventDefault();
-
-                        let formData = new FormData(this);
-
-                        let files = myDropzone.getAcceptedFiles();
-                        files.forEach(function(file, index) {
-                            formData.append('images[' + index + ']', file);
-                        });
-
-                        $.ajax({
-                            url: $(this).attr('action'),
-                            method: 'POST',
-                            data: formData,
-                            processData: false,
-                            contentType: false,
-                            success: function(response, textStatus, xhr) {
-                                console.log('Success response:', response);
-
-                                // Parse response if it's a string
-                                if (typeof response === 'string') {
-                                    try {
-                                        response = JSON.parse(response);
-                                    } catch (e) {
-                                        console.log('Response is not JSON, treating as success');
-                                        response = { success: true };
-                                    }
-                                }
-
-                                if (response.success || response.message || response.restaurant || xhr.status === 200) {
-                                    swal({
-                                        title: "Успешно!",
-                                        text: response.message || "Ресторан успешно обновлен",
-                                        icon: "success",
-                                        button: "ОК",
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                } else {
-                                    swal({
-                                        title: "Внимание",
-                                        text: "Ресторан обновлен, но получен неожиданный ответ",
-                                        icon: "warning",
-                                        button: "ОК",
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                }
-                            },
-                            error: function(xhr) {
-                                console.error('Error response:', xhr);
-
-                                // Try to parse responseText if responseJSON is not available
-                                let errors = null;
-                                if (xhr.status === 422) {
-                                    try {
-                                        errors = xhr.responseJSON ? xhr.responseJSON.errors : JSON.parse(xhr.responseText).errors;
-                                    } catch (e) {
-                                        errors = null;
-                                    }
-                                }
-
-                                if (errors) {
-                                    let errorList = '<ul style="text-align: left; margin: 0; padding-left: 20px;">';
-                                    Object.keys(errors).forEach(function(key) {
-                                        errors[key].forEach(function(error) {
-                                            errorList += '<li>' + error + '</li>';
-                                        });
-                                    });
-                                    errorList += '</ul>';
-
-                                    swal({
-                                        title: "Ошибка валидации",
-                                        content: {
-                                            element: "div",
-                                            attributes: {
-                                                innerHTML: errorList
-                                            }
-                                        },
-                                        icon: "error",
-                                        button: "Закрыть",
-                                    });
-                                } else if (xhr.status === 200) {
-                                    // Sometimes 200 goes to error handler
-                                    swal({
-                                        title: "Успешно!",
-                                        text: "Ресторан успешно обновлен",
-                                        icon: "success",
-                                        button: "ОК",
-                                    }).then(() => {
-                                        window.location.reload();
-                                    });
-                                } else {
-                                    let errorMessage = "Произошла ошибка при обновлении ресторана";
-                                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                                        errorMessage = xhr.responseJSON.message;
-                                    }
-
-                                    swal({
-                                        title: "Ошибка!",
-                                        text: errorMessage,
-                                        icon: "error",
-                                        button: "Закрыть",
-                                    });
-                                }
-                            }
-                        });
-                    });
-                }
-            });
-        } else {
-            editDropzone.removeAllFiles(true);
-        }
-    });
-
-    $('#editRestaurantModal').on('hidden.bs.modal', function() {
-        if (editDropzone) {
-            editDropzone.removeAllFiles(true);
-        }
-    });
+    }); // End of CREATE MODAL ready
 
     // VIEW button
     let showMap;
-    $(document).on('click', '.view-btn', function() {
+    $(document).on('click', '.restaurants-page .view-btn', function() {
         let id = $(this).data('id');
         let url = "{{ route('restaurants.show', ':id') }}".replace(':id', id);
 
@@ -728,7 +744,7 @@
     });
 
     // EDIT button
-    $(document).on('click', '.edit-btn', function() {
+    $(document).on('click', '.restaurants-page .edit-btn', function() {
         let id = $(this).data('id');
         let url = "{{ route('restaurants.edit', ':id') }}".replace(':id', id);
 
@@ -865,7 +881,9 @@
                             try {
                                 response = JSON.parse(response);
                             } catch (e) {
-                                response = { success: true };
+                                response = {
+                                    success: true
+                                };
                             }
                         }
 

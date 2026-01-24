@@ -61,8 +61,8 @@
                                 <div class="col-md-6">
                                     <form method="GET" action="{{ route('brands.index') }}">
                                         <div class="input-group">
-                                            <input type="text" name="search" class="form-control" placeholder="Поиск..." value="{{ request('search') }}">
-                                            <div class="input-group-append">
+                                            <div class="input-group">
+                                                <input type="text" name="search" class="form-control" placeholder="Поиск..." value="{{ request('search') }}">
                                                 <button type="submit" class="btn btn-outline-info"><i class="fa fa-search"></i></button>
                                             </div>
                                         </div>

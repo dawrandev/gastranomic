@@ -19,10 +19,15 @@
  <script src="{{ asset('assets/js/theme-customizer/customizer.js') }}"></script>
 
  <script src="{{ asset('assets/js/sweet-alert/sweetalert.min.js') }}"></script>
- <script src="{{ asset('assets/js/sweet-alert/app.js') }}"></script>
 
  <script src="{{ asset('assets/js/select2/select2.full.min.js') }}"></script>
  <script src="{{ asset('assets/js/dropzone/dropzone.js') }}"></script>
+ <script>
+     // Disable Dropzone auto-discover globally
+     if (typeof Dropzone !== 'undefined') {
+         Dropzone.autoDiscover = false;
+     }
+ </script>
  <script src="{{ asset('assets/js/owlcarousel/owl.carousel.js') }}"></script>
  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
  <!-- login js-->

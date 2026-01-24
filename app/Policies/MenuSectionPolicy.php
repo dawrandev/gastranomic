@@ -4,63 +4,47 @@ namespace App\Policies;
 
 use App\Models\MenuSection;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use App\Permissions\MenuSectionPermissions;
 
 class MenuSectionPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->can(MenuSectionPermissions::VIEW_ANY);
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, MenuSection $menuSection): bool
     {
-        return false;
+        if ($user->isSuperAdmin()) {
+            return true;
+        }
+
+        return $user->can(MenuSectionPermissions::VIEW) &&
+            $user->brand_id === $menuSection->brand_id;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        return false;
+        return $user->can(MenuSectionPermissions::CREATE);
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, MenuSection $menuSection): bool
     {
-        return false;
+        if ($user->isSuperAdmin()) {
+            return false;
+        }
+
+        return $user->can(MenuSectionPermissions::UPDATE) &&
+            $user->brand_id === $menuSection->brand_id;
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, MenuSection $menuSection): bool
     {
-        return false;
-    }
+        if ($user->isSuperAdmin()) {
+            return false;
+        }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, MenuSection $menuSection): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, MenuSection $menuSection): bool
-    {
-        return false;
+        return $user->can(MenuSectionPermissions::DELETE) &&
+            $user->brand_id === $menuSection->brand_id;
     }
 }
