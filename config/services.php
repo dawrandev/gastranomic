@@ -31,4 +31,10 @@ return [
         ],
     ],
 
+    'eskiz' => [
+        'base_url' => env('ESKIZ_BASE_URL', 'https://notify.eskiz.uz/api'),
+        'email' => env('ESKIZ_EMAIL'),
+        'password' => env('ESKIZ_PASSWORD'),
+    ],
+
 ];
