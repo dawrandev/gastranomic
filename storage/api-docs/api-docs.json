@@ -1,0 +1,454 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "RestReviews Mobile API",
+        "description": "API dokumentatsiya mobil ilova uchun - Restaurant sharhlari tizimi",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost",
+            "description": "Local Development Server"
+        },
+        {
+            "url": "https://api.restreviews.uz",
+            "description": "Production Server"
+        }
+    ],
+    "paths": {
+        "/api/auth/send-code": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Tasdiqlash kodini yuborish",
+                "description": "Telefon raqamiga SMS orqali 4 raqamli tasdiqlash kodini yuboradi. Kod 5 daqiqa amal qiladi.",
+                "operationId": "0f2ff5da3d5883ef973571776bfcbc27",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "description": "Telefon raqami (998XXXXXXXXX formatida)",
+                                        "type": "string",
+                                        "example": "998901234567"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tasdiqlash kodi muvaffaqiyatli yuborildi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tasdiqlash kodi yuborildi"
+                                        },
+                                        "phone": {
+                                            "type": "string",
+                                            "example": "998901234567"
+                                        },
+                                        "code": {
+                                            "description": "Test rejimida qaytadi, production da null",
+                                            "type": "string",
+                                            "example": "1234",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validatsiya xatosi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Validation error"
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "example": {
+                                                "phone": [
+                                                    "The phone field is required."
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "SMS yuborishda xatolik",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "SMS yuborishda xatolik yuz berdi. Qaytadan urinib ko'ring."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/verify-code": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Kodni tekshirish va login/register",
+                "description": "Tasdiqlash kodini tekshiradi. Agar foydalanuvchi yangi bo'lsa, ism va familiya bilan ro'yxatdan o'tkazadi. Mavjud foydalanuvchi uchun login qiladi.",
+                "operationId": "29564ddf07960c1a2c60526d2a6b676a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "phone",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "phone": {
+                                        "description": "Telefon raqami",
+                                        "type": "string",
+                                        "example": "998901234567"
+                                    },
+                                    "code": {
+                                        "description": "4 raqamli tasdiqlash kodi",
+                                        "type": "string",
+                                        "example": "1234"
+                                    },
+                                    "first_name": {
+                                        "description": "Ism (yangi foydalanuvchilar uchun majburiy)",
+                                        "type": "string",
+                                        "example": "Abdulla",
+                                        "nullable": true
+                                    },
+                                    "last_name": {
+                                        "description": "Familiya (yangi foydalanuvchilar uchun majburiy)",
+                                        "type": "string",
+                                        "example": "Valiyev",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Muvaffaqiyatli login yoki ro'yxatdan o'tish",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tizimga kirdingiz"
+                                        },
+                                        "is_new_user": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "client": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "Abdulla"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Valiyev"
+                                                },
+                                                "full_name": {
+                                                    "type": "string",
+                                                    "example": "Abdulla Valiyev"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "998901234567"
+                                                },
+                                                "image_path": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "token": {
+                                            "description": "Bearer token keyingi so'rovlar uchun",
+                                            "type": "string",
+                                            "example": "1|abcdefghijklmnopqrstuvwxyz123456789"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Noto'g'ri tasdiqlash kodi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Noto'g'ri tasdiqlash kodi"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Kod topilmadi yoki muddati tugagan",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tasdiqlash kodi topilmadi yoki muddati tugagan"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validatsiya xatosi yoki yangi foydalanuvchi uchun ism/familiya kerak",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Ism va familiya kiritish shart"
+                                        },
+                                        "requires_registration": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/auth/me": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Foydalanuvchi profilini olish",
+                "description": "Autentifikatsiya qilingan foydalanuvchining profilini qaytaradi",
+                "operationId": "b5de204f5e452ef51327c691aa99e77c",
+                "responses": {
+                    "200": {
+                        "description": "Profil ma'lumotlari",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "client": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "Abdulla"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Valiyev"
+                                                },
+                                                "full_name": {
+                                                    "type": "string",
+                                                    "example": "Abdulla Valiyev"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "998901234567"
+                                                },
+                                                "image_path": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Autentifikatsiya xatosi - token noto'g'ri yoki yo'q",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Tizimdan chiqish",
+                "description": "Joriy tokenni bekor qiladi va foydalanuvchini tizimdan chiqaradi",
+                "operationId": "df9bdc6c7a6d9f20b983526b2ec0f698",
+                "responses": {
+                    "200": {
+                        "description": "Muvaffaqiyatli logout",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Tizimdan chiqdingiz"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Autentifikatsiya xatosi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "Authentication"
+        }
+    ]
+}

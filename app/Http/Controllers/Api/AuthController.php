@@ -9,7 +9,28 @@ use App\Services\EskizSmsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 
+#[OA\Info(
+    version: "1.0.0",
+    title: "RestReviews Mobile API",
+    description: "API dokumentatsiya mobil ilova uchun - Restaurant sharhlari tizimi"
+)]
+#[OA\Server(
+    url: "http://localhost",
+    description: "Local Development Server"
+)]
+#[OA\Server(
+    url: "https://api.restreviews.uz",
+    description: "Production Server"
+)]
+#[OA\SecurityScheme(
+    securityScheme: "bearerAuth",
+    type: "http",
+    scheme: "bearer",
+    bearerFormat: "JWT"
+)]
 class AuthController extends Controller
 {
     protected EskizSmsService $smsService;
@@ -19,12 +40,71 @@ class AuthController extends Controller
         $this->smsService = $smsService;
     }
 
-    /**
-     * Send verification code to phone
-     *
-     * POST /api/auth/send-code
-     * Body: { "phone": "998901234567" }
-     */
+    #[OA\Post(
+        path: "/api/auth/send-code",
+        summary: "Tasdiqlash kodini yuborish",
+        description: "Telefon raqamiga SMS orqali 4 raqamli tasdiqlash kodini yuboradi. Kod 5 daqiqa amal qiladi.",
+        tags: ["Authentication"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["phone"],
+                properties: [
+                    new OA\Property(
+                        property: "phone",
+                        type: "string",
+                        description: "Telefon raqami (998XXXXXXXXX formatida)",
+                        example: "998901234567"
+                    )
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Tasdiqlash kodi muvaffaqiyatli yuborildi",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Tasdiqlash kodi yuborildi"),
+                        new OA\Property(property: "phone", type: "string", example: "998901234567"),
+                        new OA\Property(
+                            property: "code",
+                            type: "string",
+                            nullable: true,
+                            description: "Test rejimida qaytadi, production da null",
+                            example: "1234"
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validatsiya xatosi",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: false),
+                        new OA\Property(property: "message", type: "string", example: "Validation error"),
+                        new OA\Property(
+                            property: "errors",
+                            type: "object",
+                            example: ["phone" => ["The phone field is required."]]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: "SMS yuborishda xatolik",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: false),
+                        new OA\Property(property: "message", type: "string", example: "SMS yuborishda xatolik yuz berdi. Qaytadan urinib ko'ring.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function sendCode(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -56,7 +136,7 @@ class AuthController extends Controller
         $smsSent = $this->smsService->sendVerificationCode($phone, $code);
 
         // For testing without Eskiz - log the code
-        \Log::info("Verification code for {$phone}: {$code}");
+        Log::info("Verification code for {$phone}: {$code}");
 
         if (!$smsSent && !config('app.debug')) {
             return response()->json([
@@ -69,22 +149,114 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Tasdiqlash kodi yuborildi',
             'phone' => $phone,
-            // Only for development/testing - remove in production
-            'code' => config('app.debug') ? $code : null,
+            // In test mode, return code in response since SMS won't contain it
+            'code' => config('services.eskiz.test_mode', true) ? $code : null,
         ]);
     }
 
-    /**
-     * Verify code and login/register
-     *
-     * POST /api/auth/verify-code
-     * Body: {
-     *   "phone": "998901234567",
-     *   "code": "1234",
-     *   "first_name": "John",    // Optional, required for new users
-     *   "last_name": "Doe"        // Optional, required for new users
-     * }
-     */
+    #[OA\Post(
+        path: "/api/auth/verify-code",
+        summary: "Kodni tekshirish va login/register",
+        description: "Tasdiqlash kodini tekshiradi. Agar foydalanuvchi yangi bo'lsa, ism va familiya bilan ro'yxatdan o'tkazadi. Mavjud foydalanuvchi uchun login qiladi.",
+        tags: ["Authentication"],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ["phone", "code"],
+                properties: [
+                    new OA\Property(
+                        property: "phone",
+                        type: "string",
+                        description: "Telefon raqami",
+                        example: "998901234567"
+                    ),
+                    new OA\Property(
+                        property: "code",
+                        type: "string",
+                        description: "4 raqamli tasdiqlash kodi",
+                        example: "1234"
+                    ),
+                    new OA\Property(
+                        property: "first_name",
+                        type: "string",
+                        description: "Ism (yangi foydalanuvchilar uchun majburiy)",
+                        example: "Abdulla",
+                        nullable: true
+                    ),
+                    new OA\Property(
+                        property: "last_name",
+                        type: "string",
+                        description: "Familiya (yangi foydalanuvchilar uchun majburiy)",
+                        example: "Valiyev",
+                        nullable: true
+                    )
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Muvaffaqiyatli login yoki ro'yxatdan o'tish",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Tizimga kirdingiz"),
+                        new OA\Property(property: "is_new_user", type: "boolean", example: false),
+                        new OA\Property(
+                            property: "client",
+                            type: "object",
+                            properties: [
+                                new OA\Property(property: "id", type: "integer", example: 1),
+                                new OA\Property(property: "first_name", type: "string", example: "Abdulla"),
+                                new OA\Property(property: "last_name", type: "string", example: "Valiyev"),
+                                new OA\Property(property: "full_name", type: "string", example: "Abdulla Valiyev"),
+                                new OA\Property(property: "phone", type: "string", example: "998901234567"),
+                                new OA\Property(property: "image_path", type: "string", nullable: true, example: null)
+                            ]
+                        ),
+                        new OA\Property(
+                            property: "token",
+                            type: "string",
+                            description: "Bearer token keyingi so'rovlar uchun",
+                            example: "1|abcdefghijklmnopqrstuvwxyz123456789"
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Noto'g'ri tasdiqlash kodi",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: false),
+                        new OA\Property(property: "message", type: "string", example: "Noto'g'ri tasdiqlash kodi")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: "Kod topilmadi yoki muddati tugagan",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: false),
+                        new OA\Property(property: "message", type: "string", example: "Tasdiqlash kodi topilmadi yoki muddati tugagan")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: "Validatsiya xatosi yoki yangi foydalanuvchi uchun ism/familiya kerak",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: false),
+                        new OA\Property(property: "message", type: "string", example: "Ism va familiya kiritish shart"),
+                        new OA\Property(property: "requires_registration", type: "boolean", example: true),
+                        new OA\Property(property: "errors", type: "object", nullable: true)
+                    ]
+                )
+            )
+        ]
+    )]
     public function verifyCode(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -171,12 +343,45 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Get authenticated client profile
-     *
-     * GET /api/auth/me
-     * Headers: { "Authorization": "Bearer {token}" }
-     */
+    #[OA\Get(
+        path: "/api/auth/me",
+        summary: "Foydalanuvchi profilini olish",
+        description: "Autentifikatsiya qilingan foydalanuvchining profilini qaytaradi",
+        security: [["bearerAuth" => []]],
+        tags: ["Authentication"],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Profil ma'lumotlari",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(
+                            property: "client",
+                            type: "object",
+                            properties: [
+                                new OA\Property(property: "id", type: "integer", example: 1),
+                                new OA\Property(property: "first_name", type: "string", example: "Abdulla"),
+                                new OA\Property(property: "last_name", type: "string", example: "Valiyev"),
+                                new OA\Property(property: "full_name", type: "string", example: "Abdulla Valiyev"),
+                                new OA\Property(property: "phone", type: "string", example: "998901234567"),
+                                new OA\Property(property: "image_path", type: "string", nullable: true, example: null)
+                            ]
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Autentifikatsiya xatosi - token noto'g'ri yoki yo'q",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function me(Request $request)
     {
         $client = $request->user();
@@ -194,12 +399,34 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Logout
-     *
-     * POST /api/auth/logout
-     * Headers: { "Authorization": "Bearer {token}" }
-     */
+    #[OA\Post(
+        path: "/api/auth/logout",
+        summary: "Tizimdan chiqish",
+        description: "Joriy tokenni bekor qiladi va foydalanuvchini tizimdan chiqaradi",
+        security: [["bearerAuth" => []]],
+        tags: ["Authentication"],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: "Muvaffaqiyatli logout",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "success", type: "boolean", example: true),
+                        new OA\Property(property: "message", type: "string", example: "Tizimdan chiqdingiz")
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: "Autentifikatsiya xatosi",
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: "message", type: "string", example: "Unauthenticated.")
+                    ]
+                )
+            )
+        ]
+    )]
     public function logout(Request $request)
     {
         // Revoke current token

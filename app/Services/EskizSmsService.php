@@ -29,7 +29,12 @@ class EskizSmsService
         }
 
         try {
-            $response = Http::post("{$this->baseUrl}/auth/login", [
+            Log::info('Eskiz: Attempting login', [
+                'email' => $this->email,
+                'endpoint' => "{$this->baseUrl}/auth/login"
+            ]);
+
+            $response = Http::asForm()->post("{$this->baseUrl}/auth/login", [
                 'email' => $this->email,
                 'password' => $this->password,
             ]);
@@ -37,10 +42,16 @@ class EskizSmsService
             if ($response->successful()) {
                 $data = $response->json();
                 $this->token = $data['data']['token'] ?? null;
+
+                Log::info('Eskiz: Login successful', [
+                    'has_token' => !empty($this->token)
+                ]);
+
                 return $this->token;
             }
 
             Log::error('Eskiz auth failed', [
+                'status_code' => $response->status(),
                 'response' => $response->json()
             ]);
 
@@ -76,12 +87,23 @@ class EskizSmsService
         }
 
         try {
-            $response = Http::withHeaders([
+            Log::info('Attempting to send SMS', [
+                'phone' => $phone,
+                'message' => $message,
+                'endpoint' => "{$this->baseUrl}/message/sms/send"
+            ]);
+
+            $response = Http::asForm()->withHeaders([
                 'Authorization' => 'Bearer ' . $token,
             ])->post("{$this->baseUrl}/message/sms/send", [
                 'mobile_phone' => $phone,
                 'message' => $message,
                 'from' => '4546', // Eskiz default sender
+            ]);
+
+            Log::info('SMS API Response', [
+                'status' => $response->status(),
+                'body' => $response->json()
             ]);
 
             if ($response->successful()) {
@@ -94,6 +116,7 @@ class EskizSmsService
 
             Log::error('SMS send failed', [
                 'phone' => $phone,
+                'status_code' => $response->status(),
                 'response' => $response->json()
             ]);
 
@@ -115,7 +138,19 @@ class EskizSmsService
      */
     public function sendVerificationCode(string $phone, string $code): bool
     {
-        $message = "Sizning tasdiqlash kodingiz: {$code}\n\nKodni hech kimga bermang!";
+        // Check if in test mode by trying to detect production status
+        // In test mode, only specific messages are allowed
+        $isTestMode = config('services.eskiz.test_mode', true);
+
+        if ($isTestMode) {
+            // Test mode: send approved message only
+            $message = "Bu Eskiz dan test";
+            Log::info("Eskiz TEST MODE: Sending approved test message. Verification code: {$code}");
+        } else {
+            // Production mode: send actual code
+            $message = "Sizning tasdiqlash kodingiz: {$code}\n\nKodni hech kimga bermang!";
+        }
+
         return $this->sendSms($phone, $message);
     }
 }

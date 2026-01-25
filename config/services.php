@@ -35,6 +35,7 @@ return [
         'base_url' => env('ESKIZ_BASE_URL', 'https://notify.eskiz.uz/api'),
         'email' => env('ESKIZ_EMAIL'),
         'password' => env('ESKIZ_PASSWORD'),
+        'test_mode' => env('ESKIZ_TEST_MODE', true), // Set to false when production mode is active
     ],
 
 ];
