@@ -15,8 +15,8 @@
                         <div class="me-3">
                             <select class="form-select form-select-sm language-switcher" id="menu-language-select" style="width: auto;">
                                 @php
-                                    $currentLang = \App\Helpers\LanguageHelper::getCurrentLang();
-                                    $allLanguages = \App\Models\Language::all();
+                                $currentLang = \App\Helpers\LanguageHelper::getCurrentLang();
+                                $allLanguages = \App\Models\Language::all();
                                 @endphp
                                 @foreach($allLanguages as $lang)
                                 <option value="{{ $lang->code }}" {{ $currentLang == $lang->code ? 'selected' : '' }}>

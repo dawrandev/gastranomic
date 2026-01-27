@@ -13,12 +13,12 @@ use OpenApi\Attributes as OA;
     description: 'Client API for RestReviews mobile application'
 )]
 #[OA\Server(
-    url: 'http://restreviews.test',
-    description: 'Local Development Server'
+    url: 'https://gastronomic.webclub.uz',
+    description: 'Production Server'
 )]
 #[OA\Server(
     url: 'http://localhost:8000',
-    description: 'Alternative Local Server'
+    description: 'Local Development Server'
 )]
 #[OA\SecurityScheme(
     securityScheme: 'bearerAuth',

@@ -53,7 +53,7 @@
                                     <h4 class="mb-0 fw-bold">{{ number_format($statistics['total_reviews']) }}</h4>
                                 </div>
                                 <div class="bg-primary bg-opacity-10 rounded-circle p-3">
-                                    <i class="fa fa-comments fa-2x text-primary"></i>
+                                    <i class="fa fa-comments fa-2x"></i>
                                 </div>
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                                     </h4>
                                 </div>
                                 <div class="bg-warning bg-opacity-10 rounded-circle p-3">
-                                    <i class="fa fa-star fa-2x text-warning"></i>
+                                    <i class="fa fa-star fa-2x"></i>
                                 </div>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                                     <h4 class="mb-0 fw-bold text-success">{{ number_format($statistics['five_star']) }}</h4>
                                 </div>
                                 <div class="bg-success bg-opacity-10 rounded-circle p-3">
-                                    <i class="fa fa-thumbs-up fa-2x text-success"></i>
+                                    <i class="fa fa-thumbs-up fa-2x"></i>
                                 </div>
                             </div>
                         </div>
@@ -104,7 +104,7 @@
                                     <h4 class="mb-0 fw-bold text-danger">{{ number_format($statistics['one_star'] + $statistics['two_star']) }}</h4>
                                 </div>
                                 <div class="bg-danger bg-opacity-10 rounded-circle p-3">
-                                    <i class="fa fa-thumbs-down fa-2x text-danger"></i>
+                                    <i class="fa fa-thumbs-down fa-2x"></i>
                                 </div>
                             </div>
                         </div>
@@ -121,34 +121,34 @@
                         </div>
                         <div class="card-body">
                             @php
-                                $maxCount = max($statistics['five_star'], $statistics['four_star'], $statistics['three_star'], $statistics['two_star'], $statistics['one_star']);
+                            $maxCount = max($statistics['five_star'], $statistics['four_star'], $statistics['three_star'], $statistics['two_star'], $statistics['one_star']);
                             @endphp
                             @foreach([5, 4, 3, 2, 1] as $rating)
-                                @php
-                                    $count = $statistics[match($rating) {
-                                        5 => 'five_star',
-                                        4 => 'four_star',
-                                        3 => 'three_star',
-                                        2 => 'two_star',
-                                        1 => 'one_star',
-                                    }];
-                                    $percentage = $statistics['total_reviews'] > 0 ? ($count / $statistics['total_reviews']) * 100 : 0;
-                                @endphp
-                                <div class="row align-items-center mb-2">
-                                    <div class="col-auto">
-                                        <span class="text-muted">{{ $rating }} <i class="fa fa-star text-warning"></i></span>
-                                    </div>
-                                    <div class="col">
-                                        <div class="progress" style="height: 20px;">
-                                            <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $percentage }}%" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100">
-                                                {{ number_format($percentage, 1) }}%
-                                            </div>
+                            @php
+                            $count = $statistics[match($rating) {
+                            5 => 'five_star',
+                            4 => 'four_star',
+                            3 => 'three_star',
+                            2 => 'two_star',
+                            1 => 'one_star',
+                            }];
+                            $percentage = $statistics['total_reviews'] > 0 ? ($count / $statistics['total_reviews']) * 100 : 0;
+                            @endphp
+                            <div class="row align-items-center mb-2">
+                                <div class="col-auto">
+                                    <span class="text-muted">{{ $rating }} <i class="fa fa-star text-warning"></i></span>
+                                </div>
+                                <div class="col">
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ $percentage }}%" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100">
+                                            {{ number_format($percentage, 1) }}%
                                         </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <span class="badge bg-secondary">{{ $count }}</span>
-                                    </div>
                                 </div>
+                                <div class="col-auto">
+                                    <span class="badge bg-secondary">{{ $count }}</span>
+                                </div>
+                            </div>
                             @endforeach
                         </div>
                     </div>
@@ -195,12 +195,12 @@
                                                 <span class="badge bg-secondary">{{ $review->restaurant->branch_name }}</span>
                                                 <span class="ms-2">
                                                     @for($i = 1; $i <= 5; $i++)
-                                                        @if($i <= $review->rating)
-                                                            <i class="fa fa-star text-warning"></i>
+                                                        @if($i <=$review->rating)
+                                                        <i class="fa fa-star text-warning"></i>
                                                         @else
-                                                            <i class="fa fa-star text-muted"></i>
+                                                        <i class="fa fa-star text-muted"></i>
                                                         @endif
-                                                    @endfor
+                                                        @endfor
                                                 </span>
                                             </div>
                                             @if($review->comment)

@@ -117,7 +117,7 @@
                                             </p>
                                             @if($item->weight)
                                             <p class="text-muted small mb-2">
-                                                <i class="fa fa-weight text-info me-1"></i> {{ $item->weight }}
+                                                <i class="fa-solid fa-dumbbell text-primary me-1"></i> {{ $item->weight }} г
                                             </p>
                                             @endif
                                             @if($item->description)
