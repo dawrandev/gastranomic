@@ -1,44 +1,380 @@
 @extends('layouts.main')
 
-@section('title', __('Панель управления'))
+@section('title', 'Панель управления')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="card shadow-none bg-transparent" style="margin-top: 10vh;">
-                <div class="card-body text-center">
-                    <div class="mb-4">
-                        <i class="icon-dashboard d-block mb-3" style="font-size: 100px; color: #7366ff; opacity: 0.3;"></i>
-                        <img src="{{ asset('assets/images/dashboard/welcome.png') }}" alt="" class="img-fluid d-none" style="max-width: 300px;">
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="page-title">
+                <div class="row">
+                    <div class="col-6">
+                        <h3>Панель управления</h3>
                     </div>
-
-                    <h3 class="fw-bold">{{ __('Добро пожаловать в панель управления!') }}</h3>
-                    <p class="text-muted mx-auto" style="max-width: 500px;">
-                        {{ __('На данный момент здесь нет активных данных для отображения. Скоро здесь появятся графики, статистика и ключевые показатели вашего бизнеса.') }}
-                    </p>
-
-                    <div class="mt-4">
-                        <a href="{{ route('restaurants.index') }}" class="btn btn-primary btn-lg px-4 shadow-sm">
-                            <i class="fa fa-plus me-2"></i> {{ __('Перейти к ресторанам') }}
-                        </a>
-                        <button class="btn btn-outline-light text-dark ms-2 btn-lg px-4" onclick="location.reload()">
-                            <i class="fa fa-refresh me-2"></i> {{ __('Обновить') }}
-                        </button>
+                    <div class="col-6">
+                        <ol class="breadcrumb float-end mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa fa-home"></i></a></li>
+                            <li class="breadcrumb-item active">Панель управления</li>
+                        </ol>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Statistics Cards -->
+            <div class="row">
+                <!-- Card 1: My Restaurants -->
+                <div class="col-xl-3 col-md-6 mb-4 box-col-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-muted small mb-1">Мои рестораны</div>
+                                    <h4 class="mb-0 fw-bold">{{ number_format($cards['my_restaurants']) }}</h4>
+                                </div>
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                    <i class="fa fa-building fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Total Reviews -->
+                <div class="col-xl-3 col-md-6 mb-4 box-col-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-muted small mb-1">Всего отзывов</div>
+                                    <h4 class="mb-0 fw-bold">{{ number_format($cards['total_reviews']) }}</h4>
+                                </div>
+                                <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                                    <i class="fa fa-comments fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Average Rating -->
+                <div class="col-xl-3 col-md-6 mb-4 box-col-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-muted small mb-1">Средний рейтинг</div>
+                                    <h4 class="mb-0 fw-bold">
+                                        {{ $cards['average_rating'] }}
+                                        <span class="text-warning"><i class="fa fa-star"></i></span>
+                                    </h4>
+                                </div>
+                                <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                    <i class="fa fa-star fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Guest Reviews -->
+                <div class="col-xl-3 col-md-6 mb-4 box-col-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-muted small mb-1">Гостевые отзывы</div>
+                                    <h4 class="mb-0 fw-bold">{{ number_format($cards['guest_reviews']) }}</h4>
+                                </div>
+                                <div class="bg-secondary bg-opacity-10 rounded-circle p-3">
+                                    <i class="fa fa-user-o fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5: Today's Reviews -->
+                <div class="col-xl-3 col-md-6 mb-4 box-col-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-muted small mb-1">Сегодняшние отзывы</div>
+                                    <h4 class="mb-0 fw-bold">{{ number_format($cards['today_reviews']) }}</h4>
+                                </div>
+                                <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                    <i class="fa fa-calendar-check-o fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Five Star Reviews -->
+                <div class="col-xl-3 col-md-6 mb-4 box-col-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <div class="text-muted small mb-1">5 звёзд</div>
+                                    <h4 class="mb-0 fw-bold">{{ number_format($cards['five_star']) }}</h4>
+                                </div>
+                                <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                    <i class="fa fa-star fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 7: Top Restaurant -->
+                <div class="col-xl-3 col-md-6 mb-4 box-col-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div style="max-width: 70%;">
+                                    <div class="text-muted small mb-1">Лучший ресторан</div>
+                                    @if($cards['top_restaurant'])
+                                    <h6 class="mb-1 fw-bold text-truncate" title="{{ $cards['top_restaurant']['name'] }}">
+                                        {{ $cards['top_restaurant']['name'] }}
+                                    </h6>
+                                    <div class="text-success small">
+                                        <i class="fa fa-star"></i>
+                                        <strong>{{ $cards['top_restaurant']['avg_rating'] }}</strong>
+                                        <span class="text-muted">({{ $cards['top_restaurant']['review_count'] }})</span>
+                                    </div>
+                                    @else
+                                    <h4 class="mb-0 fw-bold">-</h4>
+                                    @endif
+                                </div>
+                                <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                    <i class="fa fa-trophy fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 8: Worst Restaurant -->
+                <div class="col-xl-3 col-md-6 mb-4 box-col-3">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div style="max-width: 70%;">
+                                    <div class="text-muted small mb-1">Низкий рейтинг</div>
+                                    @if($cards['worst_restaurant'])
+                                    <h6 class="mb-1 fw-bold text-truncate" title="{{ $cards['worst_restaurant']['name'] }}">
+                                        {{ $cards['worst_restaurant']['name'] }}
+                                    </h6>
+                                    <div class="text-danger small">
+                                        <i class="fa fa-star"></i>
+                                        <strong>{{ $cards['worst_restaurant']['avg_rating'] }}</strong>
+                                        <span class="text-muted">({{ $cards['worst_restaurant']['review_count'] }})</span>
+                                    </div>
+                                    @else
+                                    <h4 class="mb-0 fw-bold">-</h4>
+                                    @endif
+                                </div>
+                                <div class="bg-danger bg-opacity-10 rounded-circle p-3">
+                                    <i class="fa fa-arrow-down fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 1 -->
+            <div class="row">
+                <!-- Chart 1: Reviews Trend (30 days) -->
+                <div class="col-sm-12 col-xl-6 box-col-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5>Динамика отзывов (30 дней)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="area-spaline"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 2: Monthly Reviews (12 months) -->
+                <div class="col-sm-12 col-xl-6 box-col-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5>Месячные отзывы (12 месяцев)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="monthly-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row 2 -->
+            <div class="row">
+                <!-- Chart 3: Rating Distribution -->
+                <div class="col-xl-6 col-md-12 box-col-12">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5>Распределение рейтингов</h5>
+                        </div>
+                        <div class="card-body apex-chart">
+                            <div id="donutchart"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Guest vs Registered -->
+                <div class="col-sm-12 col-xl-6 box-col-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h5>Гостевые vs Зарегистрированные</h5>
+                        </div>
+                        <div class="card-body apex-chart">
+                            <div id="piechart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
 @endsection
 
 @push('scripts')
+<script src="{{ asset('assets/js/chart/apex-chart/apex-chart.js') }}"></script>
+<script src="{{ asset('assets/js/chart/chartjs/chart.min.js') }}"></script>
 <script>
-    // Cuba admin-dagi Feather ikonkalarni faollashtirish
-    if (feather) {
-        feather.replace();
-    }
+    $(document).ready(function() {
+        var primary = localStorage.getItem('primary_color') || '#7366ff';
+        var secondary = localStorage.getItem('secondary_color') || '#f73164';
+
+        // Chart 1: Reviews Trend (Area Spaline)
+        var reviewsTrendOptions = {
+            chart: {
+                height: 350,
+                type: 'area',
+                toolbar: {
+                    show: false
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            series: [{
+                name: 'Количество отзывов',
+                data: @json($charts['reviews_trend']['data'])
+            }],
+            xaxis: {
+                categories: @json($charts['reviews_trend']['labels'])
+            },
+            colors: [primary]
+        };
+
+        var reviewsTrendChart = new ApexCharts(
+            document.querySelector("#area-spaline"),
+            reviewsTrendOptions
+        );
+        reviewsTrendChart.render();
+
+        // Chart 2: Monthly Reviews (12 months - Area Chart)
+        var monthlyOptions = {
+            chart: {
+                height: 350,
+                type: 'area',
+                toolbar: {
+                    show: false
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth'
+            },
+            series: [{
+                name: 'Месячные отзывы',
+                data: @json($charts['monthly_reviews']['data'])
+            }],
+            xaxis: {
+                categories: @json($charts['monthly_reviews']['labels'])
+            },
+            colors: [secondary]
+        };
+
+        var monthlyChart = new ApexCharts(
+            document.querySelector("#monthly-chart"),
+            monthlyOptions
+        );
+        monthlyChart.render();
+
+        // Chart 3: Rating Distribution (Donut)
+        var ratingDistOptions = {
+            chart: {
+                width: 380,
+                type: 'donut',
+            },
+            series: @json($charts['rating_distribution']['data']),
+            labels: @json($charts['rating_distribution']['labels']),
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }],
+            colors: ['#dc3545', '#fd7e14', '#ffc107', '#20c997', '#28a745']
+        };
+
+        var ratingDistChart = new ApexCharts(
+            document.querySelector("#donutchart"),
+            ratingDistOptions
+        );
+        ratingDistChart.render();
+
+        // Chart 4: Guest vs Registered (Pie Chart)
+        var guestVsRegOptions = {
+            chart: {
+                height: 400,
+                type: 'pie',
+            },
+            labels: @json($charts['guest_vs_registered']['labels']),
+            series: @json($charts['guest_vs_registered']['data']),
+            legend: {
+                position: 'bottom',
+                fontSize: '14px'
+            },
+            responsive: [{
+                breakpoint: 480,
+                options: {
+                    chart: {
+                        width: 200
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }],
+            colors: [secondary, primary]
+        };
+
+        var guestVsRegChart = new ApexCharts(
+            document.querySelector("#piechart"),
+            guestVsRegOptions
+        );
+        guestVsRegChart.render();
+    });
 </script>
 @endpush

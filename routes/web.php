@@ -12,6 +12,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::prefix('superadmin/dashboard')->middleware(['auth', 'role:superadmin'])->name('superadmin.')->group(function () {
     Route::get('/', [App\Http\Controllers\SuperAdmin\DashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/locale/{locale}', [App\Http\Controllers\SuperAdmin\DashboardController::class, 'setLocale'])->name('dashboard.locale');
 });
 
 Route::prefix('admin/dashboard')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {

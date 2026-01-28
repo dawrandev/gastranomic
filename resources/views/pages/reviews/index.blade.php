@@ -12,16 +12,6 @@
         box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.1);
         border-left-color: var(--bs-primary);
     }
-    #loading-overlay {
-        display: none;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255,255,255,0.8);
-        z-index: 100;
-    }
 </style>
 @endpush
 
@@ -207,12 +197,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-body p-0 position-relative" style="min-height: 200px;">
-                            <div id="loading-overlay" class="d-flex align-items-center justify-content-center">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Загрузка...</span>
-                                </div>
-                            </div>
+                        <div class="card-body p-0" style="min-height: 200px;">
                             <div id="reviews-container">
                                 @include('pages.reviews.partials.review-list', ['reviews' => $reviews])
                             </div>
@@ -242,20 +227,21 @@ $(document).ready(function() {
         const restaurantId = $('#restaurant-filter').length ? $('#restaurant-filter').val() : '';
         const rating = $('#rating-filter').val();
 
-        $('#loading-overlay').show();
-
         $.ajax({
             url: '{{ route("reviews.index") }}',
             type: 'GET',
+            dataType: 'json',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             data: {
                 restaurant_id: restaurantId,
                 rating: rating,
                 page: page,
-                ajax: 1
+                ajax: '1'
             },
             success: function(response) {
-                $('#reviews-container').html(response);
-                $('#loading-overlay').hide();
+                $('#reviews-container').html(response.html);
 
                 // Update URL without reload
                 const url = new URL(window.location);
@@ -272,8 +258,9 @@ $(document).ready(function() {
                 url.searchParams.set('page', page);
                 window.history.pushState({}, '', url);
             },
-            error: function() {
-                $('#loading-overlay').hide();
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+                console.log('Response:', xhr.responseText);
                 alert('Ошибка загрузки отзывов');
             }
         });
