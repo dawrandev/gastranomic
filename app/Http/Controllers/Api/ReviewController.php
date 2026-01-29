@@ -66,7 +66,8 @@ class ReviewController extends Controller
     #[OA\Post(
         path: '/api/restaurants/{id}/reviews',
         summary: 'Sharh qoldirish',
-        description: 'Restoranga reyting va comment qoldirish. Login shart emas - guest users ham qoldirishi mumkin. Device ID orqali kuzatiladi. Limit: 3 sharh/kun per restaurant.',
+        description: 'Restoranga reyting va comment qoldirish. Login shart emas - guest users ham qoldirishi mumkin. Agar Authorization header yuborilsa, sharh avtomatik ravishda clientga bog\'lanadi. Device ID orqali kuzatiladi. Limit: 3 sharh/kun per restaurant.',
+        security: [['bearerAuth' => []], []],
         tags: ['⭐ Sharhlar'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -153,20 +154,8 @@ class ReviewController extends Controller
         }
 
         // Get authenticated client if exists (nullable for guest support)
-        // Try to get user via Sanctum token
-        $clientId = null;
-
-        // Check if Authorization header exists
-        if ($request->bearerToken()) {
-            // Manually authenticate via Sanctum
-            $token = $request->bearerToken();
-            $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
-
-            if ($accessToken && $accessToken->tokenable_type === \App\Models\Client::class) {
-                $client = $accessToken->tokenable;
-                $clientId = $client->id;
-            }
-        }
+        // OptionalAuthMiddleware automatically sets user if token is valid
+        $clientId = $request->user()?->id;
 
         $review = $this->reviewService->createOrUpdateReview(
             $clientId,

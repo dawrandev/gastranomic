@@ -1539,7 +1539,7 @@
                     "⭐ Sharhlar"
                 ],
                 "summary": "Sharh qoldirish",
-                "description": "Restoranga reyting va comment qoldirish. Login shart emas - guest users ham qoldirishi mumkin. Device ID orqali kuzatiladi. Limit: 3 sharh/kun per restaurant.",
+                "description": "Restoranga reyting va comment qoldirish. Login shart emas - guest users ham qoldirishi mumkin. Agar Authorization header yuborilsa, sharh avtomatik ravishda clientga bog'lanadi. Device ID orqali kuzatiladi. Limit: 3 sharh/kun per restaurant.",
                 "operationId": "c3b04e826aeafcf34ff32c7c1df8e4f0",
                 "parameters": [
                     {
@@ -1647,7 +1647,13 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    },
+                    {}
+                ]
             }
         },
         "/api/reviews/{id}": {

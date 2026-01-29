@@ -42,9 +42,10 @@ Route::get('/menu-items/{id}', [MenuController::class, 'show']);
 
 Route::get('/search', [SearchController::class, 'search']);
 
-// Reviews (now guest-friendly with device tracking)
+// Reviews (now guest-friendly with device tracking, optional auth for client_id)
 Route::prefix('restaurants')->group(function () {
-    Route::post('/{id}/reviews', [ReviewController::class, 'store'])->middleware('throttle:10,1'); // 10 requests per minute
+    Route::post('/{id}/reviews', [ReviewController::class, 'store'])
+        ->middleware(['optional.auth', 'throttle:10,1']); // Optional auth + 10 requests per minute
 });
 
 /*

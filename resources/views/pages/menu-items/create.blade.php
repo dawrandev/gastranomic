@@ -86,7 +86,7 @@
                                 @error('image')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <small class="text-muted">JPEG, PNG, JPG. Макс: 2MB</small>
+                                <small class="text-muted">JPEG, PNG, JPG, WEBP. Макс: 2MB</small>
                             </div>
                         </div>
                     </div>
