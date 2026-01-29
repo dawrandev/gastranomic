@@ -73,7 +73,7 @@
                                     <img id="edit_current_image" src="" alt="Current Image" class="img-thumbnail" style="max-height: 100px; display: none;">
                                 </div>
                                 <input type="file" class="form-control" id="edit_image" name="image" accept="image/*">
-                                <small class="text-muted">JPEG, PNG, JPG. Макс: 2MB</small>
+                                <small class="text-muted">JPEG, PNG, JPG, WEBP. Макс: 2MB</small>
                             </div>
                         </div>
                     </div>
