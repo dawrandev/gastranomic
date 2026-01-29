@@ -100,10 +100,14 @@ class RestaurantRepository
 
             // Add new images
             if (isset($data['new_images']) && is_array($data['new_images'])) {
-                foreach ($data['new_images'] as $imagePath) {
+                // Check if restaurant has any cover image
+                $hasCoverImage = $restaurant->images()->where('is_cover', true)->exists();
+
+                foreach ($data['new_images'] as $index => $imagePath) {
                     $restaurant->images()->create([
                         'image_path' => $imagePath,
-                        'is_cover' => false,
+                        // If no cover image exists, make first new image as cover
+                        'is_cover' => !$hasCoverImage && $index === 0,
                     ]);
                 }
             }

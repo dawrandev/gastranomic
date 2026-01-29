@@ -107,8 +107,8 @@ class RestaurantService
 
     protected function generateRestaurantQrCode(Restaurant $restaurant): void
     {
-        // Generate URL for restaurant show page
-        $url = route('restaurants.show', $restaurant->id);
+        // Generate URL for restaurant show page with full domain
+        $url = 'https://gastronomic.webclub.uz/restaurants/' . $restaurant->id;
 
         // Generate QR code filename
         $filename = 'restaurant_' . $restaurant->id . '_' . time();

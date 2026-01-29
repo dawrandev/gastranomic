@@ -28,6 +28,7 @@ class RestaurantDetailResource extends JsonResource
                 'id' => $this->brand->id,
                 'name' => $this->brand->name,
                 'logo' => $this->brand->logo ? asset('storage/' . $this->brand->logo) : null,
+                'image' => $this->brand->logo ? asset('storage/' . $this->brand->logo) : null,
                 'description' => $this->brand->description,
             ],
 

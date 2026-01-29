@@ -213,4 +213,68 @@ class DiscoveryRepository
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
     }
+
+    /**
+     * Get top restaurants by category (ordered by rating descending).
+     */
+    public function getTopRestaurantsByCategory(int $categoryId, int $limit = 10)
+    {
+        return Restaurant::query()
+            ->where('is_active', true)
+            ->whereHas('categories', function ($q) use ($categoryId) {
+                $q->where('categories.id', $categoryId);
+            })
+            ->with([
+                'brand:id,name,logo',
+                'city:id',
+                'city.translations',
+                'coverImage:id,restaurant_id,image_path,is_cover',
+                'categories:id,icon',
+                'categories.translations',
+                'operatingHours:id,restaurant_id,day_of_week,opening_time,closing_time,is_closed',
+            ])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->orderBy('reviews_avg_rating', 'desc')
+            ->orderBy('reviews_count', 'desc')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Get nearest 5 restaurants (no pagination).
+     */
+    public function getNearestRestaurants(float $latitude, float $longitude, int $limit = 5)
+    {
+        return Restaurant::query()
+            ->select([
+                'restaurants.*',
+                DB::raw("
+                    (6371 * acos(
+                        cos(radians(?)) *
+                        cos(radians(ST_Y(location))) *
+                        cos(radians(ST_X(location)) - radians(?)) +
+                        sin(radians(?)) *
+                        sin(radians(ST_Y(location)))
+                    )) AS distance
+                ")
+            ])
+            ->setBindings([$latitude, $longitude, $latitude])
+            ->where('is_active', true)
+            ->whereNotNull('location')
+            ->with([
+                'brand:id,name,logo',
+                'city:id',
+                'city.translations',
+                'coverImage:id,restaurant_id,image_path,is_cover',
+                'categories:id,icon',
+                'categories.translations',
+                'operatingHours:id,restaurant_id,day_of_week,opening_time,closing_time,is_closed',
+            ])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->orderBy('distance', 'asc')
+            ->limit($limit)
+            ->get();
+    }
 }

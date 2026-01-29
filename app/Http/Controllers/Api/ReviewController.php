@@ -19,8 +19,9 @@ class ReviewController extends Controller
 
     #[OA\Get(
         path: '/api/restaurants/{id}/reviews',
-        summary: 'Get restaurant reviews',
-        tags: ['Reviews'],
+        summary: 'Restoran sharhlari',
+        description: 'Restoranga qoldirilgan barcha sharhlar va statistika',
+        tags: ['⭐ Sharhlar'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
             new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
@@ -64,8 +65,9 @@ class ReviewController extends Controller
 
     #[OA\Post(
         path: '/api/restaurants/{id}/reviews',
-        summary: 'Create or update a review (guest-friendly)',
-        tags: ['Reviews'],
+        summary: 'Sharh qoldirish',
+        description: 'Restoranga reyting va comment qoldirish. Login shart emas - guest users ham qoldirishi mumkin. Device ID orqali kuzatiladi. Limit: 3 sharh/kun per restaurant.',
+        tags: ['⭐ Sharhlar'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -145,13 +147,26 @@ class ReviewController extends Controller
         if (!$rateLimitCheck['can_review']) {
             return response()->json([
                 'success' => false,
-                'message' => 'Siz bugun bu restoranga maksimal miqdorda sharh qoldirdingiz. Ertaga qayta urinib ko\'ring.',
+                'message' => 'You have reached the maximum number of reviews for this restaurant today. Please try again tomorrow.',
                 'rate_limit' => $rateLimitCheck,
             ], 429);
         }
 
         // Get authenticated client if exists (nullable for guest support)
-        $clientId = $request->user()?->id;
+        // Try to get user via Sanctum token
+        $clientId = null;
+
+        // Check if Authorization header exists
+        if ($request->bearerToken()) {
+            // Manually authenticate via Sanctum
+            $token = $request->bearerToken();
+            $accessToken = \Laravel\Sanctum\PersonalAccessToken::findToken($token);
+
+            if ($accessToken && $accessToken->tokenable_type === \App\Models\Client::class) {
+                $client = $accessToken->tokenable;
+                $clientId = $client->id;
+            }
+        }
 
         $review = $this->reviewService->createOrUpdateReview(
             $clientId,
@@ -164,7 +179,7 @@ class ReviewController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Fikr-mulohaza muvaffaqiyatli saqlandi',
+            'message' => 'Review submitted successfully',
             'data' => new ReviewResource($review),
             'rate_limit' => [
                 'remaining' => $rateLimitCheck['remaining'] - 1,
@@ -175,9 +190,10 @@ class ReviewController extends Controller
 
     #[OA\Put(
         path: '/api/reviews/{id}',
-        summary: 'Update a review',
+        summary: 'Sharhni yangilash',
+        description: 'O\'z sharhingizni yangilash. Faqat authenticated users uchun.',
         security: [['sanctum' => []]],
-        tags: ['Reviews'],
+        tags: ['⭐ Sharhlar'],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\JsonContent(
@@ -239,14 +255,14 @@ class ReviewController extends Controller
         if (!$review) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sharh topilmadi',
+                'message' => 'Review not found',
             ], 404);
         }
 
         if ($review->client_id !== $client->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sizda bu sharhni tahrirlash huquqi yo\'q',
+                'message' => 'You do not have permission to edit this review',
             ], 403);
         }
 
@@ -254,16 +270,17 @@ class ReviewController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Sharh muvaffaqiyatli yangilandi',
+            'message' => 'Review updated successfully',
             'data' => new ReviewResource($review),
         ]);
     }
 
     #[OA\Delete(
         path: '/api/reviews/{id}',
-        summary: 'Delete a review',
+        summary: 'Sharhni o\'chirish',
+        description: 'O\'z sharhingizni o\'chirish. Faqat authenticated users uchun.',
         security: [['sanctum' => []]],
-        tags: ['Reviews'],
+        tags: ['⭐ Sharhlar'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],
@@ -300,14 +317,14 @@ class ReviewController extends Controller
         if (!$review) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sharh topilmadi',
+                'message' => 'Review not found',
             ], 404);
         }
 
         if ($review->client_id !== $client->id) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sizda bu sharhni o\'chirish huquqi yo\'q',
+                'message' => 'You do not have permission to delete this review',
             ], 403);
         }
 
@@ -315,7 +332,7 @@ class ReviewController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Sharh muvaffaqiyatli o\'chirildi',
+            'message' => 'Review deleted successfully',
         ]);
     }
 }

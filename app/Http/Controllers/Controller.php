@@ -9,8 +9,8 @@ use OpenApi\Attributes as OA;
 
 #[OA\Info(
     version: '1.0.0',
-    title: 'RestReviews API',
-    description: 'Client API for RestReviews mobile application'
+    title: 'RestReviews API - Restoranlar va Sharhlar',
+    description: 'Mobile ilova uchun REST API. Restoranlarni kashf qilish, sharh qoldirish, sevimlilar va boshqalar.'
 )]
 #[OA\Server(
     url: 'https://gastronomic.webclub.uz',

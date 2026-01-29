@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\SearchController;
+use App\Http\Controllers\Api\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,7 @@ Route::prefix('auth')->group(function () {
 // Restaurant Discovery
 Route::prefix('restaurants')->group(function () {
     Route::get('/', [RestaurantDiscoveryController::class, 'index']);
+    Route::get('/nearest', [RestaurantDiscoveryController::class, 'nearest']);
     Route::get('/nearby', [RestaurantDiscoveryController::class, 'nearby']);
     Route::get('/map', [RestaurantDiscoveryController::class, 'map']);
     Route::get('/{id}', [RestaurantDiscoveryController::class, 'show']);
@@ -33,6 +35,9 @@ Route::prefix('restaurants')->group(function () {
     Route::get('/{id}/reviews', [ReviewController::class, 'index']);
 });
 
+// Top restaurants by category
+Route::get('/categories/{id}/top-restaurants', [RestaurantDiscoveryController::class, 'topByCategory']);
+
 Route::get('/menu-items/{id}', [MenuController::class, 'show']);
 
 Route::get('/search', [SearchController::class, 'search']);
@@ -40,11 +45,6 @@ Route::get('/search', [SearchController::class, 'search']);
 // Reviews (now guest-friendly with device tracking)
 Route::prefix('restaurants')->group(function () {
     Route::post('/{id}/reviews', [ReviewController::class, 'store'])->middleware('throttle:10,1'); // 10 requests per minute
-});
-
-// Favorites (guest-friendly with device tracking)
-Route::prefix('restaurants')->group(function () {
-    Route::post('/{id}/favorite', [FavoriteController::class, 'toggle'])->middleware('throttle:20,1');
 });
 
 /*
@@ -60,12 +60,18 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
     });
 
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::post('/profile', [ProfileController::class, 'update']);
+
     // Reviews (update/delete only for authenticated users)
     Route::prefix('reviews')->group(function () {
         Route::put('/{id}', [ReviewController::class, 'update']);
         Route::delete('/{id}', [ReviewController::class, 'destroy']);
     });
 
-    // Favorites list (authenticated only)
+    // Favorites (authenticated only)
     Route::get('/favorites', [FavoriteController::class, 'index']);
+    Route::get('/favorites/map', [FavoriteController::class, 'map']);
+    Route::post('/restaurants/{id}/favorite', [FavoriteController::class, 'toggle'])->middleware('throttle:20,1');
 });

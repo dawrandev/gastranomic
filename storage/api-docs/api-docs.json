@@ -1,8 +1,8 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "RestReviews API",
-        "description": "Client API for RestReviews mobile application",
+        "title": "RestReviews API - Restoranlar va Sharhlar",
+        "description": "Mobile ilova uchun REST API. Restoranlarni kashf qilish, sharh qoldirish, sevimlilar va boshqalar.",
         "version": "1.0.0"
     },
     "servers": [
@@ -23,10 +23,10 @@
         "/api/auth/send-code": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "🔐 Autentifikatsiya"
                 ],
-                "summary": "Tasdiqlash kodini yuborish",
-                "description": "Telefon raqamiga SMS orqali 4 raqamli tasdiqlash kodini yuboradi. Kod 5 daqiqa amal qiladi.",
+                "summary": "SMS tasdiqlash kodi yuborish",
+                "description": "Telefon raqamiga SMS orqali 4 raqamli tasdiqlash kodini yuboradi. Kod 5 daqiqa davomida amal qiladi.",
                 "operationId": "0f2ff5da3d5883ef973571776bfcbc27",
                 "requestBody": {
                     "required": true,
@@ -133,7 +133,7 @@
         "/api/auth/verify-code": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "🔐 Autentifikatsiya"
                 ],
                 "summary": "Kodni tekshirish va login/register",
                 "description": "Tasdiqlash kodini tekshiradi. Agar foydalanuvchi yangi bo'lsa, ism va familiya bilan ro'yxatdan o'tkazadi. Mavjud foydalanuvchi uchun login qiladi.",
@@ -310,7 +310,7 @@
         "/api/auth/me": {
             "get": {
                 "tags": [
-                    "Authentication"
+                    "🔐 Autentifikatsiya"
                 ],
                 "summary": "Foydalanuvchi profilini olish",
                 "description": "Autentifikatsiya qilingan foydalanuvchining profilini qaytaradi",
@@ -389,7 +389,7 @@
         "/api/auth/logout": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "🔐 Autentifikatsiya"
                 ],
                 "summary": "Tizimdan chiqish",
                 "description": "Joriy tokenni bekor qiladi va foydalanuvchini tizimdan chiqaradi",
@@ -442,9 +442,10 @@
         "/api/favorites": {
             "get": {
                 "tags": [
-                    "Favorites"
+                    "❤️ Sevimlilar"
                 ],
-                "summary": "Get user favorites",
+                "summary": "Sevimlilar ro'yxati",
+                "description": "Login qilgan foydalanuvchining barcha sevimli restoranlar ro'yxati",
                 "operationId": "bc433e786ab5a0bec81c53c578e0b6aa",
                 "parameters": [
                     {
@@ -520,44 +521,25 @@
         "/api/restaurants/{id}/favorite": {
             "post": {
                 "tags": [
-                    "Favorites"
+                    "❤️ Sevimlilar"
                 ],
-                "summary": "Toggle favorite status (guest-friendly)",
+                "summary": "Sevimlilar ro'yxatiga qo'shish/o'chirish",
+                "description": "Restoranni sevimlilar ro'yxatiga qo'shish yoki o'chirish. Faqat autentifikatsiya qilingan foydalanuvchilar uchun.",
                 "operationId": "7007d8d312a4e78f3e05186adb89a117",
                 "parameters": [
                     {
                         "name": "id",
                         "in": "path",
+                        "description": "Restoran ID",
                         "required": true,
                         "schema": {
                             "type": "integer"
                         }
                     }
                 ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "device_id"
-                                ],
-                                "properties": {
-                                    "device_id": {
-                                        "description": "Qurilma ID (UUID yoki fingerprint)",
-                                        "type": "string",
-                                        "maxLength": 100,
-                                        "example": "550e8400-e29b-41d4-a716-446655440000"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Favorite toggled",
+                        "description": "Sevimlilar holati o'zgartirildi",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -567,12 +549,14 @@
                                             "example": true
                                         },
                                         "message": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Sevimlilar ro'yxatiga qo'shildi"
                                         },
                                         "data": {
                                             "properties": {
                                                 "is_favorited": {
-                                                    "type": "boolean"
+                                                    "type": "boolean",
+                                                    "example": true
                                                 }
                                             },
                                             "type": "object"
@@ -583,21 +567,87 @@
                             }
                         }
                     },
-                    "404": {
-                        "description": "Restaurant not found"
+                    "401": {
+                        "description": "Autentifikatsiya xatosi"
                     },
-                    "422": {
-                        "description": "Validation error"
+                    "404": {
+                        "description": "Restoran topilmadi"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/favorites/map": {
+            "get": {
+                "tags": [
+                    "❤️ Sevimlilar"
+                ],
+                "summary": "Sevimli restoranlarni xaritada ko'rsatish",
+                "description": "Client sevimli restoranlarining koordinatalari xarita uchun",
+                "operationId": "17012642d364a1329a23a2d6c7a8d434",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Sevimli restoranlar koordinatalari",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Autentifikatsiya xatosi"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/restaurants/{id}/menu": {
             "get": {
                 "tags": [
-                    "Menu"
+                    "🍔 Menyu"
                 ],
-                "summary": "Get restaurant menu",
+                "summary": "Restoran menyusini olish",
+                "description": "Restoranning to'liq menyusini menu section lar bilan guruhlanган holda qaytaradi",
                 "operationId": "359903fa9a944d987c5d47983ce2e6f4",
                 "parameters": [
                     {
@@ -654,9 +704,10 @@
         "/api/menu-items/{id}": {
             "get": {
                 "tags": [
-                    "Menu"
+                    "🍔 Menyu"
                 ],
-                "summary": "Get menu item details",
+                "summary": "Taom batafsil ma'lumotlari",
+                "description": "Bitta taomning to'liq ma'lumotlari: nomi, tavsif, narx, rasm, vazn",
                 "operationId": "024245ee46acc80d42b2dd4e480a938e",
                 "parameters": [
                     {
@@ -710,12 +761,191 @@
                 }
             }
         },
+        "/api/profile": {
+            "get": {
+                "tags": [
+                    "👤 Profil"
+                ],
+                "summary": "Client profil ma'lumotlari",
+                "description": "Login qilgan clientning to'liq profil ma'lumotlari va statistikasi",
+                "operationId": "f1784685f8270527da017b3616288443",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Profil ma'lumotlari",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "first_name": {
+                                                    "type": "string",
+                                                    "example": "Abdulla"
+                                                },
+                                                "last_name": {
+                                                    "type": "string",
+                                                    "example": "Valiyev"
+                                                },
+                                                "full_name": {
+                                                    "type": "string",
+                                                    "example": "Abdulla Valiyev"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "998901234567"
+                                                },
+                                                "image_path": {
+                                                    "type": "string",
+                                                    "example": "https://example.com/storage/clients/photo.jpg",
+                                                    "nullable": true
+                                                },
+                                                "statistics": {
+                                                    "properties": {
+                                                        "total_reviews": {
+                                                            "type": "integer",
+                                                            "example": 15
+                                                        },
+                                                        "five_star_reviews": {
+                                                            "type": "integer",
+                                                            "example": 8
+                                                        },
+                                                        "favorites_count": {
+                                                            "type": "integer",
+                                                            "example": 5
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "reviews": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Autentifikatsiya xatosi"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "👤 Profil"
+                ],
+                "summary": "Profil ma'lumotlarini yangilash",
+                "description": "Client ism, familiya va rasmini yangilash",
+                "operationId": "df42d7bd8c9605adf2e62002661ca9f3",
+                "requestBody": {
+                    "required": false,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "first_name": {
+                                        "description": "Ism",
+                                        "type": "string",
+                                        "example": "Abdulla",
+                                        "nullable": true
+                                    },
+                                    "last_name": {
+                                        "description": "Familiya",
+                                        "type": "string",
+                                        "example": "Valiyev",
+                                        "nullable": true
+                                    },
+                                    "image": {
+                                        "description": "Profil rasmi (maksimum 2MB)",
+                                        "type": "string",
+                                        "format": "binary",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profil muvaffaqiyatli yangilandi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Profil muvaffaqiyatli yangilandi"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validatsiya xatosi"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/restaurants": {
             "get": {
                 "tags": [
-                    "Discovery"
+                    "🏠 Restoranlar"
                 ],
-                "summary": "Get all restaurants",
+                "summary": "Barcha restoranlar ro'yxati",
+                "description": "Filter va pagination bilan barcha faol restoranlarni olish",
                 "operationId": "e887e30e268dc7b10ec0d206253d5fbc",
                 "parameters": [
                     {
@@ -845,9 +1075,10 @@
         "/api/restaurants/nearby": {
             "get": {
                 "tags": [
-                    "Discovery"
+                    "🏠 Restoranlar"
                 ],
-                "summary": "Get nearby restaurants based on location",
+                "summary": "Yaqin atrofdagi restoranlar",
+                "description": "Foydalanuvchi lokatsiyasidan berilgan radius (km) ichidagi restoranlarni topadi",
                 "operationId": "3b1dcdfb289c6fca2d062079504271c6",
                 "parameters": [
                     {
@@ -946,9 +1177,10 @@
         "/api/restaurants/{id}": {
             "get": {
                 "tags": [
-                    "Discovery"
+                    "🏠 Restoranlar"
                 ],
-                "summary": "Get restaurant details",
+                "summary": "Restoran batafsil ma'lumotlari",
+                "description": "Restoranning to'liq ma'lumotlari: rasmlar, brend, menyu, operating hours, reviews statistics va hokazo",
                 "operationId": "a791f325e147d0939ab287bb5f7a5f8a",
                 "parameters": [
                     {
@@ -1005,9 +1237,10 @@
         "/api/restaurants/map": {
             "get": {
                 "tags": [
-                    "Discovery"
+                    "🏠 Restoranlar"
                 ],
-                "summary": "Get all restaurants for map display",
+                "summary": "Xarita uchun restoranlar",
+                "description": "Xaritada ko'rsatish uchun barcha restoranlarning koordinatalari",
                 "operationId": "29b971a784a37bdc6f943d392f298d40",
                 "parameters": [
                     {
@@ -1087,12 +1320,162 @@
                 }
             }
         },
+        "/api/categories/{id}/top-restaurants": {
+            "get": {
+                "tags": [
+                    "🏠 Restoranlar"
+                ],
+                "summary": "Kategoriya bo'yicha eng yuqori reytingli restoranlar",
+                "description": "Berilgan kategoriyaga tegishli eng yuqori reytingli restoranlarni qaytaradi. Masalan: \"Ommabop fast foodlar\", \"Ommabop restoranlar\"",
+                "operationId": "8662e5475e7f2c562b9787571c79326a",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Kategoriya ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Natijalar soni (default: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Top restoranlar ro'yxati",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Kategoriya topilmadi"
+                    }
+                }
+            }
+        },
+        "/api/restaurants/nearest": {
+            "get": {
+                "tags": [
+                    "🏠 Restoranlar"
+                ],
+                "summary": "Eng yaqin 5 ta restoran",
+                "description": "Foydalanuvchi lokatsiyasiga eng yaqin 5 ta restoranni qaytaradi",
+                "operationId": "8b744796dce4c397aa3b63823bdd011d",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "lat",
+                        "in": "query",
+                        "description": "Latitude (kenglik)",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    },
+                    {
+                        "name": "lng",
+                        "in": "query",
+                        "description": "Longitude (uzunlik)",
+                        "required": true,
+                        "schema": {
+                            "type": "number",
+                            "format": "float"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Eng yaqin restoranlar",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validatsiya xatosi"
+                    }
+                }
+            }
+        },
         "/api/restaurants/{id}/reviews": {
             "get": {
                 "tags": [
-                    "Reviews"
+                    "⭐ Sharhlar"
                 ],
-                "summary": "Get restaurant reviews",
+                "summary": "Restoran sharhlari",
+                "description": "Restoranga qoldirilgan barcha sharhlar va statistika",
                 "operationId": "fd9110f4ca01639b739b5c358bdec19c",
                 "parameters": [
                     {
@@ -1153,9 +1536,10 @@
             },
             "post": {
                 "tags": [
-                    "Reviews"
+                    "⭐ Sharhlar"
                 ],
-                "summary": "Create or update a review (guest-friendly)",
+                "summary": "Sharh qoldirish",
+                "description": "Restoranga reyting va comment qoldirish. Login shart emas - guest users ham qoldirishi mumkin. Device ID orqali kuzatiladi. Limit: 3 sharh/kun per restaurant.",
                 "operationId": "c3b04e826aeafcf34ff32c7c1df8e4f0",
                 "parameters": [
                     {
@@ -1269,9 +1653,10 @@
         "/api/reviews/{id}": {
             "put": {
                 "tags": [
-                    "Reviews"
+                    "⭐ Sharhlar"
                 ],
-                "summary": "Update a review",
+                "summary": "Sharhni yangilash",
+                "description": "O'z sharhingizni yangilash. Faqat authenticated users uchun.",
                 "operationId": "0a0c13ce189613706937df58ee336079",
                 "parameters": [
                     {
@@ -1351,9 +1736,10 @@
             },
             "delete": {
                 "tags": [
-                    "Reviews"
+                    "⭐ Sharhlar"
                 ],
-                "summary": "Delete a review",
+                "summary": "Sharhni o'chirish",
+                "description": "O'z sharhingizni o'chirish. Faqat authenticated users uchun.",
                 "operationId": "adc117e9be50413476f46036b7d20b76",
                 "parameters": [
                     {
@@ -1405,9 +1791,10 @@
         "/api/search": {
             "get": {
                 "tags": [
-                    "Search"
+                    "🔍 Qidiruv"
                 ],
-                "summary": "Global search for restaurants and menu items",
+                "summary": "Global qidiruv",
+                "description": "Restoranlar va taomlar bo'yicha qidiruv. Restoran nomi, brendi, taom nomi va tavsifi bo'yicha qidiradi.",
                 "operationId": "d70c8d72bc43cc6c7321086ae9d2c1f1",
                 "parameters": [
                     {
@@ -1503,28 +1890,32 @@
     },
     "tags": [
         {
-            "name": "Authentication",
-            "description": "Authentication"
+            "name": "🔐 Autentifikatsiya",
+            "description": "🔐 Autentifikatsiya"
         },
         {
-            "name": "Favorites",
-            "description": "Favorites"
+            "name": "❤️ Sevimlilar",
+            "description": "❤️ Sevimlilar"
         },
         {
-            "name": "Menu",
-            "description": "Menu"
+            "name": "🍔 Menyu",
+            "description": "🍔 Menyu"
         },
         {
-            "name": "Discovery",
-            "description": "Discovery"
+            "name": "👤 Profil",
+            "description": "👤 Profil"
         },
         {
-            "name": "Reviews",
-            "description": "Reviews"
+            "name": "🏠 Restoranlar",
+            "description": "🏠 Restoranlar"
         },
         {
-            "name": "Search",
-            "description": "Search"
+            "name": "⭐ Sharhlar",
+            "description": "⭐ Sharhlar"
+        },
+        {
+            "name": "🔍 Qidiruv",
+            "description": "🔍 Qidiruv"
         }
     ]
 }

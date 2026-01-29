@@ -20,8 +20,9 @@ class SearchController extends Controller
 
     #[OA\Get(
         path: '/api/search',
-        summary: 'Global search for restaurants and menu items',
-        tags: ['Search'],
+        summary: 'Global qidiruv',
+        description: 'Restoranlar va taomlar bo\'yicha qidiruv. Restoran nomi, brendi, taom nomi va tavsifi bo\'yicha qidiradi.',
+        tags: ['🔍 Qidiruv'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',

@@ -173,6 +173,17 @@
                                                 </form>
                                                 @endcan
 
+                                                @can(\App\Permissions\RestaurantPermissions::VIEW)
+                                                <button type="button" class="btn btn-outline-primary btn-xs d-flex align-items-center justify-content-center qr-code-btn"
+                                                    data-id="{{ $restaurant->id }}"
+                                                    data-name="{{ $restaurant->branch_name }}"
+                                                    data-qr="{{ $restaurant->qr_code ? asset('storage/' . $restaurant->qr_code) : '' }}"
+                                                    style="width: 35px; height: 35px; padding: 0;"
+                                                    title="QR-код">
+                                                    <i class="fa fa-qrcode"></i>
+                                                </button>
+                                                @endcan
+
                                             </div>
                                         </div>
                                     </div>
@@ -208,6 +219,7 @@
 @include('pages.restaurants.modals.create')
 @include('pages.restaurants.modals.show')
 @include('pages.restaurants.modals.edit')
+@include('pages.restaurants.modals.qrcode')
 
 @endsection
 
@@ -977,5 +989,26 @@
             createModal.show();
         });
     }
+
+    // QR Code button
+    $(document).on('click', '.restaurants-page .qr-code-btn', function() {
+        let restaurantName = $(this).data('name');
+        let qrCodeUrl = $(this).data('qr');
+
+        $('#qrcode-restaurant-name').text(restaurantName);
+
+        if (qrCodeUrl) {
+            $('#qrcode-image').attr('src', qrCodeUrl).show();
+            $('#qrcode-download-link').attr('href', qrCodeUrl).show();
+            $('#qrcode-no-image').hide();
+        } else {
+            $('#qrcode-image').hide();
+            $('#qrcode-download-link').hide();
+            $('#qrcode-no-image').show();
+        }
+
+        var qrcodeModal = new bootstrap.Modal(document.getElementById('qrcodeRestaurantModal'));
+        qrcodeModal.show();
+    });
 </script>
 @endpush

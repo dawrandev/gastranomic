@@ -17,8 +17,9 @@ class MenuController extends Controller
 
     #[OA\Get(
         path: '/api/restaurants/{id}/menu',
-        summary: 'Get restaurant menu',
-        tags: ['Menu'],
+        summary: 'Restoran menyusini olish',
+        description: 'Restoranning to\'liq menyusini menu section lar bilan guruhlanган holda qaytaradi',
+        tags: ['🍔 Menyu'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -54,8 +55,9 @@ class MenuController extends Controller
 
     #[OA\Get(
         path: '/api/menu-items/{id}',
-        summary: 'Get menu item details',
-        tags: ['Menu'],
+        summary: 'Taom batafsil ma\'lumotlari',
+        description: 'Bitta taomning to\'liq ma\'lumotlari: nomi, tavsif, narx, rasm, vazn',
+        tags: ['🍔 Menyu'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -90,7 +92,7 @@ class MenuController extends Controller
         if (!$menuItem) {
             return response()->json([
                 'success' => false,
-                'message' => 'Taom topilmadi',
+                'message' => 'Menu item not found',
             ], 404);
         }
 

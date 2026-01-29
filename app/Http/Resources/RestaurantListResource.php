@@ -14,6 +14,7 @@ class RestaurantListResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'restaurant' => $this->branch_name,
             'branch_name' => $this->branch_name,
             'address' => $this->address,
             'phone' => $this->phone,
@@ -44,9 +45,25 @@ class RestaurantListResource extends JsonResource
                 ];
             }),
 
+            // Primary category name (for UI display)
+            'category_name' => $this->categories->first()?->getTranslatedName() ?? null,
+
             // Rating info
             'average_rating' => round($this->reviews_avg_rating ?? 0, 1),
             'reviews_count' => $this->reviews_count ?? 0,
+
+            // Operating hours (if loaded)
+            'operating_hours' => $this->when(
+                $this->relationLoaded('operatingHours'),
+                $this->operatingHours->map(function ($hour) {
+                    return [
+                        'day_of_week' => $hour->day_of_week,
+                        'opening_time' => $hour->opening_time,
+                        'closing_time' => $hour->closing_time,
+                        'is_closed' => $hour->is_closed,
+                    ];
+                })
+            ),
 
             // Distance (if available from nearby search)
             'distance' => $this->when(isset($this->distance), round($this->distance, 2)),

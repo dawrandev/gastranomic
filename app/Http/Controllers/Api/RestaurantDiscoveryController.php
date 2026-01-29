@@ -19,8 +19,9 @@ class RestaurantDiscoveryController extends Controller
 
     #[OA\Get(
         path: '/api/restaurants',
-        summary: 'Get all restaurants',
-        tags: ['Discovery'],
+        summary: 'Barcha restoranlar ro\'yxati',
+        description: 'Filter va pagination bilan barcha faol restoranlarni olish',
+        tags: ['🏠 Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -74,8 +75,9 @@ class RestaurantDiscoveryController extends Controller
 
     #[OA\Get(
         path: '/api/restaurants/nearby',
-        summary: 'Get nearby restaurants based on location',
-        tags: ['Discovery'],
+        summary: 'Yaqin atrofdagi restoranlar',
+        description: 'Foydalanuvchi lokatsiyasidan berilgan radius (km) ichidagi restoranlarni topadi',
+        tags: ['🏠 Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -143,8 +145,9 @@ class RestaurantDiscoveryController extends Controller
 
     #[OA\Get(
         path: '/api/restaurants/{id}',
-        summary: 'Get restaurant details',
-        tags: ['Discovery'],
+        summary: 'Restoran batafsil ma\'lumotlari',
+        description: 'Restoranning to\'liq ma\'lumotlari: rasmlar, brend, menyu, operating hours, reviews statistics va hokazo',
+        tags: ['🏠 Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -181,7 +184,7 @@ class RestaurantDiscoveryController extends Controller
         if (!$restaurant) {
             return response()->json([
                 'success' => false,
-                'message' => 'Restoran topilmadi',
+                'message' => 'Restaurant not found',
             ], 404);
         }
 
@@ -193,8 +196,9 @@ class RestaurantDiscoveryController extends Controller
 
     #[OA\Get(
         path: '/api/restaurants/map',
-        summary: 'Get all restaurants for map display',
-        tags: ['Discovery'],
+        summary: 'Xarita uchun restoranlar',
+        description: 'Xaritada ko\'rsatish uchun barcha restoranlarning koordinatalari',
+        tags: ['🏠 Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -230,6 +234,101 @@ class RestaurantDiscoveryController extends Controller
         return response()->json([
             'success' => true,
             'data' => MapRestaurantResource::collection(collect($restaurants)),
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/api/categories/{id}/top-restaurants',
+        summary: 'Kategoriya bo\'yicha eng yuqori reytingli restoranlar',
+        description: 'Berilgan kategoriyaga tegishli eng yuqori reytingli restoranlarni qaytaradi. Masalan: "Ommabop fast foodlar", "Ommabop restoranlar"',
+        tags: ['🏠 Restoranlar'],
+        parameters: [
+            new OA\Parameter(
+                name: 'Accept-Language',
+                in: 'header',
+                required: false,
+                description: 'Til kodi (uz, ru, kk, en). Default: kk',
+                schema: new OA\Schema(type: 'string', enum: ['uz', 'ru', 'kk', 'en'], default: 'kk')
+            ),
+            new OA\Parameter(name: 'id', in: 'path', required: true, description: 'Kategoriya ID', schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'limit', in: 'query', required: false, description: 'Natijalar soni (default: 10)', schema: new OA\Schema(type: 'integer', default: 10)),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Top restoranlar ro\'yxati',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Kategoriya topilmadi'
+            )
+        ]
+    )]
+    public function topByCategory(Request $request, int $categoryId): JsonResponse
+    {
+        $limit = $request->input('limit', 10);
+        $restaurants = $this->discoveryService->getTopRestaurantsByCategory($categoryId, $limit);
+
+        return response()->json([
+            'success' => true,
+            'data' => RestaurantListResource::collection($restaurants),
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/api/restaurants/nearest',
+        summary: 'Eng yaqin 5 ta restoran',
+        description: 'Foydalanuvchi lokatsiyasiga eng yaqin 5 ta restoranni qaytaradi',
+        tags: ['🏠 Restoranlar'],
+        parameters: [
+            new OA\Parameter(
+                name: 'Accept-Language',
+                in: 'header',
+                required: false,
+                description: 'Til kodi (uz, ru, kk, en). Default: kk',
+                schema: new OA\Schema(type: 'string', enum: ['uz', 'ru', 'kk', 'en'], default: 'kk')
+            ),
+            new OA\Parameter(name: 'lat', in: 'query', required: true, description: 'Latitude (kenglik)', schema: new OA\Schema(type: 'number', format: 'float')),
+            new OA\Parameter(name: 'lng', in: 'query', required: true, description: 'Longitude (uzunlik)', schema: new OA\Schema(type: 'number', format: 'float')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Eng yaqin restoranlar',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validatsiya xatosi'
+            )
+        ]
+    )]
+    public function nearest(Request $request): JsonResponse
+    {
+        $request->validate([
+            'lat' => 'required|numeric|between:-90,90',
+            'lng' => 'required|numeric|between:-180,180',
+        ]);
+
+        $latitude = $request->input('lat');
+        $longitude = $request->input('lng');
+
+        $restaurants = $this->discoveryService->getNearestRestaurants($latitude, $longitude, 5);
+
+        return response()->json([
+            'success' => true,
+            'data' => RestaurantListResource::collection($restaurants),
         ]);
     }
 }

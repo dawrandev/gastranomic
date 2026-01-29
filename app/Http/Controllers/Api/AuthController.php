@@ -23,9 +23,9 @@ class AuthController extends Controller
 
     #[OA\Post(
         path: "/api/auth/send-code",
-        summary: "Tasdiqlash kodini yuborish",
-        description: "Telefon raqamiga SMS orqali 4 raqamli tasdiqlash kodini yuboradi. Kod 5 daqiqa amal qiladi.",
-        tags: ["Authentication"],
+        summary: "SMS tasdiqlash kodi yuborish",
+        description: "Telefon raqamiga SMS orqali 4 raqamli tasdiqlash kodini yuboradi. Kod 5 daqiqa davomida amal qiladi.",
+        tags: ["🔐 Autentifikatsiya"],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -122,13 +122,13 @@ class AuthController extends Controller
         if (!$smsSent && !config('app.debug')) {
             return response()->json([
                 'success' => false,
-                'message' => 'SMS yuborishda xatolik yuz berdi. Qaytadan urinib ko\'ring.',
+                'message' => 'Failed to send SMS. Please try again.',
             ], 500);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Tasdiqlash kodi yuborildi',
+            'message' => 'Verification code sent successfully',
             'phone' => $phone,
             // In test mode, return code in response since SMS won't contain it
             'code' => config('services.eskiz.test_mode', true) ? $code : null,
@@ -139,7 +139,7 @@ class AuthController extends Controller
         path: "/api/auth/verify-code",
         summary: "Kodni tekshirish va login/register",
         description: "Tasdiqlash kodini tekshiradi. Agar foydalanuvchi yangi bo'lsa, ism va familiya bilan ro'yxatdan o'tkazadi. Mavjud foydalanuvchi uchun login qiladi.",
-        tags: ["Authentication"],
+        tags: ["🔐 Autentifikatsiya"],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -267,14 +267,14 @@ class AuthController extends Controller
         if (!$verification) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tasdiqlash kodi topilmadi yoki muddati tugagan',
+                'message' => 'Verification code not found or expired',
             ], 404);
         }
 
         if (!$verification->isValid($code)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Noto\'g\'ri tasdiqlash kodi',
+                'message' => 'Invalid verification code',
             ], 401);
         }
 
@@ -286,7 +286,7 @@ class AuthController extends Controller
             if (!$request->filled('first_name') || !$request->filled('last_name')) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Ism va familiya kiritish shart',
+                    'message' => 'First name and last name are required',
                     'requires_registration' => true,
                 ], 422);
             }
@@ -302,12 +302,27 @@ class AuthController extends Controller
             $isNewUser = false;
         }
 
+        // Migrate guest data to authenticated client
+        if ($request->filled('device_id')) {
+            $deviceId = $request->input('device_id');
+
+            // Migrate reviews
+            \App\Models\Review::where('device_id', $deviceId)
+                ->whereNull('client_id')
+                ->update(['client_id' => $client->id]);
+
+            // Migrate favorites
+            \App\Models\Favorite::where('device_id', $deviceId)
+                ->whereNull('client_id')
+                ->update(['client_id' => $client->id]);
+        }
+
         // Generate API token (using Sanctum)
         $token = $client->createToken('mobile-app')->plainTextToken;
 
         return response()->json([
             'success' => true,
-            'message' => $isNewUser ? 'Ro\'yxatdan o\'tdingiz' : 'Tizimga kirdingiz',
+            'message' => $isNewUser ? 'Registration successful' : 'Login successful',
             'is_new_user' => $isNewUser,
             'client' => [
                 'id' => $client->id,
@@ -326,7 +341,7 @@ class AuthController extends Controller
         summary: "Foydalanuvchi profilini olish",
         description: "Autentifikatsiya qilingan foydalanuvchining profilini qaytaradi",
         security: [["bearerAuth" => []]],
-        tags: ["Authentication"],
+        tags: ["🔐 Autentifikatsiya"],
         responses: [
             new OA\Response(
                 response: 200,
@@ -382,7 +397,7 @@ class AuthController extends Controller
         summary: "Tizimdan chiqish",
         description: "Joriy tokenni bekor qiladi va foydalanuvchini tizimdan chiqaradi",
         security: [["bearerAuth" => []]],
-        tags: ["Authentication"],
+        tags: ["🔐 Autentifikatsiya"],
         responses: [
             new OA\Response(
                 response: 200,
@@ -412,7 +427,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tizimdan chiqdingiz',
+            'message' => 'Logged out successfully',
         ]);
     }
 

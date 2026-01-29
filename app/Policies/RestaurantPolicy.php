@@ -20,6 +20,11 @@ class RestaurantPolicy
 
     public function update(User $user, Restaurant $restaurant): bool
     {
+        // Superadmin cannot edit restaurants
+        if ($user->hasRole('superadmin')) {
+            return false;
+        }
+
         return $user->can(RestaurantPermissions::UPDATE) &&
             $user->id === $restaurant->user_id;
     }
@@ -31,6 +36,11 @@ class RestaurantPolicy
 
     public function delete(User $user, Restaurant $restaurant): bool
     {
+        // Superadmin cannot delete restaurants
+        if ($user->hasRole('superadmin')) {
+            return false;
+        }
+
         return $user->can(RestaurantPermissions::DELETE) &&
             $user->id === $restaurant->user_id;
     }

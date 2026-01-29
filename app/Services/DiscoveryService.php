@@ -61,4 +61,20 @@ class DiscoveryService
             'restaurants' => $restaurants,
         ];
     }
+
+    /**
+     * Get top restaurants by category.
+     */
+    public function getTopRestaurantsByCategory(int $categoryId, int $limit = 10)
+    {
+        return $this->discoveryRepository->getTopRestaurantsByCategory($categoryId, $limit);
+    }
+
+    /**
+     * Get nearest 5 restaurants.
+     */
+    public function getNearestRestaurants(float $latitude, float $longitude, int $limit = 5)
+    {
+        return $this->discoveryRepository->getNearestRestaurants($latitude, $longitude, $limit);
+    }
 }

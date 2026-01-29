@@ -17,9 +17,10 @@ class FavoriteController extends Controller
 
     #[OA\Get(
         path: '/api/favorites',
-        summary: 'Get user favorites',
+        summary: 'Sevimlilar ro\'yxati',
+        description: 'Login qilgan foydalanuvchining barcha sevimli restoranlar ro\'yxati',
         security: [['sanctum' => []]],
-        tags: ['Favorites'],
+        tags: ['❤️ Sevimlilar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -80,91 +81,151 @@ class FavoriteController extends Controller
 
     #[OA\Post(
         path: '/api/restaurants/{id}/favorite',
-        summary: 'Toggle favorite status (guest-friendly)',
-        tags: ['Favorites'],
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                required: ['device_id'],
-                properties: [
-                    new OA\Property(
-                        property: 'device_id',
-                        type: 'string',
-                        description: 'Qurilma ID (UUID yoki fingerprint)',
-                        maxLength: 100,
-                        example: '550e8400-e29b-41d4-a716-446655440000'
-                    )
-                ]
-            )
-        ),
+        summary: 'Sevimlilar ro\'yxatiga qo\'shish/o\'chirish',
+        description: 'Restoranni sevimlilar ro\'yxatiga qo\'shish yoki o\'chirish. Faqat autentifikatsiya qilingan foydalanuvchilar uchun.',
+        security: [['bearerAuth' => []]],
+        tags: ['❤️ Sevimlilar'],
         parameters: [
             new OA\Parameter(
                 name: 'id',
                 in: 'path',
                 required: true,
+                description: 'Restoran ID',
                 schema: new OA\Schema(type: 'integer')
             ),
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Favorite toggled',
+                description: 'Sevimlilar holati o\'zgartirildi',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string'),
+                        new OA\Property(property: 'message', type: 'string', example: 'Sevimlilar ro\'yxatiga qo\'shildi'),
                         new OA\Property(
                             property: 'data',
                             type: 'object',
                             properties: [
-                                new OA\Property(property: 'is_favorited', type: 'boolean')
+                                new OA\Property(property: 'is_favorited', type: 'boolean', example: true)
                             ]
                         ),
                     ]
                 )
             ),
             new OA\Response(
-                response: 404,
-                description: 'Restaurant not found'
+                response: 401,
+                description: 'Autentifikatsiya xatosi'
             ),
             new OA\Response(
-                response: 422,
-                description: 'Validation error'
+                response: 404,
+                description: 'Restoran topilmadi'
             )
         ]
     )]
     public function toggle(Request $request, int $restaurantId): JsonResponse
     {
-        // Validate device_id
-        $request->validate([
-            'device_id' => ['required', 'string', 'max:100'],
-        ], [
-            'device_id.required' => 'Qurilma identifikatori majburiy.',
-            'device_id.string' => 'Qurilma identifikatori to\'g\'ri formatda emas.',
-            'device_id.max' => 'Qurilma identifikatori juda uzun.',
-        ]);
-
         $restaurant = \App\Models\Restaurant::find($restaurantId);
         if (!$restaurant) {
             return response()->json([
                 'success' => false,
-                'message' => 'Restoran topilmadi',
+                'message' => 'Restaurant not found',
             ], 404);
         }
 
-        // Get authenticated client if exists (nullable for guest support)
-        $clientId = $request->user()?->id;
-        $deviceId = $request->input('device_id');
-        $ipAddress = $request->ip();
+        $client = $request->user();
 
-        $result = $this->favoriteService->toggleFavorite($clientId, $restaurantId, $deviceId, $ipAddress);
+        // Toggle favorite
+        $favorite = $client->favorites()->where('restaurant_id', $restaurantId)->first();
+
+        if ($favorite) {
+            $favorite->delete();
+            $message = 'Removed from favorites';
+            $isFavorited = false;
+        } else {
+            $client->favorites()->create([
+                'restaurant_id' => $restaurantId,
+            ]);
+            $message = 'Added to favorites';
+            $isFavorited = true;
+        }
 
         return response()->json([
             'success' => true,
-            'message' => $result['message'],
+            'message' => $message,
             'data' => [
-                'is_favorited' => $result['is_favorited'],
+                'is_favorited' => $isFavorited,
             ],
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/api/favorites/map',
+        summary: 'Sevimli restoranlarni xaritada ko\'rsatish',
+        description: 'Client sevimli restoranlarining koordinatalari xarita uchun',
+        security: [['bearerAuth' => []]],
+        tags: ['❤️ Sevimlilar'],
+        parameters: [
+            new OA\Parameter(
+                name: 'Accept-Language',
+                in: 'header',
+                required: false,
+                description: 'Til kodi (uz, ru, kk, en). Default: kk',
+                schema: new OA\Schema(type: 'string', enum: ['uz', 'ru', 'kk', 'en'], default: 'kk')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Sevimli restoranlar koordinatalari',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Autentifikatsiya xatosi'
+            )
+        ]
+    )]
+    public function map(Request $request): JsonResponse
+    {
+        $client = $request->user();
+
+        $favorites = $client->favorites()
+            ->with([
+                'restaurant:id,branch_name,location,brand_id',
+                'restaurant.brand:id,name',
+            ])
+            ->get()
+            ->filter(function ($favorite) {
+                // Filter out favorites where restaurant doesn't exist
+                return $favorite->restaurant !== null;
+            })
+            ->map(function ($favorite) {
+                $restaurant = $favorite->restaurant;
+                return [
+                    'id' => $restaurant->id,
+                    'branch_name' => $restaurant->branch_name,
+                    'latitude' => $restaurant->latitude,
+                    'longitude' => $restaurant->longitude,
+                    'brand' => $restaurant->brand ? [
+                        'id' => $restaurant->brand->id,
+                        'name' => $restaurant->brand->name,
+                    ] : null,
+                ];
+            })
+            ->filter(function ($item) {
+                // Filter out items without valid coordinates
+                return $item['latitude'] && $item['longitude'];
+            })
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'data' => $favorites,
         ]);
     }
 }
