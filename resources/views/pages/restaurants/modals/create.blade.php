@@ -86,19 +86,6 @@
                             @enderror
                         </div>
                     </div>
-
-                    {{-- Address --}}
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Адрес <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('address') is-invalid @enderror"
-                            id="address" name="address"
-                            value="{{ old('address') }}"
-                            placeholder="Улица, дом, квартира" required>
-                        @error('address')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
                     {{-- Categories with Select2 (Cuba Admin style) --}}
                     <div class="mb-3">
                         <label class="col-form-label">Категории</label>
@@ -117,6 +104,19 @@
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
+
+                    {{-- Address --}}
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Адрес <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control @error('address') is-invalid @enderror"
+                            id="address" name="address"
+                            value="{{ old('address') }}"
+                            placeholder="Улица, дом, квартира" required>
+                        @error('address')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
 
                     {{-- Map --}}
                     <div class="mb-3">
