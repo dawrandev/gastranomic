@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Restaurant;
 use App\Repositories\DiscoveryRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
 class DiscoveryService
 {
@@ -36,7 +37,7 @@ class DiscoveryService
     /**
      * Get all restaurants for map display.
      */
-    public function getRestaurantsForMap(array $filters = []): array
+    public function getRestaurantsForMap(array $filters = []): Collection
     {
         return $this->discoveryRepository->getRestaurantsForMap($filters);
     }

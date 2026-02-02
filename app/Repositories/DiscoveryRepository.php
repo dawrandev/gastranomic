@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Restaurant;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class DiscoveryRepository
@@ -115,7 +116,7 @@ class DiscoveryRepository
     /**
      * Get all restaurants for map display.
      */
-    public function getRestaurantsForMap(array $filters = []): array
+    public function getRestaurantsForMap(array $filters = []): Collection
     {
         $query = Restaurant::query()
             ->where('is_active', true)
@@ -123,12 +124,12 @@ class DiscoveryRepository
             ->select([
                 'id',
                 'branch_name',
-                DB::raw('ST_X(location) as longitude'),
-                DB::raw('ST_Y(location) as latitude'),
+                'brand_id',
+                'location', // Bu geometry field
+                DB::raw('ST_X(location) as lat_coord'), // Nomini o'zgartirdik
+                DB::raw('ST_Y(location) as lng_coord'),
             ])
-            ->with([
-                'brand:id,name',
-            ])
+            ->with(['brand:id,name'])
             ->withAvg('reviews', 'rating');
 
         // Filter by category
@@ -153,7 +154,7 @@ class DiscoveryRepository
             $query->having('reviews_avg_rating', '<=', $filters['max_rating']);
         }
 
-        return $query->get()->toArray();
+        return $query->get();
     }
 
     /**

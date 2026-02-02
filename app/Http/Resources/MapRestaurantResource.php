@@ -15,12 +15,12 @@ class MapRestaurantResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->resource['id'],
-            'name' => $this->resource['branch_name'],
-            'brand_name' => $this->resource['brand']['name'] ?? null,
-            'latitude' => $this->resource['latitude'],
-            'longitude' => $this->resource['longitude'],
-            'average_rating' => round($this->resource['reviews_avg_rating'] ?? 0, 1),
+            'id' => $this->id,
+            'name' => $this->branch_name,
+            'brand_name' => $this->brand->name ?? null,
+            'latitude' => (float) ($this->lat_coord ?? 0),
+            'longitude' => (float) ($this->lng_coord ?? 0),
+            'average_rating' => round($this->reviews_avg_rating ?? 0, 1),
         ];
     }
 }

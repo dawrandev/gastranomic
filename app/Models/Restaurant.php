@@ -20,6 +20,56 @@ class Restaurant extends Model
         'qr_code'
     ];
 
+    protected $appends = ['latitude', 'longitude']; // Avtomatik qo'shish uchun
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    // Cache coordinates to avoid multiple queries
+    private $coordinates = null;
+
+    /**
+     * Get coordinates from location geometry
+     */
+    private function getCoordinates()
+    {
+        if ($this->coordinates === null) {
+            if ($this->location) {
+                // Use the actual location value from the model
+                $result = DB::selectOne(
+                    "SELECT ST_X(?) as longitude, ST_Y(?) as latitude",
+                    [$this->location, $this->location]
+                );
+
+                $this->coordinates = [
+                    'latitude' => $result ? (float) $result->latitude : null,
+                    'longitude' => $result ? (float) $result->longitude : null,
+                ];
+            } else {
+                $this->coordinates = [
+                    'latitude' => null,
+                    'longitude' => null,
+                ];
+            }
+        }
+
+        return $this->coordinates;
+    }
+
+    public function getLatitudeAttribute()
+    {
+        return $this->getCoordinates()['latitude'];
+    }
+
+    public function getLongitudeAttribute()
+    {
+        return $this->getCoordinates()['longitude'];
+    }
+
+    // Relations
     public function admin()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -83,30 +133,5 @@ class Restaurant extends Model
     public function getReviewsCountAttribute()
     {
         return $this->reviews()->count();
-    }
-
-
-    protected $casts = [
-        'is_active' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-    ];
-
-    public function getLatitudeAttribute()
-    {
-        if ($this->location) {
-            $point = DB::selectOne("SELECT ST_Y(location) as lat FROM restaurants WHERE id = ?", [$this->id]);
-            return $point ? $point->lat : null;
-        }
-        return null;
-    }
-
-    public function getLongitudeAttribute()
-    {
-        if ($this->location) {
-            $point = DB::selectOne("SELECT ST_X(location) as lng FROM restaurants WHERE id = ?", [$this->id]);
-            return $point ? $point->lng : null;
-        }
-        return null;
     }
 }
