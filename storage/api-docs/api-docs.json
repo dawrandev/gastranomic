@@ -439,6 +439,73 @@
                 ]
             }
         },
+        "/api/categories": {
+            "get": {
+                "tags": [
+                    "📂 Kategoriyalar"
+                ],
+                "summary": "Barcha kategoriyalar ro'yxati",
+                "description": "Accept-Language header orqali berilgan tildagi barcha kategoriya tarjimalarini qaytaradi",
+                "operationId": "ac9c4d978ea4e5b72915ca9728e5b8b1",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Kategoriyalar ro'yxati",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Fast Food"
+                                                    },
+                                                    "icon": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/storage/categories/icons/icon.png",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/favorites": {
             "get": {
                 "tags": [
@@ -1898,6 +1965,10 @@
         {
             "name": "🔐 Autentifikatsiya",
             "description": "🔐 Autentifikatsiya"
+        },
+        {
+            "name": "📂 Kategoriyalar",
+            "description": "📂 Kategoriyalar"
         },
         {
             "name": "❤️ Sevimlilar",

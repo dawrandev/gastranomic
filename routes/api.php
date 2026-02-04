@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ProfileController;
+use App\Http\Controllers\Api\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,9 @@ Route::prefix('restaurants')->group(function () {
 
     Route::get('/{id}/reviews', [ReviewController::class, 'index']);
 });
+
+// Categories
+Route::get('/categories', [CategoryController::class, 'index']);
 
 // Top restaurants by category
 Route::get('/categories/{id}/top-restaurants', [RestaurantDiscoveryController::class, 'topByCategory']);
