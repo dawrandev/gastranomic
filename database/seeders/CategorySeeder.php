@@ -12,7 +12,6 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Kategoriyalar ro'yxati
         $categories = [
             [
                 'id' => 2,
@@ -20,10 +19,10 @@ class CategorySeeder extends Seeder
                 'created_at' => '2026-01-29 06:55:27',
                 'updated_at' => '2026-01-29 06:55:27',
                 'translations' => [
-                    ['code' => 'kk', 'name' => 'Fast Food'],
-                    ['code' => 'uz', 'name' => 'Fast Food'],
-                    ['code' => 'ru', 'name' => 'Фаст Фуд'],
-                    ['code' => 'en', 'name' => 'Fast Food'],
+                    ['code' => 'uz', 'name' => 'Fast Food', 'desc' => 'Tezkor, mazali va to‘yimli tanovul.'],
+                    ['code' => 'ru', 'name' => 'Фаст Фуд', 'desc' => 'Быстрый, вкусный и сытный перекус.'],
+                    ['code' => 'en', 'name' => 'Fast Food', 'desc' => 'Quick, delicious and satisfying meals.'],
+                    ['code' => 'kk', 'name' => 'Fast Food', 'desc' => 'Tez, dámli hám toyımlı awqatlar.'],
                 ]
             ],
             [
@@ -32,10 +31,10 @@ class CategorySeeder extends Seeder
                 'created_at' => '2026-01-29 07:29:21',
                 'updated_at' => '2026-01-29 07:29:21',
                 'translations' => [
-                    ['code' => 'kk', 'name' => 'Restoran'],
-                    ['code' => 'uz', 'name' => 'Restoran'],
-                    ['code' => 'ru', 'name' => 'Ресторан'],
-                    ['code' => 'en', 'name' => 'Restaurant'],
+                    ['code' => 'uz', 'name' => 'Restoran', 'desc' => 'Oliy darajadagi xizmat va nafis ta’mlar.'],
+                    ['code' => 'ru', 'name' => 'Ресторан', 'desc' => 'Высокий сервис и изысканные вкусы.'],
+                    ['code' => 'en', 'name' => 'Restaurant', 'desc' => 'Premium service and exquisite flavors.'],
+                    ['code' => 'kk', 'name' => 'Restoran', 'desc' => 'Joqarı dárejeli xizmet hám názik dámler.'],
                 ]
             ],
             [
@@ -44,10 +43,10 @@ class CategorySeeder extends Seeder
                 'created_at' => '2026-01-29 07:34:42',
                 'updated_at' => '2026-01-29 07:34:42',
                 'translations' => [
-                    ['code' => 'kk', 'name' => 'Kafe'],
-                    ['code' => 'uz', 'name' => 'Kafe'],
-                    ['code' => 'ru', 'name' => 'Кафе'],
-                    ['code' => 'en', 'name' => 'Cafe'],
+                    ['code' => 'uz', 'name' => 'Kafe', 'desc' => 'Qaynoq qahva va sokin muhit.'],
+                    ['code' => 'ru', 'name' => 'Кафе', 'desc' => 'Горячий кофе и уютная атмосфера.'],
+                    ['code' => 'en', 'name' => 'Cafe', 'desc' => 'Hot coffee and cozy atmosphere.'],
+                    ['code' => 'kk', 'name' => 'Kafe', 'desc' => 'Issı kofe hám tınısh ortalıq.'],
                 ]
             ],
         ];
@@ -62,7 +61,6 @@ class CategorySeeder extends Seeder
                 ]
             );
 
-            // Tarjimalarni kiritish
             foreach ($catData['translations'] as $trans) {
                 DB::table('category_translations')->updateOrInsert(
                     [
@@ -71,6 +69,7 @@ class CategorySeeder extends Seeder
                     ],
                     [
                         'name' => $trans['name'],
+                        'description' => $trans['desc'], // Description maydoni qo'shildi
                         'created_at' => $catData['created_at'],
                         'updated_at' => $catData['updated_at'],
                     ]
