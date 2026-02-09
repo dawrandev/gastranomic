@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -18,7 +19,7 @@ class UserSeeder extends Seeder
                 'brand_id' => null,
                 'name' => 'Asosiy Boshqaruvchi',
                 'login' => 'superadmin',
-                'password' => '$2y$12$QYl46CiuNyG.PoCR2opCQ.njghPlkEM.naP4eYu4Nb7.vhqrdFQ8u',
+                'password' => Hash::make('password123'),
                 'created_at' => '2026-01-29 05:44:04',
             ],
             [
@@ -26,7 +27,7 @@ class UserSeeder extends Seeder
                 'brand_id' => 1,
                 'name' => 'Cake Bumer Admin',
                 'login' => 'cakebumer',
-                'password' => '$2y$12$/kCtgNZyXKRB9QmTe1X5seT0oT6Q4epglOWEAthwOFLtdvJ.ox7ti',
+                'password' => Hash::make('cakebumer'),
                 'created_at' => '2026-01-29 05:45:14',
             ],
             [
@@ -34,7 +35,7 @@ class UserSeeder extends Seeder
                 'brand_id' => 2,
                 'name' => 'Grand Lavash Admini',
                 'login' => 'grand123',
-                'password' => '$2y$12$Jq.TTp1BlYtAfu9WU6bHU.HO8EJb2AKh5Nf1WEKRrOuLJWR0O372W',
+                'password' => Hash::make('grand123'),
                 'created_at' => '2026-01-29 06:55:54',
             ],
             [
@@ -42,7 +43,7 @@ class UserSeeder extends Seeder
                 'brand_id' => 3,
                 'name' => 'Neo Admin',
                 'login' => 'neo12345',
-                'password' => '$2y$12$0T3aGDsQy80poqh70phABuU5ErtVXBVRYpPv8EnvEG0apGV4GU3DK',
+                'password' => Hash::make('neo12345'),
                 'created_at' => '2026-01-29 07:29:44',
             ],
             [
@@ -50,7 +51,7 @@ class UserSeeder extends Seeder
                 'brand_id' => 4,
                 'name' => 'Qaraqalpaǵım Admin',
                 'login' => 'qaraqalpaq',
-                'password' => '$2y$12$RsFDQT/0NQMT1MJ89iK2vuuxWMEPiO5DmVVlmT0n6d6x4zVY2mHj2',
+                'password' => Hash::make('qaraqalpaq'),
                 'created_at' => '2026-01-29 07:35:51',
             ],
         ];
