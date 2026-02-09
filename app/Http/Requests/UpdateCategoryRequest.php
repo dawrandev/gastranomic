@@ -24,15 +24,18 @@ class UpdateCategoryRequest extends FormRequest
         return [
             'icon' => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg', 'max:2048'],
             'translations' => ['nullable', 'array'],
-            'translations.*' => ['nullable', 'string', 'max:255'],
+            'translations.*' => ['nullable', 'array'],
+            'translations.*.name' => ['nullable', 'string', 'min:3', 'max:255'],
+            'translations.*.description' => ['nullable', 'string', 'max:1000'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'Поле имя обязательно для заполнения',
-            'name.max' => 'Имя не должно превышать 255 символов',
+            'translations.*.name.min' => 'Название должно содержать минимум :min символа',
+            'translations.*.name.max' => 'Название не должно превышать :max символов',
+            'translations.*.description.max' => 'Описание не должно превышать :max символов',
             'icon.image' => 'Файл должен быть изображением',
             'icon.mimes' => 'Допустимые форматы: jpg, jpeg, png, svg',
             'icon.max' => 'Размер файла не должен превышать 2MB',

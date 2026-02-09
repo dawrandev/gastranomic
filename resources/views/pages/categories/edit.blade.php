@@ -20,17 +20,41 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <label class="fw-bold">Переводы</label>
+                        <label class="fw-bold mb-3">Переводы</label>
                         @foreach(getLanguages() as $language)
-                        <div class="mb-2">
-                            <label for="edit_translation_{{ $language->code }}" class="form-label">
-                                {{ $language->name }} ({{ strtoupper($language->code) }})
-                            </label>
-                            <input type="text"
-                                class="form-control"
-                                id="edit_translation_{{ $language->code }}"
-                                name="translations[{{ $language->code }}]"
-                                placeholder="Название на {{ $language->name }}">
+                        <div class="mb-3 p-3 border rounded" style="background-color: #f8f9fa;">
+                            <h6 class="mb-3">{{ $language->name }} ({{ strtoupper($language->code) }})</h6>
+
+                            <!-- Name input -->
+                            <div class="mb-3">
+                                <label for="edit_translation_{{ $language->code }}_name" class="form-label">
+                                    Название <span class="text-danger">*</span>
+                                </label>
+                                <input type="text"
+                                    class="form-control"
+                                    id="edit_translation_{{ $language->code }}_name"
+                                    name="translations[{{ $language->code }}][name]"
+                                    placeholder="Название на {{ $language->name }}"
+                                    minlength="3"
+                                    maxlength="255">
+                            </div>
+
+                            <!-- Description textarea -->
+                            <div class="mb-0">
+                                <label for="edit_translation_{{ $language->code }}_description" class="form-label">
+                                    Описание
+                                </label>
+                                <textarea
+                                    class="form-control"
+                                    id="edit_translation_{{ $language->code }}_description"
+                                    name="translations[{{ $language->code }}][description]"
+                                    placeholder="Описание на {{ $language->name }}"
+                                    rows="3"
+                                    maxlength="1000"></textarea>
+                                <small class="text-muted">
+                                    <span class="edit-char-count-{{ $language->code }}">0</span>/1000 символов
+                                </small>
+                            </div>
                         </div>
                         @endforeach
                     </div>
@@ -43,3 +67,17 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Character count for edit form description fields
+    @foreach(getLanguages() as $language)
+    $('#edit_translation_{{ $language->code }}_description').on('input', function() {
+        var length = $(this).val().length;
+        $('.edit-char-count-{{ $language->code }}').text(length);
+    });
+    @endforeach
+});
+</script>
+@endpush

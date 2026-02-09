@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\BrandController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,10 @@ Route::get('/categories', [CategoryController::class, 'index']);
 
 // Top restaurants by category
 Route::get('/categories/{id}/top-restaurants', [RestaurantDiscoveryController::class, 'topByCategory']);
+
+// Brands
+Route::get('/brands', [BrandController::class, 'index']);
+Route::get('/restaurants/brand/{brand_id}', [BrandController::class, 'restaurantsByBrand']);
 
 Route::get('/menu-items/{id}', [MenuController::class, 'show']);
 

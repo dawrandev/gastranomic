@@ -76,6 +76,7 @@
                                         <th style="width: 50px;">№</th>
                                         <th style="width: 80px;">Иконка</th>
                                         <th>Переводы</th>
+                                        <th>Описания</th>
                                         <th style="width: 120px">Действия</th>
                                     </tr>
                                 </thead>
@@ -98,6 +99,22 @@
                                             @endforeach
                                             @else
                                             <span class="text-muted">Нет переводов</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($category->translations->count() > 0)
+                                            @foreach($category->translations as $translation)
+                                            <div class="mb-1">
+                                                <small class="text-muted fw-bold">{{ strtoupper($translation->code) }}:</small>
+                                                @if($translation->description)
+                                                <small class="text-muted">{{ Str::limit($translation->description, 75) }}</small>
+                                                @else
+                                                <small class="text-muted">—</small>
+                                                @endif
+                                            </div>
+                                            @endforeach
+                                            @else
+                                            <span class="text-muted">—</span>
                                             @endif
                                         </td>
                                         <td>
@@ -128,7 +145,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="4" class="text-center">Данные не найдены</td>
+                                        <td colspan="5" class="text-center">Данные не найдены</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -175,8 +192,22 @@
 
                     // Load translations
                     if (data.translations) {
-                        $.each(data.translations, function(langCode, name) {
-                            $('#edit_translation_' + langCode).val(name);
+                        $.each(data.translations, function(langCode, translation) {
+                            // Handle both new nested format and legacy flat format
+                            if (typeof translation === 'object' && translation !== null) {
+                                // New format: {name: '...', description: '...'}
+                                $('#edit_translation_' + langCode + '_name').val(translation.name || '');
+                                $('#edit_translation_' + langCode + '_description').val(translation.description || '');
+
+                                // Update character count for description
+                                var descLength = (translation.description || '').length;
+                                $('.edit-char-count-' + langCode).text(descLength);
+                            } else {
+                                // Legacy format: direct string value
+                                $('#edit_translation_' + langCode + '_name').val(translation || '');
+                                $('#edit_translation_' + langCode + '_description').val('');
+                                $('.edit-char-count-' + langCode).text(0);
+                            }
                         });
                     }
 

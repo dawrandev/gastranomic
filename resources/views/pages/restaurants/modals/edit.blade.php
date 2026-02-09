@@ -55,13 +55,6 @@
                             </select>
                         </div>
                     </div>
-
-                    {{-- Address --}}
-                    <div class="mb-3">
-                        <label for="edit_address" class="form-label">Адрес <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="edit_address" name="address" required>
-                    </div>
-
                     {{-- Categories with Select2 --}}
                     <div class="mb-3">
                         <label for="edit_categories" class="form-label">Категории</label>
@@ -74,6 +67,13 @@
                         </select>
                         <small class="text-muted">Выберите одну или несколько категорий</small>
                     </div>
+
+                    {{-- Address --}}
+                    <div class="mb-3">
+                        <label for="edit_address" class="form-label">Адрес <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="edit_address" name="address" required>
+                    </div>
+
 
                     {{-- Map --}}
                     <div class="mb-3">

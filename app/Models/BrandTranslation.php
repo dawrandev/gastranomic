@@ -4,22 +4,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CategoryTranslation extends Model
+class BrandTranslation extends Model
 {
     protected $fillable = [
-        'category_id',
+        'brand_id',
         'code',
         'name',
         'description',
     ];
 
-    public function category()
+    public function brand()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Brand::class);
     }
 
     public function language()
     {
-        return $this->belongsTo(Language::class);
+        return $this->belongsTo(Language::class, 'code', 'code');
     }
 }

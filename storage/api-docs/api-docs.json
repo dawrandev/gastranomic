@@ -439,6 +439,241 @@
                 ]
             }
         },
+        "/api/brands": {
+            "get": {
+                "tags": [
+                    "🏷️ Brandlar"
+                ],
+                "summary": "Barcha brandlar ro'yxati",
+                "description": "Accept-Language header orqali berilgan tildagi barcha brand tarjimalarini qaytaradi",
+                "operationId": "130f2bd423b6fe2355253e2c39878d99",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Brandlar ro'yxati",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "KFC"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Kentucky Fried Chicken",
+                                                        "nullable": true
+                                                    },
+                                                    "logo": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/storage/brands/logos/kfc.png",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/restaurants/brand/{brand_id}": {
+            "get": {
+                "tags": [
+                    "🏷️ Brandlar"
+                ],
+                "summary": "Brand bo'yicha restaurantlar",
+                "description": "Berilgan brand_id ga tegishli barcha restaurantlarni qaytaradi",
+                "operationId": "339c85bbe61e4896f4afac65cbac4404",
+                "parameters": [
+                    {
+                        "name": "brand_id",
+                        "in": "path",
+                        "description": "Brand ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Brandga tegishli restaurantlar ro'yxati",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "brand_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "brand_name": {
+                                                    "type": "string",
+                                                    "example": "KFC"
+                                                },
+                                                "restaurants": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "KFC Mega Planet"
+                                                            },
+                                                            "images": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "image_url": {
+                                                                            "type": "string",
+                                                                            "example": "https://example.com/storage/restaurants/image.jpg"
+                                                                        },
+                                                                        "is_cover": {
+                                                                            "type": "boolean",
+                                                                            "example": true
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "avg_rating": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 4.5
+                                                            },
+                                                            "reviews_count": {
+                                                                "type": "integer",
+                                                                "example": 120
+                                                            },
+                                                            "address": {
+                                                                "type": "string",
+                                                                "example": "Mega Planet, Almaty",
+                                                                "nullable": true
+                                                            },
+                                                            "operating_hours": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "day_of_week": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "opening_time": {
+                                                                            "type": "string",
+                                                                            "example": "09:00:00"
+                                                                        },
+                                                                        "closing_time": {
+                                                                            "type": "string",
+                                                                            "example": "23:00:00"
+                                                                        },
+                                                                        "is_closed": {
+                                                                            "type": "boolean",
+                                                                            "example": false
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Brand topilmadi",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Brand not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/categories": {
             "get": {
                 "tags": [
@@ -1965,6 +2200,10 @@
         {
             "name": "🔐 Autentifikatsiya",
             "description": "🔐 Autentifikatsiya"
+        },
+        {
+            "name": "🏷️ Brandlar",
+            "description": "🏷️ Brandlar"
         },
         {
             "name": "📂 Kategoriyalar",

@@ -3,8 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\City;
-use App\Models\Language;
+use Illuminate\Support\Facades\DB;
 
 class CitySeeder extends Seeder
 {
@@ -13,23 +12,41 @@ class CitySeeder extends Seeder
      */
     public function run(): void
     {
-        $nukus = City::create();
-
-        $languages = Language::all();
-
-        $translations = [
-            'uz' => 'Nukus',
-            'ru' => 'Нукус',
-            'en' => 'Nukus',
-            'kk' => 'Nókis',
+        $cities = [
+            [
+                'id' => 1,
+                'created_at' => '2026-01-29 05:44:04',
+                'updated_at' => '2026-01-29 05:44:04',
+                'translations' => [
+                    ['code' => 'kk', 'name' => 'Nókis'],
+                    ['code' => 'uz', 'name' => 'Nukus'],
+                    ['code' => 'ru', 'name' => 'Нукус'],
+                    ['code' => 'en', 'name' => 'Nukus'],
+                ]
+            ],
         ];
 
-        foreach ($languages as $language) {
-            if (isset($translations[$language->code])) {
-                $nukus->translations()->create([
-                    'code' => $language->code,
-                    'name' => $translations[$language->code],
-                ]);
+        foreach ($cities as $cityData) {
+            DB::table('cities')->updateOrInsert(
+                ['id' => $cityData['id']],
+                [
+                    'created_at' => $cityData['created_at'],
+                    'updated_at' => $cityData['updated_at'],
+                ]
+            );
+
+            foreach ($cityData['translations'] as $trans) {
+                DB::table('city_translations')->updateOrInsert(
+                    [
+                        'city_id' => $cityData['id'],
+                        'code' => $trans['code']
+                    ],
+                    [
+                        'name' => $trans['name'],
+                        'created_at' => $cityData['created_at'],
+                        'updated_at' => $cityData['updated_at'],
+                    ]
+                );
             }
         }
     }

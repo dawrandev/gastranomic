@@ -66,11 +66,23 @@ class CategoryService
         $translations = [];
 
         if (isset($requestData['translations'])) {
-            foreach ($requestData['translations'] as $langCode => $name) {
+            foreach ($requestData['translations'] as $langCode => $translation) {
+                // Handle both new nested format and legacy flat format
+                if (is_array($translation)) {
+                    // New format: ['name' => '...', 'description' => '...']
+                    $name = $translation['name'] ?? null;
+                    $description = $translation['description'] ?? null;
+                } else {
+                    // Legacy format: direct string value
+                    $name = $translation;
+                    $description = null;
+                }
+
                 if (!empty($name)) {
                     $translations[] = [
                         'code' => $langCode,
                         'name' => $name,
+                        'description' => $description,
                     ];
                 }
             }

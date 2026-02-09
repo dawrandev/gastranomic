@@ -50,7 +50,12 @@ class CategoryController extends Controller
         return response()->json([
             'id'           => $category->id,
             'icon'         => $category->icon,
-            'translations' => $category->translations->pluck('name', 'code')->toArray(),
+            'translations' => $category->translations->mapWithKeys(function($translation) {
+                return [$translation->code => [
+                    'name' => $translation->name,
+                    'description' => $translation->description,
+                ]];
+            })->toArray(),
         ]);
     }
 

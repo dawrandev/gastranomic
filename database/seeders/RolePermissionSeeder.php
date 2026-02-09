@@ -2,45 +2,53 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Permissions\RestaurantPermissions;
+use App\Permissions\BrandPermissions;
+use App\Permissions\CategoryPermissions;
 
 class RolePermissionSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $allPermissions = array_merge(
-            \App\Permissions\RestaurantPermissions::all(),
-            \App\Permissions\BrandPermissions::all(),
-            \App\Permissions\CategoryPermissions::all()
+        $allPermissionsList = array_merge(
+            RestaurantPermissions::all(),
+            BrandPermissions::all(),
+            CategoryPermissions::all()
         );
 
-        foreach ($allPermissions as $permission) {
+        foreach ($allPermissionsList as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
 
+        $superAdminPermissions = array_merge(
+            [
+                RestaurantPermissions::VIEW,
+                RestaurantPermissions::VIEW_ANY,
+            ],
+            BrandPermissions::all(),
+            CategoryPermissions::all()
+        );
+
         $superadmin = Role::firstOrCreate(['name' => 'superadmin']);
-        $superadmin->syncPermissions(Permission::all());
+        $superadmin->syncPermissions($superAdminPermissions);
 
+        // 4. Admin uchun ruxsatlar (Siz yozgan mantiq bo'yicha)
         $admin = Role::firstOrCreate(['name' => 'admin']);
-
         $adminPermissions = [
-            \App\Permissions\RestaurantPermissions::VIEW,
-            \App\Permissions\RestaurantPermissions::UPDATE,
-            \App\Permissions\RestaurantPermissions::EDIT,
-            \App\Permissions\RestaurantPermissions::CREATE,
-            \App\Permissions\RestaurantPermissions::DELETE,
-            \App\Permissions\BrandPermissions::VIEW,
-            \App\Permissions\BrandPermissions::VIEW_ANY,
-            \App\Permissions\CategoryPermissions::VIEW,
-            \App\Permissions\CategoryPermissions::VIEW_ANY
+            RestaurantPermissions::VIEW,
+            RestaurantPermissions::UPDATE,
+            RestaurantPermissions::EDIT,
+            RestaurantPermissions::CREATE,
+            RestaurantPermissions::DELETE,
+            BrandPermissions::VIEW,
+            BrandPermissions::VIEW_ANY,
+            CategoryPermissions::VIEW,
+            CategoryPermissions::VIEW_ANY
         ];
 
         $admin->syncPermissions($adminPermissions);

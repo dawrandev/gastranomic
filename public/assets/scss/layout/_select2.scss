@@ -58,7 +58,7 @@
 
 .select2-container--open {
   .select2-dropdown {
-    z-index: 7;
+    z-index: 1060 !important;  // Above Bootstrap modal (1050) and Leaflet map
   }
 }
 
