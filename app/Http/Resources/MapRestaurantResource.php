@@ -14,10 +14,12 @@ class MapRestaurantResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $locale = $request->header('Accept-Language', 'kk');
+
         return [
             'id' => $this->id,
             'name' => $this->branch_name,
-            'brand_name' => $this->brand->name ?? null,
+            'brand_name' => $this->brand?->getTranslatedName($locale) ?? null,
             'latitude' => (float) ($this->lat_coord ?? 0),
             'longitude' => (float) ($this->lng_coord ?? 0),
             'average_rating' => round($this->reviews_avg_rating ?? 0, 1),

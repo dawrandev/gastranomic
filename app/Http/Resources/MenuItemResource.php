@@ -12,10 +12,13 @@ class MenuItemResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $locale = $request->header('Accept-Language', 'kk');
+        $translation = $this->getTranslation($locale);
+
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
+            'name' => $translation ? $translation->name : null,
+            'description' => $translation ? $translation->description : null,
             'image_path' => $this->image_path ? asset('storage/' . $this->image_path) : null,
             'base_price' => $this->base_price,
             'weight' => $this->weight,

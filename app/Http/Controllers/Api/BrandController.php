@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BrandResource;
 use App\Models\Brand;
 use App\Models\Restaurant;
 use Illuminate\Http\JsonResponse;
@@ -52,28 +53,11 @@ class BrandController extends Controller
     )]
     public function index(Request $request): JsonResponse
     {
-        // Get language from Accept-Language header
-        $locale = $request->header('Accept-Language', 'kk');
-
-        // Set application locale
-        app()->setLocale($locale);
-
-        // Get all brands with translations
         $brands = Brand::with('translations')->get();
-
-        // Map brands with translated names
-        $data = $brands->map(function ($brand) use ($locale) {
-            return [
-                'id' => $brand->id,
-                'name' => $brand->getTranslatedName($locale),
-                'description' => $brand->getTranslatedDescription($locale),
-                'logo' => $brand->logo ? asset('storage/' . $brand->logo) : null,
-            ];
-        });
 
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => BrandResource::collection($brands),
         ]);
     }
 
@@ -169,13 +153,8 @@ class BrandController extends Controller
     )]
     public function restaurantsByBrand(Request $request, $brand_id): JsonResponse
     {
-        // Get language from Accept-Language header
         $locale = $request->header('Accept-Language', 'kk');
 
-        // Set application locale
-        app()->setLocale($locale);
-
-        // Find brand with translations
         $brand = Brand::with('translations')->find($brand_id);
 
         if (!$brand) {
@@ -185,14 +164,12 @@ class BrandController extends Controller
             ], 404);
         }
 
-        // Get restaurants for this brand with relations
         $restaurants = Restaurant::where('brand_id', $brand_id)
             ->with(['images', 'operatingHours', 'reviews'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->get();
 
-        // Map restaurants data
         $restaurantsData = $restaurants->map(function ($restaurant) {
             return [
                 'id' => $restaurant->id,

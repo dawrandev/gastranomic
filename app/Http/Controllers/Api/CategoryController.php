@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -38,6 +39,7 @@ class CategoryController extends Controller
                                 properties: [
                                     new OA\Property(property: 'id', type: 'integer', example: 1),
                                     new OA\Property(property: 'name', type: 'string', example: 'Fast Food'),
+                                    new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Tez tayyorlaniladigan ovqat'),
                                     new OA\Property(property: 'icon', type: 'string', nullable: true, example: 'https://example.com/storage/categories/icons/icon.png'),
                                 ],
                                 type: 'object'
@@ -50,27 +52,11 @@ class CategoryController extends Controller
     )]
     public function index(Request $request): JsonResponse
     {
-        // Get language from Accept-Language header
-        $locale = $request->header('Accept-Language', 'kk');
-
-        // Set application locale
-        app()->setLocale($locale);
-
-        // Get all categories with translations
         $categories = Category::with('translations')->get();
-
-        // Map categories with translated names
-        $data = $categories->map(function ($category) use ($locale) {
-            return [
-                'id' => $category->id,
-                'name' => $category->getTranslatedName($locale),
-                'icon' => $category->icon ? asset('storage/' . $category->icon) : null,
-            ];
-        });
 
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => CategoryResource::collection($categories),
         ]);
     }
 }

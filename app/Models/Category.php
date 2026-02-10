@@ -32,4 +32,17 @@ class Category extends Model
 
         return $translation ? $translation->name : null;
     }
+
+    /**
+     * Get translated description based on current locale
+     */
+    public function getTranslatedDescription($locale = null)
+    {
+        $locale = $locale ?? app()->getLocale();
+
+        // Use loaded translations to avoid N+1 query
+        $translation = $this->translations->firstWhere('code', $locale);
+
+        return $translation ? $translation->description : null;
+    }
 }

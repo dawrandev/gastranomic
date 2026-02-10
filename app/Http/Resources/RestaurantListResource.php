@@ -12,6 +12,8 @@ class RestaurantListResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $locale = $request->header('Accept-Language', 'kk');
+
         return [
             'id' => $this->id,
             'restaurant' => $this->branch_name,
@@ -22,14 +24,14 @@ class RestaurantListResource extends JsonResource
             // Brand info
             'brand' => [
                 'id' => $this->brand->id,
-                'name' => $this->brand->name,
+                'name' => $this->brand->getTranslatedName($locale),
                 'logo' => $this->brand->logo ? asset('storage/' . $this->brand->logo) : null,
             ],
 
             // City
             'city' => [
                 'id' => $this->city->id,
-                'name' => $this->city->getTranslatedName(),
+                'name' => $this->city->getTranslatedName($locale),
             ],
 
             // Cover image
@@ -38,15 +40,15 @@ class RestaurantListResource extends JsonResource
                 : null,
 
             // Categories
-            'categories' => $this->categories->map(function ($category) {
+            'categories' => $this->categories->map(function ($category) use ($locale) {
                 return [
                     'id' => $category->id,
-                    'name' => $category->getTranslatedName(),
+                    'name' => $category->getTranslatedName($locale),
                 ];
             }),
 
             // Primary category name (for UI display)
-            'category_name' => $this->categories->first()?->getTranslatedName() ?? null,
+            'category_name' => $this->categories->first()?->getTranslatedName($locale) ?? null,
 
             // Rating info
             'average_rating' => round($this->reviews_avg_rating ?? 0, 1),

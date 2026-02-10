@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class MenuSectionResource extends JsonResource
+class BrandResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -13,13 +13,12 @@ class MenuSectionResource extends JsonResource
     public function toArray(Request $request): array
     {
         $locale = $request->header('Accept-Language', 'kk');
-        $translation = $this->getTranslation($locale);
 
         return [
             'id' => $this->id,
-            'name' => $translation ? $translation->name : null,
-            'sort_order' => $this->sort_order,
-            'items' => MenuItemResource::collection($this->menuItems),
+            'name' => $this->getTranslatedName($locale),
+            'description' => $this->getTranslatedDescription($locale),
+            'logo' => $this->logo ? asset('storage/' . $this->logo) : null,
         ];
     }
 }

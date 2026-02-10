@@ -723,6 +723,11 @@
                                                         "type": "string",
                                                         "example": "Fast Food"
                                                     },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "example": "Tez tayyorlaniladigan ovqat",
+                                                        "nullable": true
+                                                    },
                                                     "icon": {
                                                         "type": "string",
                                                         "example": "https://example.com/storage/categories/icons/icon.png",
