@@ -31,10 +31,10 @@ class UpdateReviewRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'rating.integer' => 'Reyting butun son bo\'lishi kerak.',
-            'rating.min' => 'Reyting kamida 1 bo\'lishi kerak.',
-            'rating.max' => 'Reyting ko\'pi bilan 5 bo\'lishi kerak.',
-            'comment.max' => 'Izoh 1000 belgidan oshmasligi kerak.',
+            'rating.integer' => 'Оценка должна быть числом.',
+            'rating.min' => 'Оценка должна быть не менее 1.',
+            'rating.max' => 'Оценка не должна превышать 5.',
+            'comment.max' => 'Комментарий не должен превышать 1000 символов.',
         ];
     }
 }

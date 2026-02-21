@@ -22,7 +22,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'icon' => ['nullable', 'image', 'mimes:jpg,jpeg,png,svg', 'max:2048'],
+            'icon' => ['required', 'image', 'mimes:jpg,jpeg,png,svg', 'max:2048'],
             'translations' => ['required', 'array', 'min:1'],
             'translations.*' => ['required', 'array'],
             'translations.*.name' => ['required', 'string', 'min:3', 'max:255'],
@@ -33,14 +33,15 @@ class StoreCategoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'translations.required' => 'Необходимо указать хотя бы один перевод',
-            'translations.*.name.required' => 'Название обязательно для заполнения',
-            'translations.*.name.min' => 'Название должно содержать минимум :min символа',
-            'translations.*.name.max' => 'Название не должно превышать :max символов',
-            'translations.*.description.max' => 'Описание не должно превышать :max символов',
-            'icon.image' => 'Файл должен быть изображением',
-            'icon.mimes' => 'Допустимые форматы: jpg, jpeg, png, svg',
-            'icon.max' => 'Размер файла не должен превышать 2MB',
+            'icon.required' => 'Иконка обязательна для заполнения.',
+            'icon.image' => 'Файл должен быть изображением.',
+            'icon.mimes' => 'Допустимые форматы: jpg, jpeg, png, svg.',
+            'icon.max' => 'Размер файла не должен превышать 2MB.',
+            'translations.required' => 'Необходимо указать хотя бы один перевод.',
+            'translations.*.name.required' => 'Название обязательно для заполнения.',
+            'translations.*.name.min' => 'Название должно содержать минимум :min символа.',
+            'translations.*.name.max' => 'Название не должно превышать :max символов.',
+            'translations.*.description.max' => 'Описание не должно превышать :max символов.',
         ];
     }
 }

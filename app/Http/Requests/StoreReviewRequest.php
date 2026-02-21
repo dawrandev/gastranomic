@@ -32,14 +32,14 @@ class StoreReviewRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'device_id.required' => 'Qurilma identifikatori majburiy.',
-            'device_id.string' => 'Qurilma identifikatori to\'g\'ri formatda emas.',
-            'device_id.max' => 'Qurilma identifikatori juda uzun.',
-            'rating.required' => 'Reytingni tanlash majburiy.',
-            'rating.integer' => 'Reyting butun son bo\'lishi kerak.',
-            'rating.min' => 'Reyting kamida 1 bo\'lishi kerak.',
-            'rating.max' => 'Reyting ko\'pi bilan 5 bo\'lishi kerak.',
-            'comment.max' => 'Izoh 1000 belgidan oshmasligi kerak.',
+            'device_id.required' => 'Идентификатор устройства обязателен.',
+            'device_id.string' => 'Идентификатор устройства должен быть строкой.',
+            'device_id.max' => 'Идентификатор устройства слишком длинный.',
+            'rating.required' => 'Оценка обязательна.',
+            'rating.integer' => 'Оценка должна быть числом.',
+            'rating.min' => 'Оценка должна быть не менее 1.',
+            'rating.max' => 'Оценка не должна превышать 5.',
+            'comment.max' => 'Комментарий не должен превышать 1000 символов.',
         ];
     }
 }

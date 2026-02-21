@@ -33,12 +33,12 @@ class UpdateCategoryRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'translations.*.name.min' => 'Название должно содержать минимум :min символа',
-            'translations.*.name.max' => 'Название не должно превышать :max символов',
-            'translations.*.description.max' => 'Описание не должно превышать :max символов',
-            'icon.image' => 'Файл должен быть изображением',
-            'icon.mimes' => 'Допустимые форматы: jpg, jpeg, png, svg',
-            'icon.max' => 'Размер файла не должен превышать 2MB',
+            'icon.image' => 'Файл должен быть изображением.',
+            'icon.mimes' => 'Допустимые форматы: jpg, jpeg, png, svg.',
+            'icon.max' => 'Размер файла не должен превышать 2MB.',
+            'translations.*.name.min' => 'Название должно содержать минимум :min символа.',
+            'translations.*.name.max' => 'Название не должно превышать :max символов.',
+            'translations.*.description.max' => 'Описание не должно превышать :max символов.',
         ];
     }
 }

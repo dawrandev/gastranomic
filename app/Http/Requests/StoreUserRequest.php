@@ -22,7 +22,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'brand_id' => 'required|exists:brands,id',
+            'brand_id' => 'nullable|exists:brands,id',
             'name' => 'required|string|max:255',
             'login' => 'required|string|unique:users|max:255',
             'password' => 'required|string|min:8|confirmed',
@@ -32,18 +32,18 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'brand_id.required' => 'Поле "Бренд" обязательно для заполнения.',
+            'brand_id.nullable' => '',
             'brand_id.exists' => 'Выбранный бренд не существует.',
-            'name.required' => 'Поле "Имя" обязательно для заполнения.',
-            'name.string' => 'Поле "Имя" должно быть строкой.',
-            'name.max' => 'Поле "Имя" не должно превышать 255 символов.',
-            'login.required' => 'Поле "Логин" обязательно для заполнения.',
-            'login.string' => 'Поле "Логин" должно быть строкой.',
+            'name.required' => 'Имя обязательно для заполнения.',
+            'name.string' => 'Имя должно быть строкой.',
+            'name.max' => 'Имя не должно превышать 255 символов.',
+            'login.required' => 'Логин обязателен для заполнения.',
+            'login.string' => 'Логин должен быть строкой.',
             'login.unique' => 'Такой логин уже существует.',
-            'login.max' => 'Поле "Логин" не должно превышать 255 символов.',
-            'password.required' => 'Поле "Пароль" обязательно для заполнения.',
-            'password.string' => 'Поле "Пароль" должно быть строкой.',
-            'password.min' => 'Поле "Пароль" должно содержать минимум 8 символов.',
+            'login.max' => 'Логин не должен превышать 255 символов.',
+            'password.required' => 'Пароль обязателен для заполнения.',
+            'password.string' => 'Пароль должен быть строкой.',
+            'password.min' => 'Пароль должен содержать минимум 8 символов.',
             'password.confirmed' => 'Подтверждение пароля не совпадает.',
         ];
     }
