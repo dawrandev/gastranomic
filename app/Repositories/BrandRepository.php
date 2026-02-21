@@ -10,12 +10,11 @@ class BrandRepository
 {
     public function paginate(int $perPage = 15, ?string $search = null): LengthAwarePaginator
     {
-        $query = Brand::withCount(['restaurants', 'users']);
+        $query = Brand::with(['translations'])->withCount(['restaurants', 'users']);
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+            $query->whereHas('translations', function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%");
             });
         }
 
@@ -24,17 +23,23 @@ class BrandRepository
 
     public function findById(int $id): ?Brand
     {
-        return Brand::with(['restaurants', 'users'])->find($id);
+        return Brand::with(['translations', 'restaurants', 'users'])->find($id);
     }
 
     public function create(array $data): Brand
     {
         return DB::transaction(function () use ($data) {
-            return Brand::create([
-                'name' => $data['name'],
+            $brand = Brand::create([
                 'logo' => $data['logo'] ?? null,
-                'description' => $data['description'] ?? null,
             ]);
+
+            if (isset($data['translations'])) {
+                foreach ($data['translations'] as $translation) {
+                    $brand->translations()->create($translation);
+                }
+            }
+
+            return $brand->load('translations');
         });
     }
 
@@ -42,18 +47,24 @@ class BrandRepository
     {
         return DB::transaction(function () use ($brand, $data) {
             $brand->update([
-                'name' => $data['name'],
                 'logo' => $data['logo'] ?? $brand->logo,
-                'description' => $data['description'] ?? $brand->description,
             ]);
 
-            return $brand->fresh();
+            if (isset($data['translations'])) {
+                $brand->translations()->delete();
+                foreach ($data['translations'] as $translation) {
+                    $brand->translations()->create($translation);
+                }
+            }
+
+            return $brand->fresh('translations');
         });
     }
 
     public function delete(Brand $brand): bool
     {
         return DB::transaction(function () use ($brand) {
+            $brand->translations()->delete();
             return $brand->delete();
         });
     }

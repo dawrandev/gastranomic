@@ -8,7 +8,7 @@ class CategoryTranslation extends Model
 {
     protected $fillable = [
         'category_id',
-        'code',
+        'lang_code',
         'name',
         'description',
     ];

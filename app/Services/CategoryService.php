@@ -80,7 +80,7 @@ class CategoryService
 
                 if (!empty($name)) {
                     $translations[] = [
-                        'code' => $langCode,
+                        'lang_code' => $langCode,
                         'name' => $name,
                         'description' => $description,
                     ];

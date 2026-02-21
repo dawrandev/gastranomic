@@ -65,7 +65,7 @@ class CategorySeeder extends Seeder
                 DB::table('category_translations')->updateOrInsert(
                     [
                         'category_id' => $catData['id'],
-                        'code' => $trans['code']
+                        'lang_code' => $trans['code']
                     ],
                     [
                         'name' => $trans['name'],

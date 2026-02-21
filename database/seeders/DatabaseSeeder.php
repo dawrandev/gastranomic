@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
 
             BrandSeeder::class,
+            BrandTranslationSeeder::class,
             UserSeeder::class,
 
             RestaurantSeeder::class,

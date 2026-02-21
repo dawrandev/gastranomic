@@ -1887,6 +1887,13 @@
                                         "maxLength": 1000,
                                         "example": "Juda zo'r restoran, taomlar mazali!",
                                         "nullable": true
+                                    },
+                                    "phone": {
+                                        "description": "Telefon raqami (ixtiyoriy, maksimum 20 belgi)",
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "+998901234567",
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -2000,6 +2007,13 @@
                                         "type": "string",
                                         "maxLength": 1000,
                                         "example": "Yangilangan izoh",
+                                        "nullable": true
+                                    },
+                                    "phone": {
+                                        "description": "Telefon raqami (ixtiyoriy, maksimum 20 belgi)",
+                                        "type": "string",
+                                        "maxLength": 20,
+                                        "example": "+998901234567",
                                         "nullable": true
                                     }
                                 },

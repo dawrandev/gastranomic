@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
             $table->tinyInteger('day_of_week');
-            $table->time('opening_time')->nullable();
-            $table->time('closing_time')->nullable();
+            $table->time('opening_time');
+            $table->time('closing_time');
             $table->boolean('is_closed')->default(false);
             $table->timestamps();
 

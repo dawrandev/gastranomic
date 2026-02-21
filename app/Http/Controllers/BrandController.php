@@ -30,7 +30,10 @@ class BrandController extends Controller
     public function store(StoreBrandRequest $request)
     {
         try {
-            $this->brandService->createBrand($request->validated());
+            $data = $request->validated();
+            $data['translations'] = $this->brandService->prepareTranslations($data);
+
+            $this->brandService->createBrand($data);
 
             return redirect()->route('brands.index')->with('success', 'Бренд успешно создан');
         } catch (\Exception $e) {
@@ -44,16 +47,23 @@ class BrandController extends Controller
 
         return response()->json([
             'id' => $brand->id,
-            'name' => $brand->name,
             'logo' => $brand->logo,
-            'description' => $brand->description,
+            'translations' => $brand->translations->mapWithKeys(function($translation) {
+                return [$translation->lang_code => [
+                    'name' => $translation->name,
+                    'description' => $translation->description,
+                ]];
+            })->toArray(),
         ]);
     }
 
     public function update(UpdateBrandRequest $request, Brand $brand)
     {
         try {
-            $this->brandService->updateBrand($brand, $request->validated());
+            $data = $request->validated();
+            $data['translations'] = $this->brandService->prepareTranslations($data);
+
+            $this->brandService->updateBrand($brand, $data);
 
             return redirect()->route('brands.index')->with('success', 'Бренд успешно обновлен');
         } catch (\Exception $e) {

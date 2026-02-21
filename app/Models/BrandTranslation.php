@@ -8,7 +8,7 @@ class BrandTranslation extends Model
 {
     protected $fillable = [
         'brand_id',
-        'code',
+        'lang_code',
         'name',
         'description',
     ];
@@ -20,6 +20,6 @@ class BrandTranslation extends Model
 
     public function language()
     {
-        return $this->belongsTo(Language::class, 'code', 'code');
+        return $this->belongsTo(Language::class, 'lang_code', 'code');
     }
 }

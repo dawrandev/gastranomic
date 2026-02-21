@@ -35,7 +35,7 @@ class CityRepository
                 foreach ($data['translations'] as $langCode => $name) {
                     if (!empty($name)) {
                         $city->translations()->create([
-                            'code' => $langCode,
+                            'lang_code' => $langCode,
                             'name' => $name,
                         ]);
                     }
@@ -56,7 +56,7 @@ class CityRepository
                 foreach ($data['translations'] as $langCode => $name) {
                     if (!empty($name)) {
                         $city->translations()->create([
-                            'code' => $langCode,
+                            'lang_code' => $langCode,
                             'name' => $name,
                         ]);
                     }

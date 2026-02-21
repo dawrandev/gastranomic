@@ -17,12 +17,12 @@ return new class extends Migration
             $table->foreignId('brand_id')->constrained('brands')->onDelete('cascade');
             $table->foreignId('city_id')->constrained('cities')->onDelete('cascade');
             $table->string('branch_name');
-            $table->string('phone')->nullable();
+            $table->string('phone');
             $table->text('description')->nullable();
-            $table->string('address')->nullable();
-            $table->geometry('location')->nullable();
+            $table->string('address');
+            $table->geometry('location');
             $table->boolean('is_active')->default(true);
-            $table->string('qr_code')->nullable();
+            $table->string('qr_code');
             $table->timestamps();
         });
     }

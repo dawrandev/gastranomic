@@ -149,7 +149,7 @@ class DashboardRepository
             ->select('category_translations.name', DB::raw('COUNT(restaurant_category.restaurant_id) as restaurant_count'))
             ->leftJoin('category_translations', function ($join) use ($locale) {
                 $join->on('categories.id', '=', 'category_translations.category_id')
-                    ->where('category_translations.code', '=', $locale);
+                    ->where('category_translations.lang_code', '=', $locale);
             })
             ->leftJoin('restaurant_category', 'categories.id', '=', 'restaurant_category.category_id')
             ->groupBy('categories.id', 'category_translations.name')

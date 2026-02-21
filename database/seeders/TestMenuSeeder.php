@@ -9,8 +9,8 @@ class TestMenuSeeder extends Seeder
 {
     public function run(): void
     {
-        $brand = \App\Models\Brand::where('name', 'like', '%Grand Lavash%')->first()
-            ?? \App\Models\Brand::first();
+        // Get the Grand Lavash brand (ID: 2) or use the first brand
+        $brand = \App\Models\Brand::find(2) ?? \App\Models\Brand::first();
 
         if (!$brand) {
             $this->command->warn('No brands found. Skipping TestMenuSeeder.');
@@ -71,6 +71,6 @@ class TestMenuSeeder extends Seeder
             }
         }
 
-        $this->command->info("Test menu sections created successfully for {$brand->name}!");
+        $this->command->info("Test menu sections created successfully for brand ID {$brand->id}!");
     }
 }

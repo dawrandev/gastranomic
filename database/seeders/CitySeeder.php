@@ -39,7 +39,7 @@ class CitySeeder extends Seeder
                 DB::table('city_translations')->updateOrInsert(
                     [
                         'city_id' => $cityData['id'],
-                        'code' => $trans['code']
+                        'lang_code' => $trans['code']
                     ],
                     [
                         'name' => $trans['name'],

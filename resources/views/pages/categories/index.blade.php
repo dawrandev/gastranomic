@@ -172,8 +172,18 @@
             let id = $(this).data('id');
             let url = "{{ route('categories.edit', ':id') }}".replace(':id', id);
 
+            // Reset form and clear all translation fields
             $('#editCategoryForm').trigger("reset");
             $('.is-invalid').removeClass('is-invalid');
+
+            // Clear all translation fields
+            let languages = ['uz', 'ru', 'kk', 'en'];
+            languages.forEach(function(lang) {
+                $('#edit_' + lang + '_name').val('');
+                $('#edit_' + lang + '_description').val('');
+                $('.edit-char-count-' + lang).text(0);
+            });
+
             $('#current_icon_preview').attr('src', '').hide();
 
             $.ajax({
@@ -188,7 +198,12 @@
                     }
 
                     // Clear all translation fields first
-                    $('[id^="edit_translation_"]').val('');
+                    let languages = ['uz', 'ru', 'kk', 'en'];
+                    languages.forEach(function(lang) {
+                        $('#edit_' + lang + '_name').val('');
+                        $('#edit_' + lang + '_description').val('');
+                        $('.edit-char-count-' + lang).text(0);
+                    });
 
                     // Load translations
                     if (data.translations) {
@@ -196,16 +211,16 @@
                             // Handle both new nested format and legacy flat format
                             if (typeof translation === 'object' && translation !== null) {
                                 // New format: {name: '...', description: '...'}
-                                $('#edit_translation_' + langCode + '_name').val(translation.name || '');
-                                $('#edit_translation_' + langCode + '_description').val(translation.description || '');
+                                $('#edit_' + langCode + '_name').val(translation.name || '');
+                                $('#edit_' + langCode + '_description').val(translation.description || '');
 
                                 // Update character count for description
                                 var descLength = (translation.description || '').length;
                                 $('.edit-char-count-' + langCode).text(descLength);
                             } else {
                                 // Legacy format: direct string value
-                                $('#edit_translation_' + langCode + '_name').val(translation || '');
-                                $('#edit_translation_' + langCode + '_description').val('');
+                                $('#edit_' + langCode + '_name').val(translation || '');
+                                $('#edit_' + langCode + '_description').val('');
                                 $('.edit-char-count-' + langCode).text(0);
                             }
                         });

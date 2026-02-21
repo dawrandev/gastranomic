@@ -28,7 +28,7 @@ class Category extends Model
         $locale = $locale ?? app()->getLocale();
 
         // Use loaded translations to avoid N+1 query
-        $translation = $this->translations->firstWhere('code', $locale);
+        $translation = $this->translations->firstWhere('lang_code', $locale);
 
         return $translation ? $translation->name : null;
     }
@@ -41,7 +41,7 @@ class Category extends Model
         $locale = $locale ?? app()->getLocale();
 
         // Use loaded translations to avoid N+1 query
-        $translation = $this->translations->firstWhere('code', $locale);
+        $translation = $this->translations->firstWhere('lang_code', $locale);
 
         return $translation ? $translation->description : null;
     }

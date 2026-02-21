@@ -8,7 +8,7 @@ class CityTranslation extends Model
 {
     protected $fillable = [
         'city_id',
-        'code',
+        'lang_code',
         'name'
     ];
 

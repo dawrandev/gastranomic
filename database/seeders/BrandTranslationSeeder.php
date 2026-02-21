@@ -13,118 +13,101 @@ class BrandTranslationSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create brands with their translations
+        // Create translations for existing brands
         $brands = [
             [
-                'name' => 'KFC',
-                'logo' => null,
-                'description' => 'Kentucky Fried Chicken',
+                'id' => 1,
                 'translations' => [
                     'uz' => [
-                        'name' => 'KFC',
-                        'description' => 'Kentucky Qovurilgan Tovuq'
+                        'name' => 'Cake Bumer',
+                        'description' => 'Mazali tort va shirinliklar'
                     ],
                     'ru' => [
-                        'name' => 'KFC',
-                        'description' => 'Кентукки Жареная Курица'
+                        'name' => 'Cake Bumer',
+                        'description' => 'Роскошные десерты из свежих ингредиентов и сытный Fastfood'
                     ],
                     'kk' => [
-                        'name' => 'KFC',
-                        'description' => 'Кентукки Қуырылған Тауық'
+                        'name' => 'Cake Bumer',
+                        'description' => 'Nóhes ingridiyentterden jasalǵan sherli tort hám toy awqat'
                     ],
                     'en' => [
-                        'name' => 'KFC',
-                        'description' => 'Kentucky Fried Chicken'
+                        'name' => 'Cake Bumer',
+                        'description' => 'Delicious cakes and pastries'
                     ],
                 ],
             ],
             [
-                'name' => 'McDonald\'s',
-                'logo' => null,
-                'description' => 'Fast food restaurant chain',
+                'id' => 2,
                 'translations' => [
                     'uz' => [
-                        'name' => 'McDonald\'s',
-                        'description' => 'Tez ovqatlanish restoran tarmog\'i'
+                        'name' => 'Grand Lavash',
+                        'description' => 'Oshpaz lavash va mashhur taomlar'
                     ],
                     'ru' => [
-                        'name' => 'McDonald\'s',
-                        'description' => 'Сеть ресторанов быстрого питания'
+                        'name' => 'Grand Lavash',
+                        'description' => 'Лучший лаваш и традиционная кухня'
                     ],
                     'kk' => [
-                        'name' => 'McDonald\'s',
-                        'description' => 'Тез тамақтану мекемелер желісі'
+                        'name' => 'Grand Lavash',
+                        'description' => 'Nókis qalasındaǵı eń mazalı fast food'
                     ],
                     'en' => [
-                        'name' => 'McDonald\'s',
-                        'description' => 'Fast food restaurant chain'
+                        'name' => 'Grand Lavash',
+                        'description' => 'Premium lavash and traditional cuisine'
                     ],
                 ],
             ],
             [
-                'name' => 'Osh Markazi',
-                'logo' => null,
-                'description' => 'Traditional Uzbek cuisine',
+                'id' => 3,
                 'translations' => [
                     'uz' => [
-                        'name' => 'Osh Markazi',
-                        'description' => 'An\'anaviy o\'zbek oshxonasi'
+                        'name' => 'Neo',
+                        'description' => 'Restoran, karaoke va dans maydoni'
                     ],
                     'ru' => [
-                        'name' => 'Центр Плова',
-                        'description' => 'Традиционная узбекская кухня'
+                        'name' => 'Neo',
+                        'description' => 'Ресторан • Караоке • Танцпол'
                     ],
                     'kk' => [
-                        'name' => 'Ош Орталығы',
-                        'description' => 'Дәстүрлі өзбек асханасы'
+                        'name' => 'Neo',
+                        'description' => 'Restoran, karaoke hám tans maydanı'
                     ],
                     'en' => [
-                        'name' => 'Osh Center',
-                        'description' => 'Traditional Uzbek cuisine'
+                        'name' => 'Neo',
+                        'description' => 'Restaurant • Karaoke • Dance floor'
                     ],
                 ],
             ],
             [
-                'name' => 'City Cafe',
-                'logo' => null,
-                'description' => 'Modern cafe chain',
+                'id' => 4,
                 'translations' => [
                     'uz' => [
-                        'name' => 'City Cafe',
-                        'description' => 'Zamonaviy kafe tarmog\'i'
+                        'name' => 'Qaraqalpaǵım',
+                        'description' => 'Samarqand shahar kafe'
                     ],
                     'ru' => [
-                        'name' => 'City Cafe',
-                        'description' => 'Современная сеть кафе'
+                        'name' => 'Qaraqalpaǵım',
+                        'description' => 'Каракалпагым Кафе'
                     ],
                     'kk' => [
-                        'name' => 'City Cafe',
-                        'description' => 'Заманауи кафе желісі'
+                        'name' => 'Qaraqalpaǵım',
+                        'description' => 'Qaraqalpaǵım kafe'
                     ],
                     'en' => [
-                        'name' => 'City Cafe',
-                        'description' => 'Modern cafe chain'
+                        'name' => 'Qaraqalpaǵım',
+                        'description' => 'Qaraqalpaǵım Cafe'
                     ],
                 ],
             ],
         ];
 
         foreach ($brands as $brandData) {
-            // Create brand
-            $brand = Brand::firstOrCreate(
-                ['name' => $brandData['name']],
-                [
-                    'logo' => $brandData['logo'],
-                    'description' => $brandData['description'],
-                ]
-            );
-
-            // Create translations for the brand
+            // Create translations for existing brands
             foreach ($brandData['translations'] as $code => $translation) {
                 BrandTranslation::updateOrCreate(
                     [
-                        'brand_id' => $brand->id,
-                        'code' => $code,
+                        'brand_id' => $brandData['id'],
+                        'lang_code' => $code,
                     ],
                     [
                         'name' => $translation['name'],

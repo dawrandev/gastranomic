@@ -88,15 +88,16 @@
                                         <td>{{ $counter++ }}</td>
                                         <td class="text-center">
                                             @if($brand->logo)
-                                            <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->name }}" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
+                                            <img src="{{ asset('storage/' . $brand->logo) }}" alt="{{ $brand->getTranslatedName() }}" class="img-thumbnail" style="max-width: 50px; max-height: 50px;">
                                             @else
                                             <span class="text-muted">—</span>
                                             @endif
                                         </td>
-                                        <td><strong>{{ $brand->name }}</strong></td>
+                                        <td><strong>{{ $brand->getTranslatedName() ?? 'N/A' }}</strong></td>
                                         <td>
-                                            @if($brand->description)
-                                            {{ Str::limit($brand->description, 50) }}
+                                            @php $desc = $brand->getTranslatedDescription(); @endphp
+                                            @if($desc)
+                                            {{ Str::limit($desc, 50) }}
                                             @else
                                             <span class="text-muted">—</span>
                                             @endif
@@ -158,8 +159,17 @@
             let id = $(this).data('id');
             let url = "{{ route('brands.edit', ':id') }}".replace(':id', id);
 
+            // Reset form and clear all translation fields
             $('#editBrandForm').trigger("reset");
             $('.is-invalid').removeClass('is-invalid');
+
+            // Clear all translation fields
+            let languages = ['uz', 'ru', 'kk', 'en'];
+            languages.forEach(function(lang) {
+                $('#edit_' + lang + '_name').val('');
+                $('#edit_' + lang + '_description').val('');
+            });
+
             $('#current_logo_preview').attr('src', '').hide();
 
             $.ajax({
@@ -167,8 +177,21 @@
                 method: 'GET',
                 success: function(data) {
                     $('#edit_brand_id').val(data.id);
-                    $('#edit_name').val(data.name);
-                    $('#edit_description').val(data.description);
+
+                    // Load translations for all languages
+                    let translations = data.translations;
+                    let languages = ['uz', 'ru', 'kk', 'en'];
+
+                    languages.forEach(function(lang) {
+                        let translation = translations[lang];
+                        if (translation) {
+                            $('#edit_' + lang + '_name').val(translation.name || '');
+                            $('#edit_' + lang + '_description').val(translation.description || '');
+                        } else {
+                            $('#edit_' + lang + '_name').val('');
+                            $('#edit_' + lang + '_description').val('');
+                        }
+                    });
 
                     if (data.logo) {
                         $('#current_logo_preview').attr('src', '/storage/' + data.logo).show();

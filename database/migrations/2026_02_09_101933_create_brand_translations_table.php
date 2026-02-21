@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('brand_translations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('brand_id')->constrained('brands')->onDelete('cascade');
-            $table->string('code');
+            $table->string('lang_code', 5);
             $table->string('name');
             $table->text('description')->nullable();
             $table->timestamps();
+
+            $table->foreign('lang_code')->references('code')->on('languages')->onDelete('cascade');
+            $table->unique(['brand_id', 'lang_code']);
         });
     }
 

@@ -51,7 +51,7 @@ class CategoryController extends Controller
             'id'           => $category->id,
             'icon'         => $category->icon,
             'translations' => $category->translations->mapWithKeys(function($translation) {
-                return [$translation->code => [
+                return [$translation->lang_code => [
                     'name' => $translation->name,
                     'description' => $translation->description,
                 ]];

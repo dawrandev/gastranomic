@@ -46,7 +46,7 @@ class CityController extends Controller
 
         $translations = [];
         foreach ($city->translations as $translation) {
-            $translations[$translation->code] = $translation->name;
+            $translations[$translation->lang_code] = $translation->name;
         }
 
         return response()->json([
