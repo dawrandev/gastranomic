@@ -29,28 +29,14 @@ class ReviewService
     }
 
     /**
-     * Create or update a review (with device tracking).
+     * Create a new review (always creates new, never updates based on device_id).
+     * Clients can leave multiple reviews per restaurant.
      */
     public function createOrUpdateReview(?int $clientId, int $restaurantId, array $data): Review
     {
-        // If client is authenticated, check by client_id
-        if ($clientId) {
-            $existingReview = $this->reviewRepository->findByClientAndRestaurant($clientId, $restaurantId);
-
-            if ($existingReview) {
-                return $this->reviewRepository->update($existingReview, $data);
-            }
-        }
-
-        // For guests or new reviews, check by device_id
-        $existingReviewByDevice = Review::where('device_id', $data['device_id'])
-            ->where('restaurant_id', $restaurantId)
-            ->first();
-
-        if ($existingReviewByDevice) {
-            return $this->reviewRepository->update($existingReviewByDevice, $data);
-        }
-
+        // Always create a new review
+        // Allows multiple reviews per device per restaurant
+        // Rate limiting is handled separately in canDeviceReview()
         return $this->reviewRepository->create([
             'client_id' => $clientId,
             'restaurant_id' => $restaurantId,
