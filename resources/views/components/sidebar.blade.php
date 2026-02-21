@@ -1,22 +1,42 @@
 <div class="sidebar-wrapper">
     <div>
-        <div class="logo-wrapper">
+        <div class="logo-wrapper" style="padding: 18px 15px;">
             <a href="{{ route('login') }}">
-                <img class="img-fluid for-light" src="{{asset('/assets/images/logo/logo.png') }}" alt="">
-                <img class="img-fluid for-dark" src="{{asset('/assets/images/logo/logo_dark.png') }}" alt="">
+                @php
+                $user = auth()->user();
+                $brandLogo = $user && $user->brand && $user->brand->logo
+                    ? asset('storage/' . $user->brand->logo)
+                    : asset('/assets/images/logo/logo.png');
+                @endphp
+                <img class="img-fluid for-light" src="{{ $brandLogo }}" alt="" style="max-height: 50px; object-fit: contain; object-position: center;">
+                <img class="img-fluid for-dark" src="{{ $brandLogo }}" alt="" style="max-height: 50px; object-fit: contain; object-position: center;">
             </a>
             <div class="back-btn"><i class="fa fa-angle-left"></i></div>
             <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle" data-feather="grid"> </i></div>
         </div>
         <div class="logo-icon-wrapper">
-            <a href="{{ route('login') }}"><img class="img-fluid" src="{{asset('/assets/images/logo/logo-icon.png') }}" alt=""></a>
+            <a href="{{ route('login') }}">
+                @php
+                $iconLogo = $user && $user->brand && $user->brand->logo
+                    ? asset('storage/' . $user->brand->logo)
+                    : asset('/assets/images/logo/logo-icon.png');
+                @endphp
+                <img class="img-fluid" src="{{ $iconLogo }}" alt="" style="max-height: 35px; object-fit: contain; object-position: center;">
+            </a>
         </div>
         <nav class="sidebar-main">
             <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
             <div id="sidebar-menu">
                 <ul class="sidebar-links" id="simple-bar">
                     <li class="back-btn">
-                        <a href="{{ route('login') }}"><img class="img-fluid" src="{{asset('/assets/images/logo/logo-icon.png') }}" alt=""></a>
+                        <a href="{{ route('login') }}">
+                            @php
+                            $mobileIconLogo = $user && $user->brand && $user->brand->logo
+                                ? asset('storage/' . $user->brand->logo)
+                                : asset('/assets/images/logo/logo-icon.png');
+                            @endphp
+                            <img class="img-fluid" src="{{ $mobileIconLogo }}" alt="" style="max-height: 35px; object-fit: contain; object-position: center;">
+                        </a>
                         <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
                     </li>
 

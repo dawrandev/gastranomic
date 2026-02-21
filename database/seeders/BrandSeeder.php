@@ -15,42 +15,38 @@ class BrandSeeder extends Seeder
         $brands = [
             [
                 'id' => 1,
-                'name' => 'Cake Bumer',
-                'logo' => 'brands/logos/5dMqFqk7p7tAXhMIOrN590fIrsbEaAQi6vmBVECs.jpg',
-                'description' => 'Роскошные десерты из свежих ингредиентов и сытный Fastfood',
-                'created_at' => '2026-01-29 05:44:25',
-                'updated_at' => '2026-01-29 07:27:07',
+                'logo' => 'brands/logos/9HmgIpTfGmKI4lBDSltXtaYhuksoVlztGQpiO99F.png',
+                'created_at' => '2026-01-29 00:44:25',
+                'updated_at' => '2026-01-29 02:27:07',
             ],
             [
                 'id' => 2,
-                'name' => 'Grand Lavash',
-                'logo' => 'brands/logos/39TnmeysQsR2AFsJuAe2PzG59akezGGR5xGVjwSS.png',
-                'description' => 'Nókis qalasındaǵı eń mazalı fast food',
-                'created_at' => '2026-01-29 06:54:57',
-                'updated_at' => '2026-01-29 06:58:19',
+                'logo' => 'brands/logos/9jjJ4N0RZvydpA1eou2xHrJPS1shNs6WHyOcnc6v.png',
+                'created_at' => '2026-01-29 01:54:57',
+                'updated_at' => '2026-01-29 01:58:19',
             ],
             [
                 'id' => 3,
-                'name' => 'Neo',
-                'logo' => 'brands/logos/8nGRKsbI5Fvx8hzyiCbKWc3IFktCnj4VSJ12ycBV.jpg',
-                'description' => 'Ресторан • Караоке • Танцпол',
-                'created_at' => '2026-01-29 07:28:58',
-                'updated_at' => '2026-01-29 07:28:58',
+                'logo' => 'brands/logos/9kRULfr5hKBKTDunjZEYBrNt1uYMa1fLu4jBpeSM.png',
+                'created_at' => '2026-01-29 02:28:58',
+                'updated_at' => '2026-01-29 02:28:58',
             ],
             [
                 'id' => 4,
-                'name' => 'Qaraqalpaǵım',
-                'logo' => 'brands/logos/Z3FiOAGPKv9wD7XUobiu8VxEBLL8bzshtPiGYz3S.jpg',
-                'description' => 'Каракалпагым Кафе',
-                'created_at' => '2026-01-29 07:35:18',
-                'updated_at' => '2026-01-29 07:35:18',
+                'logo' => 'brands/logos/ag61sJUwjBLn3AeDgLkOaXHcbiR6IUVoRPgr0BsI.png',
+                'created_at' => '2026-01-29 02:35:18',
+                'updated_at' => '2026-01-29 02:35:18',
             ],
         ];
 
         foreach ($brands as $brand) {
             DB::table('brands')->updateOrInsert(
                 ['id' => $brand['id']], // ID bo'yicha tekshiradi
-                $brand                  // Ma'lumotlarni kiritadi yoki yangilaydi
+                [
+                    'logo' => $brand['logo'],
+                    'created_at' => $brand['created_at'],
+                    'updated_at' => $brand['updated_at'],
+                ]
             );
         }
     }

@@ -29,7 +29,14 @@
 
                   <li class="maximize"><a class="text-dark" href="#!" onclick="javascript:toggleFullScreen()"><i data-feather="maximize"></i></a></li>
                   <li class="profile-nav onhover-dropdown p-0 me-0">
-                      <div class="media profile-media"><img class="b-r-10" src="../assets/images/dashboard/profile.jpg" alt="">
+                      <div class="media profile-media">
+                          @php
+                          $user = Auth::user();
+                          $brandLogo = $user->brand && $user->brand->logo
+                              ? asset('storage/' . $user->brand->logo)
+                              : asset('assets/images/dashboard/profile.jpg');
+                          @endphp
+                          <img class="b-r-10" src="{{ $brandLogo }}" alt="" style="width: 40px; height: 40px; object-fit: cover; object-position: center;">
                           <div class="media-body"><span>{{ Auth::user()->name }}</span>
                               <p class="mb-0 font-roboto">{{ Auth::user()->role }}<i class="middle fa fa-angle-down"></i></p>
                           </div>
