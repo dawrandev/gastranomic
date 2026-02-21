@@ -15,6 +15,7 @@ class Review extends Model
         'restaurant_id',
         'device_id',
         'ip_address',
+        'phone',
         'rating',
         'comment',
     ];

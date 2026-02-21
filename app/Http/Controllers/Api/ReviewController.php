@@ -96,6 +96,14 @@ class ReviewController extends Controller
                         maxLength: 1000,
                         nullable: true,
                         example: 'Juda zo\'r restoran, taomlar mazali!'
+                    ),
+                    new OA\Property(
+                        property: 'phone',
+                        type: 'string',
+                        description: 'Telefon raqami (ixtiyoriy, maksimum 20 belgi)',
+                        maxLength: 20,
+                        nullable: true,
+                        example: '+998901234567'
                     )
                 ]
             )
@@ -203,6 +211,14 @@ class ReviewController extends Controller
                         maxLength: 1000,
                         nullable: true,
                         example: 'Yangilangan izoh'
+                    ),
+                    new OA\Property(
+                        property: 'phone',
+                        type: 'string',
+                        description: 'Telefon raqami (ixtiyoriy, maksimum 20 belgi)',
+                        maxLength: 20,
+                        nullable: true,
+                        example: '+998901234567'
                     )
                 ]
             )

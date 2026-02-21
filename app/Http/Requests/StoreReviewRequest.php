@@ -23,6 +23,7 @@ class StoreReviewRequest extends FormRequest
             'device_id' => ['required', 'string', 'max:100'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string', 'max:1000'],
+            'phone' => ['nullable', 'string', 'max:20'],
         ];
     }
 
@@ -40,6 +41,8 @@ class StoreReviewRequest extends FormRequest
             'rating.min' => 'Оценка должна быть не менее 1.',
             'rating.max' => 'Оценка не должна превышать 5.',
             'comment.max' => 'Комментарий не должен превышать 1000 символов.',
+            'phone.string' => 'Номер телефона должен быть строкой.',
+            'phone.max' => 'Номер телефона не должен превышать 20 символов.',
         ];
     }
 }

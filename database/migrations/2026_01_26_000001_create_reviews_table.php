@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
             $table->string('device_id', 100)->index()->comment('Unique device identifier');
             $table->string('ip_address', 45)->nullable()->comment('IP address (IPv4/IPv6)');
+            $table->string('phone', 20)->nullable()->comment('Phone number (optional)');
             $table->tinyInteger('rating')->unsigned()->comment('1-5 rating');
             $table->text('comment')->nullable();
             $table->timestamps();
