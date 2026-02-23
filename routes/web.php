@@ -82,3 +82,12 @@ Route::middleware(['auth'])->name('reviews.')->group(function () {
     Route::get('/reviews', [App\Http\Controllers\ReviewController::class, 'index'])->name('index');
     Route::delete('/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('destroy');
 });
+
+Route::prefix('questions')->middleware(['auth', 'role:superadmin'])->name('questions.')->group(function () {
+    Route::get('/', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'index'])->name('index');
+    Route::get('/create', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'create'])->name('create');
+    Route::post('/store', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'store'])->name('store');
+    Route::get('/{question}/edit', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'edit'])->name('edit');
+    Route::put('/{question}/update', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'update'])->name('update');
+    Route::delete('/{question}/destroy', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'destroy'])->name('destroy');
+});

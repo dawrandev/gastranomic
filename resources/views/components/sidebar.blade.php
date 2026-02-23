@@ -99,6 +99,12 @@
                             <i data-feather="map-pin"></i><span>Города</span>
                         </a>
                     </li>
+
+                    <li class="sidebar-list {{ request()->routeIs('questions.*') ? 'active' : '' }}">
+                        <a class="sidebar-link sidebar-title link-nav" href="{{ route('questions.index') }}">
+                            <i data-feather="help-circle"></i><span>Вопросы</span>
+                        </a>
+                    </li>
                     @endif
 
                     {{-- 5. Menu (Faqat restorani bor Adminlar uchun) --}}

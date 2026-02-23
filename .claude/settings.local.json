@@ -11,7 +11,8 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nImplement Resource Pattern for all APIs with header-based locale handling\n\n- Created CategoryResource and BrandResource for consistent data transformation\n- Modified all API Resources \\(MenuItem, MenuSection, Restaurant, etc.\\) to get locale from Accept-Language header instead of using setLocale\\(\\)\n- Removed redundant setLocale\\(\\) calls from Controllers\n- Added getTranslatedDescription\\(\\) method to Category model\n- All APIs now return translated content based on request header without global locale state\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(mysql:*)",
       "Bash(grep:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(php -l:*)"
     ]
   }
 }

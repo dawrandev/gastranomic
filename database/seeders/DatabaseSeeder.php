@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             RestaurantSeeder::class,
             OperatingHourSeeder::class,
             ReviewSeeder::class,
+            ReviewQuestionsSeeder::class,
 
             MenuSectionSeeder::class,
             MenuItemSeeder::class,

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BrandController;
+use App\Http\Controllers\Api\QuestionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +47,9 @@ Route::get('/categories/{id}/top-restaurants', [RestaurantDiscoveryController::c
 // Brands
 Route::get('/brands', [BrandController::class, 'index']);
 Route::get('/restaurants/brand/{brand_id}', [BrandController::class, 'restaurantsByBrand']);
+
+// Questions (for review submission)
+Route::get('/questions', [QuestionController::class, 'index']);
 
 Route::get('/menu-items/{id}', [MenuController::class, 'show']);
 

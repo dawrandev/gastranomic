@@ -104,6 +104,14 @@ class ReviewController extends Controller
                         maxLength: 20,
                         nullable: true,
                         example: '+998901234567'
+                    ),
+                    new OA\Property(
+                        property: 'selected_option_ids',
+                        type: 'array',
+                        description: 'Tanlangan savollar javoblari (ixtiyoriy)',
+                        nullable: true,
+                        items: new OA\Items(type: 'integer'),
+                        example: [1, 15, 22]
                     )
                 ]
             )

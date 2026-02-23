@@ -1246,6 +1246,98 @@
                 ]
             }
         },
+        "/api/questions": {
+            "get": {
+                "tags": [
+                    "❓ Savollar"
+                ],
+                "summary": "Barcha savol kategoriyalari",
+                "description": "Sharh berishda ko'rsatiladigan savollar va javob variantlari. Har bir kategoriya ko'p variantli savolni o'z ichiga oladi.",
+                "operationId": "860331f8e4b6d740293483a82e52fc5a",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Tilni belgilash (uz, ru, kk, en)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Question categories with options",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer"
+                                                    },
+                                                    "key": {
+                                                        "type": "string"
+                                                    },
+                                                    "title": {
+                                                        "type": "string"
+                                                    },
+                                                    "description": {
+                                                        "type": "string",
+                                                        "nullable": true
+                                                    },
+                                                    "is_required": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "sort_order": {
+                                                        "type": "integer"
+                                                    },
+                                                    "options": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer"
+                                                                },
+                                                                "key": {
+                                                                    "type": "string"
+                                                                },
+                                                                "text": {
+                                                                    "type": "string"
+                                                                },
+                                                                "sort_order": {
+                                                                    "type": "integer"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/restaurants": {
             "get": {
                 "tags": [
@@ -1894,6 +1986,19 @@
                                         "maxLength": 20,
                                         "example": "+998901234567",
                                         "nullable": true
+                                    },
+                                    "selected_option_ids": {
+                                        "description": "Tanlangan savollar javoblari (ixtiyoriy)",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            15,
+                                            22
+                                        ],
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -2239,6 +2344,10 @@
         {
             "name": "👤 Profil",
             "description": "👤 Profil"
+        },
+        {
+            "name": "❓ Savollar",
+            "description": "❓ Savollar"
         },
         {
             "name": "🏠 Restoranlar",

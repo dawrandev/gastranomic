@@ -34,14 +34,25 @@ class ReviewService
      */
     public function createOrUpdateReview(?int $clientId, int $restaurantId, array $data): Review
     {
+        // Extract selected_option_ids before creating review
+        $selectedOptionIds = $data['selected_option_ids'] ?? [];
+        unset($data['selected_option_ids']);
+
         // Always create a new review
         // Allows multiple reviews per device per restaurant
         // Rate limiting is handled separately in canDeviceReview()
-        return $this->reviewRepository->create([
+        $review = $this->reviewRepository->create([
             'client_id' => $clientId,
             'restaurant_id' => $restaurantId,
             ...$data,
         ]);
+
+        // Sync selected options if provided
+        if (!empty($selectedOptionIds)) {
+            $review->selectedOptions()->sync($selectedOptionIds);
+        }
+
+        return $review;
     }
 
     /**

@@ -14,7 +14,7 @@ class ReviewRepository
     public function getByRestaurantId(int $restaurantId, int $perPage = 15): LengthAwarePaginator
     {
         return Review::where('restaurant_id', $restaurantId)
-            ->with(['client:id,first_name,last_name,image_path'])
+            ->with(['client:id,first_name,last_name,image_path', 'selectedOptions.translations'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
     }

@@ -24,6 +24,8 @@ class StoreReviewRequest extends FormRequest
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'comment' => ['nullable', 'string', 'max:1000'],
             'phone' => ['nullable', 'string', 'max:20'],
+            'selected_option_ids' => ['nullable', 'array'],
+            'selected_option_ids.*' => ['integer', 'exists:questions_options,id'],
         ];
     }
 
