@@ -13,114 +13,83 @@ class ReviewQuestionsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Question Category A: What did you like?
-        $categoryA = QuestionCategory::create([
-            'key' => 'what_did_you_like',
+        // Question Category 1: Overall satisfaction - Open-ended (no options)
+        $category1 = QuestionCategory::create([
+            'key' => 'overall_satisfied',
             'sort_order' => 1,
             'is_required' => true,
             'is_active' => true,
         ]);
 
-        $categoryA->translations()->createMany([
+        $category1->translations()->createMany([
             [
                 'lang_code' => 'kk',
-                'title' => 'Sizge ne jaqpadı?',
+                'title' => 'Jemay hammasi sizge jaqpadımı?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'uz',
-                'title' => 'Sizga nima yoqqadi?',
+                'title' => 'Umuman hammasi sizga yoqqadimi?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'ru',
-                'title' => 'Что вам понравилось?',
+                'title' => 'В целом всё понравилось?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'en',
-                'title' => 'What did you like?',
+                'title' => 'Overall, did you like everything?',
                 'description' => null,
             ],
         ]);
 
-        // Options for Category A
-        $optionsA = [
-            ['key' => 'good_service', 'kk' => 'Baqaw xızmet', 'uz' => 'Yaxshi xizmat', 'ru' => 'Хорошее обслуживание', 'en' => 'Good service'],
-            ['key' => 'poor_service', 'kk' => 'Qolaylı emes xızmetkerler', 'uz' => 'Noqulay xizmat', 'ru' => 'Плохое обслуживание', 'en' => 'Poor service'],
-            ['key' => 'poor_cleanliness', 'kk' => 'Jetkilikli tazalıq joq', 'uz' => 'Nopok tazolik', 'ru' => 'Плохая чистота', 'en' => 'Poor cleanliness'],
-            ['key' => 'order_errors', 'kk' => 'Buyırtpada qáteler', 'uz' => 'Buyurtmada xatolar', 'ru' => 'Ошибки в заказе', 'en' => 'Order errors'],
-            ['key' => 'bad_presentation', 'kk' => 'Yamán jaritıw', 'uz' => 'Yomon taqdim etish', 'ru' => 'Плохое оформление', 'en' => 'Bad presentation'],
-            ['key' => 'noisy_environment', 'kk' => 'Shawqınlı muxıt', 'uz' => 'Shovqinli muhit', 'ru' => 'Шумная атмосфера', 'en' => 'Noisy environment'],
-            ['key' => 'uncomfortable_seating', 'kk' => 'Qolaylı emes orınlıqlar', 'uz' => 'Noqulay o\'rindiqlar', 'ru' => 'Неудобные сиденья', 'en' => 'Uncomfortable seating'],
-        ];
-
-        foreach ($optionsA as $optionData) {
-            $key = $optionData['key'];
-            $option = QuestionOption::create([
-                'questions_category_id' => $categoryA->id,
-                'key' => $key,
-                'sort_order' => array_search($optionData, $optionsA),
-                'is_active' => true,
-            ]);
-
-            $option->translations()->createMany([
-                ['lang_code' => 'kk', 'text' => $optionData['kk']],
-                ['lang_code' => 'uz', 'text' => $optionData['uz']],
-                ['lang_code' => 'ru', 'text' => $optionData['ru']],
-                ['lang_code' => 'en', 'text' => $optionData['en']],
-            ]);
-        }
-
-        // Question Category B: What caused dissatisfaction?
-        $categoryB = QuestionCategory::create([
-            'key' => 'what_caused_dissatisfaction',
+        // Question Category 2: Visit category
+        $category2 = QuestionCategory::create([
+            'key' => 'visit_category',
             'sort_order' => 2,
             'is_required' => false,
             'is_active' => true,
         ]);
 
-        $categoryB->translations()->createMany([
+        $category2->translations()->createMany([
             [
                 'lang_code' => 'kk',
-                'title' => 'Neni narazılıqqa sebep boldı?',
+                'title' => 'Qanday kategoriyani tashlawshı?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'uz',
-                'title' => 'Nima norozilikka sabab bo\'ldi?',
+                'title' => 'Qaysi kategoriya uchun tafsiya bergan bo\'lardingiz?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'ru',
-                'title' => 'Что вызвало недовольство?',
+                'title' => 'Какую категорию вы бы выделили для посещения?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'en',
-                'title' => 'What caused dissatisfaction?',
+                'title' => 'Which category would you recommend visiting?',
                 'description' => null,
             ],
         ]);
 
-        // Options for Category B
-        $optionsB = [
-            ['key' => 'food_quality', 'kk' => 'Taam/ishimlik', 'uz' => 'Ovqat/ichimlik', 'ru' => 'Еда/напитки', 'en' => 'Food/drinks'],
-            ['key' => 'taste_issue', 'kk' => 'dám', 'uz' => 'ta\'m', 'ru' => 'вкус', 'en' => 'taste'],
-            ['key' => 'quality_issue', 'kk' => 'sapat', 'uz' => 'sifat', 'ru' => 'качество', 'en' => 'quality'],
-            ['key' => 'temperature_issue', 'kk' => 'temperatura', 'uz' => 'temperatura', 'ru' => 'температура', 'en' => 'temperature'],
-            ['key' => 'staff_responsibility', 'kk' => 'Xızmetkerdıń wájibliligı', 'uz' => 'Xodim mas\'uliyati', 'ru' => 'Ответственность персонала', 'en' => 'Staff responsibility'],
-            ['key' => 'price_quality_ratio', 'kk' => 'Baha/sapat qatnası', 'uz' => 'Narx/sifat nisbati', 'ru' => 'Соотношение цена/качество', 'en' => 'Price/quality ratio'],
-            ['key' => 'overall_environment', 'kk' => 'Muxıttıń ulıwma tásiri', 'uz' => 'Muhitning umumiy ta\'siri', 'ru' => 'Общее впечатление от атмосферы', 'en' => 'Overall environment'],
-            ['key' => 'wait_time', 'kk' => 'Taamdı kútiw waqtı', 'uz' => 'Ovqatni kutish vaqti', 'ru' => 'Время ожидания', 'en' => 'Wait time'],
+        $options2 = [
+            ['key' => 'breakfast', 'kk' => 'Tangilik', 'uz' => 'Nonushta', 'ru' => 'Завтрак', 'en' => 'Breakfast'],
+            ['key' => 'lunch', 'kk' => 'Tushlik', 'uz' => 'Tushlik', 'ru' => 'Ланч', 'en' => 'Lunch'],
+            ['key' => 'dinner', 'kk' => 'Kesh', 'uz' => 'Kechki ovqat', 'ru' => 'Ужин', 'en' => 'Dinner'],
+            ['key' => 'coffee', 'kk' => 'Kofe', 'uz' => 'Kofe', 'ru' => 'Кофе', 'en' => 'Coffee'],
+            ['key' => 'dessert', 'kk' => 'Turımtay', 'uz' => 'Qandolat', 'ru' => 'Десерт', 'en' => 'Dessert'],
+            ['key' => 'other', 'kk' => 'Basqa', 'uz' => 'Boshqasi', 'ru' => 'Другое', 'en' => 'Other'],
         ];
 
-        foreach ($optionsB as $optionData) {
+        foreach ($options2 as $optionData) {
             $key = $optionData['key'];
             $option = QuestionOption::create([
-                'questions_category_id' => $categoryB->id,
+                'questions_category_id' => $category2->id,
                 'key' => $key,
-                'sort_order' => array_search($optionData, $optionsB),
+                'sort_order' => array_search($optionData, $options2),
                 'is_active' => true,
             ]);
 
@@ -132,53 +101,49 @@ class ReviewQuestionsSeeder extends Seeder
             ]);
         }
 
-        // Question Category C: What meal category did you order?
-        $categoryC = QuestionCategory::create([
-            'key' => 'meal_category',
+        // Question Category 3: Would you return again?
+        $category3 = QuestionCategory::create([
+            'key' => 'would_return_again',
             'sort_order' => 3,
             'is_required' => false,
             'is_active' => true,
         ]);
 
-        $categoryC->translations()->createMany([
+        $category3->translations()->createMany([
             [
                 'lang_code' => 'kk',
-                'title' => 'Qanday kategoriyani ajratasiz?',
+                'title' => 'Qaytadan oshinsa kelesizbemi?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'uz',
-                'title' => 'Qanday kategoriyani tanladingiz?',
+                'title' => 'Yana bu restoranga kelasizmi?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'ru',
-                'title' => 'Какую категорию вы выбрали?',
+                'title' => 'Вернётесь ли вы снова в этот ресторан?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'en',
-                'title' => 'What meal category did you order?',
+                'title' => 'Will you visit this restaurant again?',
                 'description' => null,
             ],
         ]);
 
-        // Options for Category C (meal types)
-        $optionsC = [
-            ['key' => 'breakfast', 'kk' => 'Taňgilik', 'uz' => 'Nonushta', 'ru' => 'Завтрак', 'en' => 'Breakfast'],
-            ['key' => 'lunch', 'kk' => 'Gúnortag', 'uz' => 'Tushlik', 'ru' => 'Обед', 'en' => 'Lunch'],
-            ['key' => 'dinner', 'kk' => 'Kesh', 'uz' => 'Kechki ovqat', 'ru' => 'Ужин', 'en' => 'Dinner'],
-            ['key' => 'snacks', 'kk' => 'Araqashılıqlar', 'uz' => 'Yumshoqlar', 'ru' => 'Закуски', 'en' => 'Snacks'],
-            ['key' => 'desserts', 'kk' => 'Turımtay', 'uz' => 'Qandolat', 'ru' => 'Десерты', 'en' => 'Desserts'],
-            ['key' => 'beverages', 'kk' => 'Ishimlikler', 'uz' => 'Ichimliklar', 'ru' => 'Напитки', 'en' => 'Beverages'],
+        $options3 = [
+            ['key' => 'yes', 'kk' => 'Ha', 'uz' => 'Ha', 'ru' => 'Да', 'en' => 'Yes'],
+            ['key' => 'maybe', 'kk' => 'Mumkin', 'uz' => 'Ehtimol', 'ru' => 'Возможно', 'en' => 'Maybe'],
+            ['key' => 'no', 'kk' => 'Joq', 'uz' => 'Yo\'q', 'ru' => 'Нет', 'en' => 'No'],
         ];
 
-        foreach ($optionsC as $optionData) {
+        foreach ($options3 as $optionData) {
             $key = $optionData['key'];
             $option = QuestionOption::create([
-                'questions_category_id' => $categoryC->id,
+                'questions_category_id' => $category3->id,
                 'key' => $key,
-                'sort_order' => array_search($optionData, $optionsC),
+                'sort_order' => array_search($optionData, $options3),
                 'is_active' => true,
             ]);
 
@@ -190,60 +155,35 @@ class ReviewQuestionsSeeder extends Seeder
             ]);
         }
 
-        // Question Category D: Would you come back?
-        $categoryD = QuestionCategory::create([
-            'key' => 'would_return',
+        // Question Category 4: Additional comments - Open-ended (no options)
+        $category4 = QuestionCategory::create([
+            'key' => 'additional_comments',
             'sort_order' => 4,
             'is_required' => false,
             'is_active' => true,
         ]);
 
-        $categoryD->translations()->createMany([
+        $category4->translations()->createMany([
             [
                 'lang_code' => 'kk',
-                'title' => 'Qaytadan kelesizbemi?',
+                'title' => 'Qo\'shimsha fikir-mulohazalarni qoydirmoqchisiz?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'uz',
-                'title' => 'Yana kelasizmi?',
+                'title' => 'Qo\'shimcha izoh qoldirmoqchisiz?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'ru',
-                'title' => 'Вы вернетесь к нам?',
+                'title' => 'Хотите оставить дополнительные комментарии?',
                 'description' => null,
             ],
             [
                 'lang_code' => 'en',
-                'title' => 'Would you visit us again?',
+                'title' => 'Would you like to leave additional comments?',
                 'description' => null,
             ],
         ]);
-
-        // Options for Category D
-        $optionsD = [
-            ['key' => 'definitely_yes', 'kk' => 'Barılıq', 'uz' => 'Aniq ha', 'ru' => 'Определенно да', 'en' => 'Definitely yes'],
-            ['key' => 'probably', 'kk' => 'Múmkin', 'uz' => 'Mumkin', 'ru' => 'Возможно', 'en' => 'Maybe'],
-            ['key' => 'probably_not', 'kk' => 'Mumkin emes', 'uz' => 'Ehtimol yo\'q', 'ru' => 'Вряд ли', 'en' => 'Probably not'],
-            ['key' => 'definitely_no', 'kk' => 'Joq', 'uz' => 'Katigiy yo\'q', 'ru' => 'Определенно нет', 'en' => 'Definitely not'],
-        ];
-
-        foreach ($optionsD as $optionData) {
-            $key = $optionData['key'];
-            $option = QuestionOption::create([
-                'questions_category_id' => $categoryD->id,
-                'key' => $key,
-                'sort_order' => array_search($optionData, $optionsD),
-                'is_active' => true,
-            ]);
-
-            $option->translations()->createMany([
-                ['lang_code' => 'kk', 'text' => $optionData['kk']],
-                ['lang_code' => 'uz', 'text' => $optionData['uz']],
-                ['lang_code' => 'ru', 'text' => $optionData['ru']],
-                ['lang_code' => 'en', 'text' => $optionData['en']],
-            ]);
-        }
     }
 }
