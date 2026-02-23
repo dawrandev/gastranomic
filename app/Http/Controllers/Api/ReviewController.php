@@ -65,26 +65,33 @@ class ReviewController extends Controller
 
     #[OA\Post(
         path: '/api/restaurants/{id}/reviews',
-        summary: 'Sharh qoldirish',
-        description: 'Restoranga reyting va comment qoldirish. Login shart emas - guest users ham qoldirishi mumkin. Agar Authorization header yuborilsa, sharh avtomatik ravishda clientga bog\'lanadi. Device ID orqali kuzatiladi. Limit: 3 sharh/kun per restaurant.',
+        summary: 'Restoranga sharh qoldirish',
+        description: 'Restoranga reyting, izoh va savollar javoblarini qoldirish. Avval GET /api/questions endpoint\'dan savollarni oling. selected_option_ids arrayiga faqat multiple-choice savollari (options mavjud bo\'lgan savollar) uchun option ID\'larini kiriting. Limit: 3 sharh/kun per restaurant.',
         security: [['bearerAuth' => []], []],
         tags: ['⭐ Sharhlar'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ['device_id', 'rating'],
+                example: [
+                    'device_id' => 'device-123',
+                    'rating' => 5,
+                    'comment' => 'Juda zo\'r restoran, taomlar mazali!',
+                    'phone' => '+998901234567',
+                    'selected_option_ids' => [2, 7]
+                ],
                 properties: [
                     new OA\Property(
                         property: 'device_id',
                         type: 'string',
-                        description: 'Qurilma ID (UUID yoki fingerprint)',
+                        description: 'Qurilmaning unikal ID\'si (UUID yoki fingerprint). Limit o\'rnatishda ishlatiladi',
                         maxLength: 100,
-                        example: '550e8400-e29b-41d4-a716-446655440000'
+                        example: 'device-123'
                     ),
                     new OA\Property(
                         property: 'rating',
                         type: 'integer',
-                        description: 'Reyting (1 dan 5 gacha)',
+                        description: 'Restoran reytingi (1 = juda yomon, 5 = ajoyib)',
                         minimum: 1,
                         maximum: 5,
                         example: 5
@@ -92,7 +99,7 @@ class ReviewController extends Controller
                     new OA\Property(
                         property: 'comment',
                         type: 'string',
-                        description: 'Izoh (ixtiyoriy, maksimum 1000 belgi)',
+                        description: 'Foydalanuvchining izohи (ixtiyoriy, maksimum 1000 belgi)',
                         maxLength: 1000,
                         nullable: true,
                         example: 'Juda zo\'r restoran, taomlar mazali!'
@@ -100,7 +107,7 @@ class ReviewController extends Controller
                     new OA\Property(
                         property: 'phone',
                         type: 'string',
-                        description: 'Telefon raqami (ixtiyoriy, maksimum 20 belgi)',
+                        description: 'Foydalanuvchining telefon raqami (ixtiyoriy, maksimum 20 belgi)',
                         maxLength: 20,
                         nullable: true,
                         example: '+998901234567'
@@ -108,10 +115,10 @@ class ReviewController extends Controller
                     new OA\Property(
                         property: 'selected_option_ids',
                         type: 'array',
-                        description: 'Tanlangan savollar javoblari (ixtiyoriy)',
+                        description: 'Tanlangan savol variantlarining ID\'lari (ixtiyoriy). GET /api/questions\'dan olgan option ID\'larini kiriting',
                         nullable: true,
-                        items: new OA\Items(type: 'integer'),
-                        example: [1, 15, 22]
+                        items: new OA\Items(type: 'integer', description: 'Javob variantining ID\'si'),
+                        example: [2, 7]
                     )
                 ]
             )
@@ -122,31 +129,83 @@ class ReviewController extends Controller
         responses: [
             new OA\Response(
                 response: 201,
-                description: 'Review created/updated',
+                description: 'Sharh muvaffaqiyatli yaratildi',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string'),
-                        new OA\Property(property: 'data', type: 'object'),
+                        new OA\Property(property: 'message', type: 'string', example: 'Review submitted successfully'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            description: 'Yaratilgan sharh ma\'lumotlari',
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer', example: 42),
+                                new OA\Property(property: 'rating', type: 'integer', example: 5),
+                                new OA\Property(property: 'comment', type: 'string', example: 'Juda zo\'r!'),
+                                new OA\Property(
+                                    property: 'selected_answers',
+                                    type: 'array',
+                                    description: 'Foydalanuvchi tanlagan javob variantlari (tarjimada)',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', description: 'Javob variantining ID\'si', example: 7),
+                                            new OA\Property(property: 'key', type: 'string', description: 'Variantning unikal kaliti', example: 'lunch'),
+                                            new OA\Property(property: 'text', type: 'string', description: 'Variantning tarjimali nomи (tanlangan tilga qarab)', example: 'Ланч'),
+                                        ]
+                                    )
+                                ),
+                                new OA\Property(property: 'created_at', type: 'string', example: '2024-01-15 10:30:00'),
+                            ]
+                        ),
+                        new OA\Property(
+                            property: 'rate_limit',
+                            type: 'object',
+                            description: 'Kun\'lik sharh limitini ko\'rsatish',
+                            properties: [
+                                new OA\Property(property: 'remaining', type: 'integer', description: 'Qolgan sharh soni (bu restoranga uchun bugun)', example: 2),
+                                new OA\Property(property: 'reset_at', type: 'string', description: 'Limit qayta tiklanish vaqti (keyingi kun boshida)', example: '2024-01-16 00:00:00'),
+                            ]
+                        ),
                     ]
                 )
             ),
             new OA\Response(
                 response: 422,
-                description: 'Validation error'
+                description: 'Validation Error - Ma\'lumotlar xato yoki to\'liq emas',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'The given data was invalid'),
+                        new OA\Property(
+                            property: 'errors',
+                            type: 'object',
+                            description: 'Xato maydonlari va ularning xabar-xabarlari',
+                            properties: [
+                                new OA\Property(property: 'device_id', type: 'array', items: new OA\Items(type: 'string'), example: ['device_id field is required']),
+                                new OA\Property(property: 'rating', type: 'array', items: new OA\Items(type: 'string'), example: ['rating must be between 1 and 5']),
+                                new OA\Property(property: 'selected_option_ids.*', type: 'array', items: new OA\Items(type: 'string'), example: ['selected option id does not exist']),
+                            ]
+                        ),
+                    ]
+                )
             ),
             new OA\Response(
                 response: 429,
-                description: 'Rate limit exceeded (3 reviews per day per restaurant)',
+                description: 'Rate limit exceeded - Foydalanuvchi bu restoranga kun\'da maksimal miqdorda sharh qoldirgan (limit: 3 ta)',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
-                        new OA\Property(property: 'message', type: 'string', example: 'Siz bugun bu restoranga maksimal miqdorda sharh qoldirdingiz. Ertaga qayta urinib ko\'ring.'),
-                        new OA\Property(property: 'rate_limit', type: 'object', properties: [
-                            new OA\Property(property: 'reviews_count', type: 'integer'),
-                            new OA\Property(property: 'remaining', type: 'integer'),
-                            new OA\Property(property: 'reset_at', type: 'string'),
-                        ]),
+                        new OA\Property(property: 'message', type: 'string', example: 'You have reached the maximum number of reviews for this restaurant today. Please try again tomorrow.'),
+                        new OA\Property(
+                            property: 'rate_limit',
+                            type: 'object',
+                            description: 'Limit haqida ma\'lumotlar',
+                            properties: [
+                                new OA\Property(property: 'can_review', type: 'boolean', example: false, description: 'Sharh qoldirishi mumkinmi?'),
+                                new OA\Property(property: 'reviews_count', type: 'integer', example: 3, description: 'Bu kun qoldirgan sharh soni'),
+                                new OA\Property(property: 'remaining', type: 'integer', example: 0, description: 'Qolgan sharh soni (0 = limit to\'ldi)'),
+                                new OA\Property(property: 'reset_at', type: 'string', example: '2024-01-16 00:00:00', description: 'Limit qayta tiklanish vaqti (keyingi kun boshida)'),
+                            ]
+                        ),
                     ]
                 )
             )

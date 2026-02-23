@@ -115,11 +115,9 @@
                                                 $currentTranslation = $question->translations->firstWhere('lang_code', $current_locale);
                                                 @endphp
                                                 @if($currentTranslation)
-                                                <div class="d-flex flex-wrap gap-1">
-                                                    <span class="badge bg-info">{{ strtoupper($current_locale) }}: {{ $currentTranslation->title }}</span>
-                                                </div>
+                                                    {{ $currentTranslation->title }}
                                                 @else
-                                                <span class="text-muted">—</span>
+                                                    <span class="text-muted">—</span>
                                                 @endif
                                             </td>
                                             <td class="text-center">
@@ -141,16 +139,18 @@
                                                 <span class="badge bg-warning">{{ $question->options()->count() }}</span>
                                             </td>
                                             <td>
-                                                <a href="{{ route('questions.edit', $question) }}" class="btn btn-sm btn-outline-warning">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('questions.destroy', $question) }}" method="POST" style="display: inline;">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Вы уверены?')">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </form>
+                                                <div class="d-flex gap-2">
+                                                    <a href="{{ route('questions.edit', $question) }}" class="btn btn-sm btn-outline-warning" title="Редактировать">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                    <form action="{{ route('questions.destroy', $question) }}" method="POST" style="display: inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Удалить" onclick="return confirm('Вы уверены?')">
+                                                            <i class="fa fa-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
                                             </td>
                                         </tr>
                                         @empty

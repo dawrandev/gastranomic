@@ -78,7 +78,5 @@ class MenuPermissionsSeeder extends Seeder
                 ReviewPermissions::DELETE,
             ]);
         }
-
-        $this->command->info('Menu permissions created and assigned successfully!');
     }
 }

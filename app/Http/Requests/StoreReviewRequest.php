@@ -45,6 +45,9 @@ class StoreReviewRequest extends FormRequest
             'comment.max' => 'Комментарий не должен превышать 1000 символов.',
             'phone.string' => 'Номер телефона должен быть строкой.',
             'phone.max' => 'Номер телефона не должен превышать 20 символов.',
+            'selected_option_ids.array' => 'selected_option_ids должен быть массивом.',
+            'selected_option_ids.*.integer' => 'Каждый ID опции должен быть числом.',
+            'selected_option_ids.*.exists' => 'Один или несколько выбранных вариантов ответа не существуют.',
         ];
     }
 }

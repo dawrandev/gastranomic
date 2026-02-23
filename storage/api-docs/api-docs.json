@@ -1251,14 +1251,14 @@
                 "tags": [
                     "❓ Savollar"
                 ],
-                "summary": "Barcha savol kategoriyalari",
-                "description": "Sharh berishda ko'rsatiladigan savollar va javob variantlari. Har bir kategoriya ko'p variantli savolni o'z ichiga oladi.",
+                "summary": "Savollarni olish",
+                "description": "Restoran sharhi qoldirganda foydalanuvchiga ko'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi. Har bir savol options arrayida bo'sh (open-ended) yoki to'li (multiple-choice) bo'ladi. is_required field'i majburi yoki ixtiyoriy ekanligini ko'rsatadi.",
                 "operationId": "860331f8e4b6d740293483a82e52fc5a",
                 "parameters": [
                     {
                         "name": "Accept-Language",
                         "in": "header",
-                        "description": "Tilni belgilash (uz, ru, kk, en)",
+                        "description": "Til tanlang. Qiymatlari: uz, ru, kk, en. Default: ru",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -1273,7 +1273,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Question categories with options",
+                        "description": "Savollar muvaffaqiyatli qaytadi",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1283,43 +1283,65 @@
                                             "example": true
                                         },
                                         "data": {
+                                            "description": "Savol kategoriyalarining massivi",
                                             "type": "array",
                                             "items": {
                                                 "properties": {
                                                     "id": {
-                                                        "type": "integer"
+                                                        "description": "Savol ID'si",
+                                                        "type": "integer",
+                                                        "example": 1
                                                     },
                                                     "key": {
-                                                        "type": "string"
+                                                        "description": "Savolning unikal kaliti. Frontend POST request'da selected_option_ids'ni jo'natishda ishlatiladi",
+                                                        "type": "string",
+                                                        "example": "overall_satisfied"
                                                     },
                                                     "title": {
-                                                        "type": "string"
+                                                        "description": "Savolning tarjimali nomi (Accept-Language bo'yicha)",
+                                                        "type": "string",
+                                                        "example": "В целом всё понравилось?"
                                                     },
                                                     "description": {
+                                                        "description": "Savolning qo'shimcha izohи (agar mavjud bo'lsa)",
                                                         "type": "string",
+                                                        "example": null,
                                                         "nullable": true
                                                     },
                                                     "is_required": {
-                                                        "type": "boolean"
+                                                        "description": "Majburi savol - TRUE bo'lsa, RED * asterisk ko'rsating. FALSE bo'lsa, asterisk ko'rsatmang",
+                                                        "type": "boolean",
+                                                        "example": true
                                                     },
                                                     "sort_order": {
-                                                        "type": "integer"
+                                                        "description": "Savol taribi (qaysi ketma-ketlikda ko'rsatish kerak)",
+                                                        "type": "integer",
+                                                        "example": 1
                                                     },
                                                     "options": {
+                                                        "description": "Javob variantlari. BOŠ bo'lsa - text input ko'rsating. TO'LI bo'lsa - radio/dropdown ko'rsating",
                                                         "type": "array",
                                                         "items": {
                                                             "properties": {
                                                                 "id": {
-                                                                    "type": "integer"
+                                                                    "description": "Javob variantining ID'si. POST request'da selected_option_ids'ga kiriting",
+                                                                    "type": "integer",
+                                                                    "example": 1
                                                                 },
                                                                 "key": {
-                                                                    "type": "string"
+                                                                    "description": "Variantning unikal kaliti",
+                                                                    "type": "string",
+                                                                    "example": "breakfast"
                                                                 },
                                                                 "text": {
-                                                                    "type": "string"
+                                                                    "description": "Variantning tarjimali nomi",
+                                                                    "type": "string",
+                                                                    "example": "Завтрак"
                                                                 },
                                                                 "sort_order": {
-                                                                    "type": "integer"
+                                                                    "description": "Variantni ko'rsatish taribi",
+                                                                    "type": "integer",
+                                                                    "example": 0
                                                                 }
                                                             },
                                                             "type": "object"
@@ -1937,8 +1959,8 @@
                 "tags": [
                     "⭐ Sharhlar"
                 ],
-                "summary": "Sharh qoldirish",
-                "description": "Restoranga reyting va comment qoldirish. Login shart emas - guest users ham qoldirishi mumkin. Agar Authorization header yuborilsa, sharh avtomatik ravishda clientga bog'lanadi. Device ID orqali kuzatiladi. Limit: 3 sharh/kun per restaurant.",
+                "summary": "Restoranga sharh qoldirish",
+                "description": "Restoranga reyting, izoh va savollar javoblarini qoldirish. Avval GET /api/questions endpoint'dan savollarni oling. selected_option_ids arrayiga faqat multiple-choice savollari (options mavjud bo'lgan savollar) uchun option ID'larini kiriting. Limit: 3 sharh/kun per restaurant.",
                 "operationId": "c3b04e826aeafcf34ff32c7c1df8e4f0",
                 "parameters": [
                     {
@@ -1961,54 +1983,64 @@
                                 ],
                                 "properties": {
                                     "device_id": {
-                                        "description": "Qurilma ID (UUID yoki fingerprint)",
+                                        "description": "Qurilmaning unikal ID'si (UUID yoki fingerprint). Limit o'rnatishda ishlatiladi",
                                         "type": "string",
                                         "maxLength": 100,
-                                        "example": "550e8400-e29b-41d4-a716-446655440000"
+                                        "example": "device-123"
                                     },
                                     "rating": {
-                                        "description": "Reyting (1 dan 5 gacha)",
+                                        "description": "Restoran reytingi (1 = juda yomon, 5 = ajoyib)",
                                         "type": "integer",
                                         "maximum": 5,
                                         "minimum": 1,
                                         "example": 5
                                     },
                                     "comment": {
-                                        "description": "Izoh (ixtiyoriy, maksimum 1000 belgi)",
+                                        "description": "Foydalanuvchining izohи (ixtiyoriy, maksimum 1000 belgi)",
                                         "type": "string",
                                         "maxLength": 1000,
                                         "example": "Juda zo'r restoran, taomlar mazali!",
                                         "nullable": true
                                     },
                                     "phone": {
-                                        "description": "Telefon raqami (ixtiyoriy, maksimum 20 belgi)",
+                                        "description": "Foydalanuvchining telefon raqami (ixtiyoriy, maksimum 20 belgi)",
                                         "type": "string",
                                         "maxLength": 20,
                                         "example": "+998901234567",
                                         "nullable": true
                                     },
                                     "selected_option_ids": {
-                                        "description": "Tanlangan savollar javoblari (ixtiyoriy)",
+                                        "description": "Tanlangan savol variantlarining ID'lari (ixtiyoriy). GET /api/questions'dan olgan option ID'larini kiriting",
                                         "type": "array",
                                         "items": {
+                                            "description": "Javob variantining ID'si",
                                             "type": "integer"
                                         },
                                         "example": [
-                                            1,
-                                            15,
-                                            22
+                                            2,
+                                            7
                                         ],
                                         "nullable": true
                                     }
                                 },
                                 "type": "object"
+                            },
+                            "example": {
+                                "device_id": "device-123",
+                                "rating": 5,
+                                "comment": "Juda zo'r restoran, taomlar mazali!",
+                                "phone": "+998901234567",
+                                "selected_option_ids": [
+                                    2,
+                                    7
+                                ]
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Review created/updated",
+                        "description": "Sharh muvaffaqiyatli yaratildi",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2018,9 +2050,69 @@
                                             "example": true
                                         },
                                         "message": {
-                                            "type": "string"
+                                            "type": "string",
+                                            "example": "Review submitted successfully"
                                         },
                                         "data": {
+                                            "description": "Yaratilgan sharh ma'lumotlari",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                },
+                                                "rating": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "comment": {
+                                                    "type": "string",
+                                                    "example": "Juda zo'r!"
+                                                },
+                                                "selected_answers": {
+                                                    "description": "Foydalanuvchi tanlagan javob variantlari (tarjimada)",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "description": "Javob variantining ID'si",
+                                                                "type": "integer",
+                                                                "example": 7
+                                                            },
+                                                            "key": {
+                                                                "description": "Variantning unikal kaliti",
+                                                                "type": "string",
+                                                                "example": "lunch"
+                                                            },
+                                                            "text": {
+                                                                "description": "Variantning tarjimali nomи (tanlangan tilga qarab)",
+                                                                "type": "string",
+                                                                "example": "Ланч"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "example": "2024-01-15 10:30:00"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "rate_limit": {
+                                            "description": "Kun'lik sharh limitini ko'rsatish",
+                                            "properties": {
+                                                "remaining": {
+                                                    "description": "Qolgan sharh soni (bu restoranga uchun bugun)",
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "reset_at": {
+                                                    "description": "Limit qayta tiklanish vaqti (keyingi kun boshida)",
+                                                    "type": "string",
+                                                    "example": "2024-01-16 00:00:00"
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },
@@ -2030,10 +2122,56 @@
                         }
                     },
                     "422": {
-                        "description": "Validation error"
+                        "description": "Validation Error - Ma'lumotlar xato yoki to'liq emas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The given data was invalid"
+                                        },
+                                        "errors": {
+                                            "description": "Xato maydonlari va ularning xabar-xabarlari",
+                                            "properties": {
+                                                "device_id": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "device_id field is required"
+                                                    ]
+                                                },
+                                                "rating": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "rating must be between 1 and 5"
+                                                    ]
+                                                },
+                                                "selected_option_ids.*": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "selected option id does not exist"
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     },
                     "429": {
-                        "description": "Rate limit exceeded (3 reviews per day per restaurant)",
+                        "description": "Rate limit exceeded - Foydalanuvchi bu restoranga kun'da maksimal miqdorda sharh qoldirgan (limit: 3 ta)",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -2044,18 +2182,30 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Siz bugun bu restoranga maksimal miqdorda sharh qoldirdingiz. Ertaga qayta urinib ko'ring."
+                                            "example": "You have reached the maximum number of reviews for this restaurant today. Please try again tomorrow."
                                         },
                                         "rate_limit": {
+                                            "description": "Limit haqida ma'lumotlar",
                                             "properties": {
+                                                "can_review": {
+                                                    "description": "Sharh qoldirishi mumkinmi?",
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
                                                 "reviews_count": {
-                                                    "type": "integer"
+                                                    "description": "Bu kun qoldirgan sharh soni",
+                                                    "type": "integer",
+                                                    "example": 3
                                                 },
                                                 "remaining": {
-                                                    "type": "integer"
+                                                    "description": "Qolgan sharh soni (0 = limit to'ldi)",
+                                                    "type": "integer",
+                                                    "example": 0
                                                 },
                                                 "reset_at": {
-                                                    "type": "string"
+                                                    "description": "Limit qayta tiklanish vaqti (keyingi kun boshida)",
+                                                    "type": "string",
+                                                    "example": "2024-01-16 00:00:00"
                                                 }
                                             },
                                             "type": "object"

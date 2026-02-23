@@ -85,7 +85,5 @@ class UserSeeder extends Seeder
                 $user->assignRole($role);
             }
         }
-
-        $this->command->info('Users created and roles assigned successfully!');
     }
 }

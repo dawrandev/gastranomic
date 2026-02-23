@@ -50,6 +50,33 @@
                     @if($review->comment)
                     <p class="mb-0 mt-1 small text-secondary">{{ $review->comment }}</p>
                     @endif
+
+                    @if($review->selectedOptions && $review->selectedOptions->count() > 0)
+                    <div class="mt-2">
+                        @php
+                        $locale = app()->getLocale();
+                        $groupedOptions = $review->selectedOptions->groupBy('questions_category_id');
+                        $categories = \App\Models\QuestionCategory::whereIn('id', $groupedOptions->keys())->with('translations')->get()->keyBy('id');
+                        @endphp
+
+                        @foreach($groupedOptions as $categoryId => $options)
+                        @php
+                        $category = $categories->get($categoryId);
+                        $categoryTitle = $category ? $category->getTranslatedTitle($locale) : '';
+                        @endphp
+                        <div class="mb-1">
+                            <small class="text-muted d-block mb-1"><strong>{{ $categoryTitle }}:</strong></small>
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach($options as $option)
+                                <span class="badge bg-light text-dark border" style="font-size: 11px;">
+                                    <i class="fa fa-check-circle text-success"></i> {{ $option->getTranslatedText($locale) }}
+                                </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
                 </div>
                 <div class="col-auto">
                     @can('delete', $review)

@@ -155,4 +155,21 @@ class ReviewService
     {
         return $this->reviewRepository->findById($id);
     }
+
+    /**
+     * Get question answers statistics for admin's restaurants
+     */
+    public function getQuestionStatsForAdmin(\App\Models\User $user): array
+    {
+        $restaurantIds = $user->restaurants->pluck('id')->toArray();
+        return $this->reviewRepository->getQuestionStatsByRestaurantIds($restaurantIds);
+    }
+
+    /**
+     * Get all question answers statistics (for superadmin)
+     */
+    public function getAllQuestionStats(): array
+    {
+        return $this->reviewRepository->getAllQuestionStats();
+    }
 }

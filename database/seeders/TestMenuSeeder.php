@@ -70,7 +70,5 @@ class TestMenuSeeder extends Seeder
                 ]);
             }
         }
-
-        $this->command->info("Test menu sections created successfully for brand ID {$brand->id}!");
     }
 }

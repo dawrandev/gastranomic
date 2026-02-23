@@ -24,9 +24,11 @@ class ReviewController extends Controller
         if ($user->hasRole('superadmin')) {
             $reviews = $this->reviewService->getAllReviews(20, $rating, $restaurantId);
             $statistics = $this->reviewService->getAllStatistics();
+            $questionStats = $this->reviewService->getAllQuestionStats();
         } else {
             $reviews = $this->reviewService->getReviewsForAdmin($user, 20, $rating);
             $statistics = $this->reviewService->getStatisticsForAdmin($user);
+            $questionStats = $this->reviewService->getQuestionStatsForAdmin($user);
         }
 
         if ($request->ajax() || $request->input('ajax') == '1') {
@@ -35,7 +37,7 @@ class ReviewController extends Controller
             ]);
         }
 
-        return view('pages.reviews.index', compact('reviews', 'statistics'));
+        return view('pages.reviews.index', compact('reviews', 'statistics', 'questionStats'));
     }
 
     public function destroy(Review $review)

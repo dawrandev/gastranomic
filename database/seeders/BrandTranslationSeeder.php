@@ -116,7 +116,5 @@ class BrandTranslationSeeder extends Seeder
                 );
             }
         }
-
-        $this->command->info('Brand translations created successfully!');
     }
 }

@@ -115,7 +115,7 @@ class ReviewRepository
     public function getPaginatedByRestaurantIds(array $restaurantIds, int $perPage = 15, ?int $rating = null): LengthAwarePaginator
     {
         $query = Review::whereIn('restaurant_id', $restaurantIds)
-            ->with(['client:id,first_name,last_name,image_path', 'restaurant:id,branch_name']);
+            ->with(['client:id,first_name,last_name,image_path', 'restaurant:id,branch_name', 'selectedOptions.translations']);
 
         if ($rating) {
             $query->where('rating', $rating);
@@ -195,5 +195,39 @@ class ReviewRepository
             'two_star' => $stats->two_star ?? 0,
             'one_star' => $stats->one_star ?? 0,
         ];
+    }
+
+    /**
+     * Get question answers statistics for multiple restaurants
+     */
+    public function getQuestionStatsByRestaurantIds(array $restaurantIds): array
+    {
+        $stats = \DB::table('review_answers')
+            ->join('reviews', 'review_answers.review_id', '=', 'reviews.id')
+            ->join('questions_options', 'review_answers.questions_option_id', '=', 'questions_options.id')
+            ->whereIn('reviews.restaurant_id', $restaurantIds)
+            ->select('questions_options.id', 'questions_options.key', \DB::raw('COUNT(*) as count'))
+            ->groupBy('questions_options.id', 'questions_options.key')
+            ->get()
+            ->pluck('count', 'key')
+            ->toArray();
+
+        return $stats;
+    }
+
+    /**
+     * Get all question answers statistics (for superadmin)
+     */
+    public function getAllQuestionStats(): array
+    {
+        $stats = \DB::table('review_answers')
+            ->join('questions_options', 'review_answers.questions_option_id', '=', 'questions_options.id')
+            ->select('questions_options.id', 'questions_options.key', \DB::raw('COUNT(*) as count'))
+            ->groupBy('questions_options.id', 'questions_options.key')
+            ->get()
+            ->pluck('count', 'key')
+            ->toArray();
+
+        return $stats;
     }
 }
