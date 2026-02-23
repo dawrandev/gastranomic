@@ -12,10 +12,33 @@
                         <h3>Категории вопросов для отзывов</h3>
                     </div>
                     <div class="col-6">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="fa fa-home"></i></a></li>
-                            <li class="breadcrumb-item active">Вопросы</li>
-                        </ol>
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-globe me-1"></i>
+                                    @php
+                                    $current_locale = session('locale', 'ru');
+                                    $locale_labels = [
+                                        'uz' => 'O\'zbek',
+                                        'ru' => 'Русский',
+                                        'en' => 'English',
+                                        'kk' => 'Қарақалпақ'
+                                    ];
+                                    @endphp
+                                    {{ $locale_labels[$current_locale] ?? 'Русский' }}
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                                    <li><a class="dropdown-item {{ session('locale', 'ru') == 'uz' ? 'active' : '' }}" href="{{ route('questions.locale', 'uz') }}">O'zbek</a></li>
+                                    <li><a class="dropdown-item {{ session('locale', 'ru') == 'ru' ? 'active' : '' }}" href="{{ route('questions.locale', 'ru') }}">Русский</a></li>
+                                    <li><a class="dropdown-item {{ session('locale', 'ru') == 'en' ? 'active' : '' }}" href="{{ route('questions.locale', 'en') }}">English</a></li>
+                                    <li><a class="dropdown-item {{ session('locale', 'ru') == 'kk' ? 'active' : '' }}" href="{{ route('questions.locale', 'kk') }}">Қарақалпақ</a></li>
+                                </ul>
+                            </div>
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="fa fa-home"></i></a></li>
+                                <li class="breadcrumb-item active">Вопросы</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -77,7 +100,10 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php $counter = ($questions->currentPage() - 1) * $questions->perPage() + 1; @endphp
+                                        @php
+                                        $counter = ($questions->currentPage() - 1) * $questions->perPage() + 1;
+                                        $current_locale = session('locale', 'ru');
+                                        @endphp
                                         @forelse ($questions as $question)
                                         <tr>
                                             <td>{{ $counter++ }}</td>
@@ -85,11 +111,12 @@
                                                 <code>{{ $question->key }}</code>
                                             </td>
                                             <td>
-                                                @if($question->translations->count() > 0)
+                                                @php
+                                                $currentTranslation = $question->translations->firstWhere('lang_code', $current_locale);
+                                                @endphp
+                                                @if($currentTranslation)
                                                 <div class="d-flex flex-wrap gap-1">
-                                                    @foreach($question->translations as $translation)
-                                                    <span class="badge bg-info">{{ strtoupper($translation->lang_code) }}: {{ $translation->title }}</span>
-                                                    @endforeach
+                                                    <span class="badge bg-info">{{ strtoupper($current_locale) }}: {{ $currentTranslation->title }}</span>
                                                 </div>
                                                 @else
                                                 <span class="text-muted">—</span>

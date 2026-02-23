@@ -12,11 +12,34 @@
                         <h3>Создать новую категорию вопроса</h3>
                     </div>
                     <div class="col-6">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="fa fa-home"></i></a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('questions.index') }}">Вопросы</a></li>
-                            <li class="breadcrumb-item active">Создать</li>
-                        </ol>
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-globe me-1"></i>
+                                    @php
+                                    $current_locale = session('locale', 'ru');
+                                    $locale_labels = [
+                                        'uz' => 'O\'zbek',
+                                        'ru' => 'Русский',
+                                        'en' => 'English',
+                                        'kk' => 'Қарақалпақ'
+                                    ];
+                                    @endphp
+                                    {{ $locale_labels[$current_locale] ?? 'Русский' }}
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                                    <li><a class="dropdown-item {{ session('locale', 'ru') == 'uz' ? 'active' : '' }}" href="{{ route('questions.locale', 'uz') }}">O'zbek</a></li>
+                                    <li><a class="dropdown-item {{ session('locale', 'ru') == 'ru' ? 'active' : '' }}" href="{{ route('questions.locale', 'ru') }}">Русский</a></li>
+                                    <li><a class="dropdown-item {{ session('locale', 'ru') == 'en' ? 'active' : '' }}" href="{{ route('questions.locale', 'en') }}">English</a></li>
+                                    <li><a class="dropdown-item {{ session('locale', 'ru') == 'kk' ? 'active' : '' }}" href="{{ route('questions.locale', 'kk') }}">Қарақалпақ</a></li>
+                                </ul>
+                            </div>
+                            <ol class="breadcrumb mb-0">
+                                <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="fa fa-home"></i></a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('questions.index') }}">Вопросы</a></li>
+                                <li class="breadcrumb-item active">Создать</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </div>

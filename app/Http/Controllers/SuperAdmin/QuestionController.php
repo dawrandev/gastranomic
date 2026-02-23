@@ -118,4 +118,16 @@ class QuestionController extends Controller
             return back()->with('error', 'Ошибка при удалении: ' . $e->getMessage());
         }
     }
+
+    public function setLocale(string $locale)
+    {
+        $validLocales = ['uz', 'ru', 'kk', 'en'];
+
+        if (in_array($locale, $validLocales)) {
+            session(['locale' => $locale]);
+            app()->setLocale($locale);
+        }
+
+        return redirect()->route('questions.index');
+    }
 }

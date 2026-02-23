@@ -90,4 +90,5 @@ Route::prefix('questions')->middleware(['auth', 'role:superadmin'])->name('quest
     Route::get('/{question}/edit', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'edit'])->name('edit');
     Route::put('/{question}/update', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'update'])->name('update');
     Route::delete('/{question}/destroy', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'destroy'])->name('destroy');
+    Route::get('/locale/{locale}', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'setLocale'])->name('locale');
 });
