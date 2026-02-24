@@ -21,7 +21,7 @@ class ReviewController extends Controller
         path: '/api/restaurants/{id}/reviews',
         summary: 'Restoran sharhlari',
         description: 'Restoranga qoldirilgan barcha sharhlar va statistika',
-        tags: ['⭐ Sharhlar'],
+        tags: ['Sharhlar'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
             new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
@@ -68,7 +68,7 @@ class ReviewController extends Controller
         summary: 'Restoranga sharh qoldirish',
         description: 'Restoranga reyting, izoh va savollar javoblarini qoldirish. Avval GET /api/questions endpoint\'dan savollarni oling. selected_option_ids arrayiga faqat multiple-choice savollari (options mavjud bo\'lgan savollar) uchun option ID\'larini kiriting. Limit: 3 sharh/kun per restaurant.',
         security: [['bearerAuth' => []], []],
-        tags: ['⭐ Sharhlar'],
+        tags: ['Sharhlar'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -257,7 +257,7 @@ class ReviewController extends Controller
         summary: 'Sharhni yangilash',
         description: 'O\'z sharhingizni yangilash. Faqat authenticated users uchun.',
         security: [['sanctum' => []]],
-        tags: ['⭐ Sharhlar'],
+        tags: ['Sharhlar'],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\JsonContent(
@@ -352,7 +352,7 @@ class ReviewController extends Controller
         summary: 'Sharhni o\'chirish',
         description: 'O\'z sharhingizni o\'chirish. Faqat authenticated users uchun.',
         security: [['sanctum' => []]],
-        tags: ['⭐ Sharhlar'],
+        tags: ['Sharhlar'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
         ],

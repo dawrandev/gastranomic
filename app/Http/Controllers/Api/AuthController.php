@@ -25,7 +25,7 @@ class AuthController extends Controller
         path: "/api/auth/send-code",
         summary: "SMS tasdiqlash kodi yuborish",
         description: "Telefon raqamiga SMS orqali 4 raqamli tasdiqlash kodini yuboradi. Kod 5 daqiqa davomida amal qiladi.",
-        tags: ["🔐 Autentifikatsiya"],
+        tags: ["Autentifikatsiya"],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -139,7 +139,7 @@ class AuthController extends Controller
         path: "/api/auth/verify-code",
         summary: "Kodni tekshirish va login/register",
         description: "Tasdiqlash kodini tekshiradi. Agar foydalanuvchi yangi bo'lsa, ism va familiya bilan ro'yxatdan o'tkazadi. Mavjud foydalanuvchi uchun login qiladi.",
-        tags: ["🔐 Autentifikatsiya"],
+        tags: ["Autentifikatsiya"],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
@@ -341,7 +341,7 @@ class AuthController extends Controller
         summary: "Foydalanuvchi profilini olish",
         description: "Autentifikatsiya qilingan foydalanuvchining profilini qaytaradi",
         security: [["bearerAuth" => []]],
-        tags: ["🔐 Autentifikatsiya"],
+        tags: ["Autentifikatsiya"],
         responses: [
             new OA\Response(
                 response: 200,
@@ -397,7 +397,7 @@ class AuthController extends Controller
         summary: "Tizimdan chiqish",
         description: "Joriy tokenni bekor qiladi va foydalanuvchini tizimdan chiqaradi",
         security: [["bearerAuth" => []]],
-        tags: ["🔐 Autentifikatsiya"],
+        tags: ["Autentifikatsiya"],
         responses: [
             new OA\Response(
                 response: 200,

@@ -20,7 +20,7 @@ class FavoriteController extends Controller
         summary: 'Sevimlilar ro\'yxati',
         description: 'Login qilgan foydalanuvchining barcha sevimli restoranlar ro\'yxati',
         security: [['sanctum' => []]],
-        tags: ['❤️ Sevimlilar'],
+        tags: ['Sevimlilar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -84,7 +84,7 @@ class FavoriteController extends Controller
         summary: 'Sevimlilar ro\'yxatiga qo\'shish/o\'chirish',
         description: 'Restoranni sevimlilar ro\'yxatiga qo\'shish yoki o\'chirish. Faqat autentifikatsiya qilingan foydalanuvchilar uchun.',
         security: [['bearerAuth' => []]],
-        tags: ['❤️ Sevimlilar'],
+        tags: ['Sevimlilar'],
         parameters: [
             new OA\Parameter(
                 name: 'id',
@@ -163,7 +163,7 @@ class FavoriteController extends Controller
         summary: 'Sevimli restoranlarni xaritada ko\'rsatish',
         description: 'Client sevimli restoranlarining koordinatalari xarita uchun',
         security: [['bearerAuth' => []]],
-        tags: ['❤️ Sevimlilar'],
+        tags: ['Sevimlilar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',

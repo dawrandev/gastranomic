@@ -16,7 +16,7 @@ class BrandController extends Controller
         path: '/api/brands',
         summary: 'Barcha brandlar ro\'yxati',
         description: 'Accept-Language header orqali berilgan tildagi barcha brand tarjimalarini qaytaradi',
-        tags: ['🏷️ Brandlar'],
+        tags: ['Brandlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -65,7 +65,7 @@ class BrandController extends Controller
         path: '/api/restaurants/brand/{brand_id}',
         summary: 'Brand bo\'yicha restaurantlar',
         description: 'Berilgan brand_id ga tegishli barcha restaurantlarni qaytaradi',
-        tags: ['🏷️ Brandlar'],
+        tags: ['Brandlar'],
         parameters: [
             new OA\Parameter(
                 name: 'brand_id',

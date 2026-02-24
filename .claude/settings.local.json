@@ -12,7 +12,8 @@
       "Bash(mysql:*)",
       "Bash(grep:*)",
       "Bash(git commit:*)",
-      "Bash(php -l:*)"
+      "Bash(php -l:*)",
+      "Bash(git push:*)"
     ]
   }
 }

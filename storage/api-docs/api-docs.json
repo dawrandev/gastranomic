@@ -23,7 +23,7 @@
         "/api/auth/send-code": {
             "post": {
                 "tags": [
-                    "🔐 Autentifikatsiya"
+                    "Autentifikatsiya"
                 ],
                 "summary": "SMS tasdiqlash kodi yuborish",
                 "description": "Telefon raqamiga SMS orqali 4 raqamli tasdiqlash kodini yuboradi. Kod 5 daqiqa davomida amal qiladi.",
@@ -133,7 +133,7 @@
         "/api/auth/verify-code": {
             "post": {
                 "tags": [
-                    "🔐 Autentifikatsiya"
+                    "Autentifikatsiya"
                 ],
                 "summary": "Kodni tekshirish va login/register",
                 "description": "Tasdiqlash kodini tekshiradi. Agar foydalanuvchi yangi bo'lsa, ism va familiya bilan ro'yxatdan o'tkazadi. Mavjud foydalanuvchi uchun login qiladi.",
@@ -310,7 +310,7 @@
         "/api/auth/me": {
             "get": {
                 "tags": [
-                    "🔐 Autentifikatsiya"
+                    "Autentifikatsiya"
                 ],
                 "summary": "Foydalanuvchi profilini olish",
                 "description": "Autentifikatsiya qilingan foydalanuvchining profilini qaytaradi",
@@ -389,7 +389,7 @@
         "/api/auth/logout": {
             "post": {
                 "tags": [
-                    "🔐 Autentifikatsiya"
+                    "Autentifikatsiya"
                 ],
                 "summary": "Tizimdan chiqish",
                 "description": "Joriy tokenni bekor qiladi va foydalanuvchini tizimdan chiqaradi",
@@ -442,7 +442,7 @@
         "/api/brands": {
             "get": {
                 "tags": [
-                    "🏷️ Brandlar"
+                    "Brandlar"
                 ],
                 "summary": "Barcha brandlar ro'yxati",
                 "description": "Accept-Language header orqali berilgan tildagi barcha brand tarjimalarini qaytaradi",
@@ -514,7 +514,7 @@
         "/api/restaurants/brand/{brand_id}": {
             "get": {
                 "tags": [
-                    "🏷️ Brandlar"
+                    "Brandlar"
                 ],
                 "summary": "Brand bo'yicha restaurantlar",
                 "description": "Berilgan brand_id ga tegishli barcha restaurantlarni qaytaradi",
@@ -677,7 +677,7 @@
         "/api/categories": {
             "get": {
                 "tags": [
-                    "📂 Kategoriyalar"
+                    "Kategoriyalar"
                 ],
                 "summary": "Barcha kategoriyalar ro'yxati",
                 "description": "Accept-Language header orqali berilgan tildagi barcha kategoriya tarjimalarini qaytaradi",
@@ -749,7 +749,7 @@
         "/api/favorites": {
             "get": {
                 "tags": [
-                    "❤️ Sevimlilar"
+                    "Sevimlilar"
                 ],
                 "summary": "Sevimlilar ro'yxati",
                 "description": "Login qilgan foydalanuvchining barcha sevimli restoranlar ro'yxati",
@@ -828,7 +828,7 @@
         "/api/restaurants/{id}/favorite": {
             "post": {
                 "tags": [
-                    "❤️ Sevimlilar"
+                    "Sevimlilar"
                 ],
                 "summary": "Sevimlilar ro'yxatiga qo'shish/o'chirish",
                 "description": "Restoranni sevimlilar ro'yxatiga qo'shish yoki o'chirish. Faqat autentifikatsiya qilingan foydalanuvchilar uchun.",
@@ -891,7 +891,7 @@
         "/api/favorites/map": {
             "get": {
                 "tags": [
-                    "❤️ Sevimlilar"
+                    "Sevimlilar"
                 ],
                 "summary": "Sevimli restoranlarni xaritada ko'rsatish",
                 "description": "Client sevimli restoranlarining koordinatalari xarita uchun",
@@ -951,7 +951,7 @@
         "/api/restaurants/{id}/menu": {
             "get": {
                 "tags": [
-                    "🍔 Menyu"
+                    "Menyu"
                 ],
                 "summary": "Restoran menyusini olish",
                 "description": "Restoranning to'liq menyusini menu section lar bilan guruhlanган holda qaytaradi",
@@ -1011,7 +1011,7 @@
         "/api/menu-items/{id}": {
             "get": {
                 "tags": [
-                    "🍔 Menyu"
+                    "Menyu"
                 ],
                 "summary": "Taom batafsil ma'lumotlari",
                 "description": "Bitta taomning to'liq ma'lumotlari: nomi, tavsif, narx, rasm, vazn",
@@ -1071,7 +1071,7 @@
         "/api/profile": {
             "get": {
                 "tags": [
-                    "👤 Profil"
+                    "Profil"
                 ],
                 "summary": "Client profil ma'lumotlari",
                 "description": "Login qilgan clientning to'liq profil ma'lumotlari va statistikasi",
@@ -1176,7 +1176,7 @@
             },
             "post": {
                 "tags": [
-                    "👤 Profil"
+                    "Profil"
                 ],
                 "summary": "Profil ma'lumotlarini yangilash",
                 "description": "Client ism, familiya va rasmini yangilash",
@@ -1249,7 +1249,7 @@
         "/api/questions": {
             "get": {
                 "tags": [
-                    "❓ Savollar"
+                    "Savollar"
                 ],
                 "summary": "Savollarni olish",
                 "description": "Restoran sharhi qoldirganda foydalanuvchiga ko'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi. Har bir savol options arrayida bo'sh (open-ended) yoki to'li (multiple-choice) bo'ladi. is_required field'i majburi yoki ixtiyoriy ekanligini ko'rsatadi.",
@@ -1363,7 +1363,7 @@
         "/api/restaurants": {
             "get": {
                 "tags": [
-                    "🏠 Restoranlar"
+                    "Restoranlar"
                 ],
                 "summary": "Barcha restoranlar ro'yxati",
                 "description": "Filter va pagination bilan barcha faol restoranlarni olish",
@@ -1496,7 +1496,7 @@
         "/api/restaurants/nearby": {
             "get": {
                 "tags": [
-                    "🏠 Restoranlar"
+                    "Restoranlar"
                 ],
                 "summary": "Yaqin atrofdagi restoranlar",
                 "description": "Foydalanuvchi lokatsiyasidan berilgan radius (km) ichidagi restoranlarni topadi",
@@ -1598,7 +1598,7 @@
         "/api/restaurants/{id}": {
             "get": {
                 "tags": [
-                    "🏠 Restoranlar"
+                    "Restoranlar"
                 ],
                 "summary": "Restoran batafsil ma'lumotlari",
                 "description": "Restoranning to'liq ma'lumotlari: rasmlar, brend, menyu, operating hours, reviews statistics va hokazo",
@@ -1658,7 +1658,7 @@
         "/api/restaurants/map": {
             "get": {
                 "tags": [
-                    "🏠 Restoranlar"
+                    "Restoranlar"
                 ],
                 "summary": "Xarita uchun restoranlar",
                 "description": "Xaritada ko'rsatish uchun barcha restoranlarning koordinatalari",
@@ -1744,7 +1744,7 @@
         "/api/categories/{id}/top-restaurants": {
             "get": {
                 "tags": [
-                    "🏠 Restoranlar"
+                    "Restoranlar"
                 ],
                 "summary": "Kategoriya bo'yicha eng yuqori reytingli restoranlar",
                 "description": "Berilgan kategoriyaga tegishli eng yuqori reytingli restoranlarni qaytaradi. Masalan: \"Ommabop fast foodlar\", \"Ommabop restoranlar\"",
@@ -1818,7 +1818,7 @@
         "/api/restaurants/nearest": {
             "get": {
                 "tags": [
-                    "🏠 Restoranlar"
+                    "Restoranlar"
                 ],
                 "summary": "Eng yaqin 5 ta restoran",
                 "description": "Foydalanuvchi lokatsiyasiga eng yaqin 5 ta restoranni qaytaradi",
@@ -1893,7 +1893,7 @@
         "/api/restaurants/{id}/reviews": {
             "get": {
                 "tags": [
-                    "⭐ Sharhlar"
+                    "Sharhlar"
                 ],
                 "summary": "Restoran sharhlari",
                 "description": "Restoranga qoldirilgan barcha sharhlar va statistika",
@@ -1957,7 +1957,7 @@
             },
             "post": {
                 "tags": [
-                    "⭐ Sharhlar"
+                    "Sharhlar"
                 ],
                 "summary": "Restoranga sharh qoldirish",
                 "description": "Restoranga reyting, izoh va savollar javoblarini qoldirish. Avval GET /api/questions endpoint'dan savollarni oling. selected_option_ids arrayiga faqat multiple-choice savollari (options mavjud bo'lgan savollar) uchun option ID'larini kiriting. Limit: 3 sharh/kun per restaurant.",
@@ -2228,7 +2228,7 @@
         "/api/reviews/{id}": {
             "put": {
                 "tags": [
-                    "⭐ Sharhlar"
+                    "Sharhlar"
                 ],
                 "summary": "Sharhni yangilash",
                 "description": "O'z sharhingizni yangilash. Faqat authenticated users uchun.",
@@ -2318,7 +2318,7 @@
             },
             "delete": {
                 "tags": [
-                    "⭐ Sharhlar"
+                    "Sharhlar"
                 ],
                 "summary": "Sharhni o'chirish",
                 "description": "O'z sharhingizni o'chirish. Faqat authenticated users uchun.",
@@ -2373,7 +2373,7 @@
         "/api/search": {
             "get": {
                 "tags": [
-                    "🔍 Qidiruv"
+                    "Qidiruv"
                 ],
                 "summary": "Global qidiruv",
                 "description": "Restoranlar va taomlar bo'yicha qidiruv. Restoran nomi, brendi, taom nomi va tavsifi bo'yicha qidiradi.",
@@ -2472,44 +2472,44 @@
     },
     "tags": [
         {
-            "name": "🔐 Autentifikatsiya",
-            "description": "🔐 Autentifikatsiya"
+            "name": "Autentifikatsiya",
+            "description": "Autentifikatsiya"
         },
         {
-            "name": "🏷️ Brandlar",
-            "description": "🏷️ Brandlar"
+            "name": "Brandlar",
+            "description": "Brandlar"
         },
         {
-            "name": "📂 Kategoriyalar",
-            "description": "📂 Kategoriyalar"
+            "name": "Kategoriyalar",
+            "description": "Kategoriyalar"
         },
         {
-            "name": "❤️ Sevimlilar",
-            "description": "❤️ Sevimlilar"
+            "name": "Sevimlilar",
+            "description": "Sevimlilar"
         },
         {
-            "name": "🍔 Menyu",
-            "description": "🍔 Menyu"
+            "name": "Menyu",
+            "description": "Menyu"
         },
         {
-            "name": "👤 Profil",
-            "description": "👤 Profil"
+            "name": "Profil",
+            "description": "Profil"
         },
         {
-            "name": "❓ Savollar",
-            "description": "❓ Savollar"
+            "name": "Savollar",
+            "description": "Savollar"
         },
         {
-            "name": "🏠 Restoranlar",
-            "description": "🏠 Restoranlar"
+            "name": "Restoranlar",
+            "description": "Restoranlar"
         },
         {
-            "name": "⭐ Sharhlar",
-            "description": "⭐ Sharhlar"
+            "name": "Sharhlar",
+            "description": "Sharhlar"
         },
         {
-            "name": "🔍 Qidiruv",
-            "description": "🔍 Qidiruv"
+            "name": "Qidiruv",
+            "description": "Qidiruv"
         }
     ]
 }

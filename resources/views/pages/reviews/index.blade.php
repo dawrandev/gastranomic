@@ -25,14 +25,42 @@
                         <h3>Отзывы и рейтинги</h3>
                     </div>
                     <div class="col-6">
-                        <ol class="breadcrumb float-end">
-                            @role('superadmin')
-                            <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="fa fa-home"></i></a></li>
-                            @else
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa fa-home"></i></a></li>
-                            @endrole
-                            <li class="breadcrumb-item active">Отзывы</li>
-                        </ol>
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
+                                        id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fa fa-globe me-1"></i>
+                                    @php
+                                    $current_locale = $locale ?? 'ru';
+                                    $locale_labels = [
+                                        'uz' => 'O\'zbek',
+                                        'ru' => 'Русский',
+                                        'en' => 'English',
+                                        'kk' => 'Қарақалпақ'
+                                    ];
+                                    @endphp
+                                    {{ $locale_labels[$current_locale] ?? 'Русский' }}
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                                    <li><a class="dropdown-item locale-switch {{ ($locale ?? 'ru') == 'uz' ? 'active' : '' }}"
+                                           href="#" data-locale="uz">O'zbek</a></li>
+                                    <li><a class="dropdown-item locale-switch {{ ($locale ?? 'ru') == 'ru' ? 'active' : '' }}"
+                                           href="#" data-locale="ru">Русский</a></li>
+                                    <li><a class="dropdown-item locale-switch {{ ($locale ?? 'ru') == 'en' ? 'active' : '' }}"
+                                           href="#" data-locale="en">English</a></li>
+                                    <li><a class="dropdown-item locale-switch {{ ($locale ?? 'ru') == 'kk' ? 'active' : '' }}"
+                                           href="#" data-locale="kk">Қарақалпақ</a></li>
+                                </ul>
+                            </div>
+                            <ol class="breadcrumb mb-0">
+                                @role('superadmin')
+                                <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="fa fa-home"></i></a></li>
+                                @else
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}"><i class="fa fa-home"></i></a></li>
+                                @endrole
+                                <li class="breadcrumb-item active">Отзывы</li>
+                            </ol>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,10 +153,11 @@
                 </div>
             </div>
 
-            <!-- Rating Distribution -->
+            <!-- Rating Distribution + Comments Summary Row -->
             <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm">
+                <!-- Rating Distribution -->
+                <div class="col-xl-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
                         <div class="card-header bg-white">
                             <h5 class="mb-0">Распределение рейтингов</h5>
                         </div>
@@ -163,6 +192,43 @@
                                 </div>
                             </div>
                             @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comments Summary -->
+                <div class="col-xl-6 mb-3">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0"><i class="fa fa-comments text-primary"></i> Детали отзывов</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6 text-center border-end">
+                                    <div class="mb-2">
+                                        <i class="fa fa-comment-alt fa-2x text-success"></i>
+                                    </div>
+                                    @php
+                                    $withComments = \App\Models\Review::whereNotNull('comment')->where('comment', '!=', '')->count();
+                                    $commentsPercentage = $statistics['total_reviews'] > 0 ? ($withComments / $statistics['total_reviews']) * 100 : 0;
+                                    @endphp
+                                    <h4 class="mb-1">{{ $withComments }}</h4>
+                                    <small class="text-muted d-block">С комментариями</small>
+                                    <span class="badge bg-success-subtle text-success mt-1">{{ number_format($commentsPercentage, 0) }}%</span>
+                                </div>
+                                <div class="col-6 text-center">
+                                    <div class="mb-2">
+                                        <i class="fa fa-check-square fa-2x text-info"></i>
+                                    </div>
+                                    @php
+                                    $withAnswers = \App\Models\Review::has('selectedOptions')->count();
+                                    $answersPercentage = $statistics['total_reviews'] > 0 ? ($withAnswers / $statistics['total_reviews']) * 100 : 0;
+                                    @endphp
+                                    <h4 class="mb-1">{{ $withAnswers }}</h4>
+                                    <small class="text-muted d-block">С ответами на вопросы</small>
+                                    <span class="badge bg-info-subtle text-info mt-1">{{ number_format($answersPercentage, 0) }}%</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -298,58 +364,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Overall Satisfaction & Additional Comments Summary -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white">
-                            <h5 class="mb-0"><i class="fa fa-comments text-primary"></i> Отзывы и комментарии</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-3 text-center border-end">
-                                    <div class="mb-2">
-                                        <i class="fa fa-comment-dots fa-2x text-primary"></i>
-                                    </div>
-                                    <h4 class="mb-1">{{ $statistics['total_reviews'] }}</h4>
-                                    <small class="text-muted">Всего отзывов</small>
-                                </div>
-                                <div class="col-md-3 text-center border-end">
-                                    <div class="mb-2">
-                                        <i class="fa fa-comment-alt fa-2x text-success"></i>
-                                    </div>
-                                    @php
-                                    $withComments = \App\Models\Review::whereNotNull('comment')->where('comment', '!=', '')->count();
-                                    @endphp
-                                    <h4 class="mb-1">{{ $withComments }}</h4>
-                                    <small class="text-muted">С текстовыми комментариями</small>
-                                </div>
-                                <div class="col-md-3 text-center border-end">
-                                    <div class="mb-2">
-                                        <i class="fa fa-check-square fa-2x text-info"></i>
-                                    </div>
-                                    @php
-                                    $withAnswers = \App\Models\Review::has('selectedOptions')->count();
-                                    @endphp
-                                    <h4 class="mb-1">{{ $withAnswers }}</h4>
-                                    <small class="text-muted">С выбранными вариантами</small>
-                                </div>
-                                <div class="col-md-3 text-center">
-                                    <div class="mb-2">
-                                        <i class="fa fa-chart-line fa-2x text-warning"></i>
-                                    </div>
-                                    @php
-                                    $avgAnswers = \App\Models\Review::withCount('selectedOptions')->get()->avg('selected_options_count');
-                                    @endphp
-                                    <h4 class="mb-1">{{ number_format($avgAnswers, 1) }}</h4>
-                                    <small class="text-muted">Среднее вариантов на отзыв</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
             @endif
 
             <!-- Reviews List -->
@@ -383,7 +397,7 @@
                         </div>
                         <div class="card-body p-0" style="min-height: 200px;">
                             <div id="reviews-container">
-                                @include('pages.reviews.partials.review-list', ['reviews' => $reviews])
+                                @include('pages.reviews.partials.review-list', ['reviews' => $reviews, 'locale' => $locale ?? 'ru'])
                             </div>
                         </div>
                     </div>
@@ -397,6 +411,20 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    // Get locale from localStorage or URL or default
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentLocale = localStorage.getItem('reviews_locale') || urlParams.get('locale') || '{{ $locale ?? "ru" }}';
+
+    // Update button text on page load
+    const localeLabels = {
+        'uz': 'O\'zbek',
+        'ru': 'Русский',
+        'en': 'English',
+        'kk': 'Қарақалпақ'
+    };
+    $('#languageDropdown').html('<i class="fa fa-globe me-1"></i> ' + localeLabels[currentLocale]);
+    $('.locale-switch[data-locale="' + currentLocale + '"]').addClass('active');
+
     // Initialize Select2 (Cuba Admin style)
     @role('superadmin')
     $('#restaurant-filter').select2({
@@ -407,7 +435,12 @@ $(document).ready(function() {
     @endrole
 
     // AJAX Filter Function
-    function loadReviews(page = 1) {
+    function loadReviews(page = 1, locale = null) {
+        if (locale) {
+            currentLocale = locale;
+            localStorage.setItem('reviews_locale', locale);
+        }
+
         const restaurantId = $('#restaurant-filter').length ? $('#restaurant-filter').val() : '';
         const rating = $('#rating-filter').val();
 
@@ -421,6 +454,7 @@ $(document).ready(function() {
             data: {
                 restaurant_id: restaurantId,
                 rating: rating,
+                locale: currentLocale,
                 page: page,
                 ajax: '1'
             },
@@ -439,6 +473,11 @@ $(document).ready(function() {
                 } else {
                     url.searchParams.delete('rating');
                 }
+                if (currentLocale !== 'ru') {
+                    url.searchParams.set('locale', currentLocale);
+                } else {
+                    url.searchParams.delete('locale');
+                }
                 url.searchParams.set('page', page);
                 window.history.pushState({}, '', url);
             },
@@ -449,6 +488,23 @@ $(document).ready(function() {
             }
         });
     }
+
+    // Language switcher
+    $(document).on('click', '.locale-switch', function(e) {
+        e.preventDefault();
+        const locale = $(this).data('locale');
+        const $button = $('#languageDropdown');
+
+        // Update button text
+        $button.html('<i class="fa fa-globe me-1"></i> ' + localeLabels[locale]);
+
+        // Update active state
+        $('.locale-switch').removeClass('active');
+        $(this).addClass('active');
+
+        // Load reviews with new locale
+        loadReviews(1, locale);
+    });
 
     // Filter change events
     @role('superadmin')

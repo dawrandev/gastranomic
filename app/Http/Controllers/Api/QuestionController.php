@@ -15,7 +15,7 @@ class QuestionController extends Controller
         path: '/api/questions',
         summary: 'Savollarni olish',
         description: 'Restoran sharhi qoldirganda foydalanuvchiga ko\'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi. Har bir savol options arrayida bo\'sh (open-ended) yoki to\'li (multiple-choice) bo\'ladi. is_required field\'i majburi yoki ixtiyoriy ekanligini ko\'rsatadi.',
-        tags: ['❓ Savollar'],
+        tags: ['Savollar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',

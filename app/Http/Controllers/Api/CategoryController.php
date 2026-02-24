@@ -15,7 +15,7 @@ class CategoryController extends Controller
         path: '/api/categories',
         summary: 'Barcha kategoriyalar ro\'yxati',
         description: 'Accept-Language header orqali berilgan tildagi barcha kategoriya tarjimalarini qaytaradi',
-        tags: ['📂 Kategoriyalar'],
+        tags: ['Kategoriyalar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',

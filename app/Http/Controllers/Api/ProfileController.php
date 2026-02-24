@@ -17,7 +17,7 @@ class ProfileController extends Controller
         summary: 'Client profil ma\'lumotlari',
         description: 'Login qilgan clientning to\'liq profil ma\'lumotlari va statistikasi',
         security: [['bearerAuth' => []]],
-        tags: ['👤 Profil'],
+        tags: ['Profil'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -104,7 +104,7 @@ class ProfileController extends Controller
         summary: 'Profil ma\'lumotlarini yangilash',
         description: 'Client ism, familiya va rasmini yangilash',
         security: [['bearerAuth' => []]],
-        tags: ['👤 Profil'],
+        tags: ['Profil'],
         requestBody: new OA\RequestBody(
             required: false,
             content: new OA\MediaType(

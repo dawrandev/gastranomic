@@ -22,7 +22,7 @@ class SearchController extends Controller
         path: '/api/search',
         summary: 'Global qidiruv',
         description: 'Restoranlar va taomlar bo\'yicha qidiruv. Restoran nomi, brendi, taom nomi va tavsifi bo\'yicha qidiradi.',
-        tags: ['🔍 Qidiruv'],
+        tags: ['Qidiruv'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',

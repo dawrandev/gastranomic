@@ -28,13 +28,8 @@
                         <strong class="mb-0 small">
                             @if($review->client)
                                 {{ $review->client->first_name }} {{ $review->client->last_name }}
-                            @else
-                                Гость
                             @endif
                         </strong>
-                        @if(!$review->client)
-                        <span class="badge bg-secondary badge-sm">Guest</span>
-                        @endif
                         <span class="badge bg-light text-dark border small">{{ $review->restaurant->branch_name }}</span>
                         <div class="ms-auto d-flex align-items-center gap-1">
                             @for($i = 1; $i <= 5; $i++)
@@ -54,7 +49,7 @@
                     @if($review->selectedOptions && $review->selectedOptions->count() > 0)
                     <div class="mt-2">
                         @php
-                        $locale = app()->getLocale();
+                        $currentLocale = $locale ?? 'ru';
                         $groupedOptions = $review->selectedOptions->groupBy('questions_category_id');
                         $categories = \App\Models\QuestionCategory::whereIn('id', $groupedOptions->keys())->with('translations')->get()->keyBy('id');
                         @endphp
@@ -62,14 +57,14 @@
                         @foreach($groupedOptions as $categoryId => $options)
                         @php
                         $category = $categories->get($categoryId);
-                        $categoryTitle = $category ? $category->getTranslatedTitle($locale) : '';
+                        $categoryTitle = $category ? $category->getTranslatedTitle($currentLocale) : '';
                         @endphp
                         <div class="mb-1">
                             <small class="text-muted d-block mb-1"><strong>{{ $categoryTitle }}:</strong></small>
                             <div class="d-flex flex-wrap gap-1">
                                 @foreach($options as $option)
                                 <span class="badge bg-light text-dark border" style="font-size: 11px;">
-                                    <i class="fa fa-check-circle text-success"></i> {{ $option->getTranslatedText($locale) }}
+                                    <i class="fa fa-check-circle text-success"></i> {{ $option->getTranslatedText($currentLocale) }}
                                 </span>
                                 @endforeach
                             </div>

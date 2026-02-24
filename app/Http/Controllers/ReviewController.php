@@ -20,6 +20,13 @@ class ReviewController extends Controller
         $user = $request->user();
         $rating = $request->input('rating');
         $restaurantId = $request->input('restaurant_id');
+        $locale = $request->input('locale', 'ru');
+
+        // Validate locale
+        $validLocales = ['uz', 'ru', 'kk', 'en'];
+        if (!in_array($locale, $validLocales)) {
+            $locale = 'ru';
+        }
 
         if ($user->hasRole('superadmin')) {
             $reviews = $this->reviewService->getAllReviews(20, $rating, $restaurantId);
@@ -33,11 +40,11 @@ class ReviewController extends Controller
 
         if ($request->ajax() || $request->input('ajax') == '1') {
             return response()->json([
-                'html' => view('pages.reviews.partials.review-list', compact('reviews'))->render()
+                'html' => view('pages.reviews.partials.review-list', compact('reviews', 'locale'))->render()
             ]);
         }
 
-        return view('pages.reviews.index', compact('reviews', 'statistics', 'questionStats'));
+        return view('pages.reviews.index', compact('reviews', 'statistics', 'questionStats', 'locale'));
     }
 
     public function destroy(Review $review)

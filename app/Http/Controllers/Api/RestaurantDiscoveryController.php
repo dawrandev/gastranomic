@@ -21,7 +21,7 @@ class RestaurantDiscoveryController extends Controller
         path: '/api/restaurants',
         summary: 'Barcha restoranlar ro\'yxati',
         description: 'Filter va pagination bilan barcha faol restoranlarni olish',
-        tags: ['🏠 Restoranlar'],
+        tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -77,7 +77,7 @@ class RestaurantDiscoveryController extends Controller
         path: '/api/restaurants/nearby',
         summary: 'Yaqin atrofdagi restoranlar',
         description: 'Foydalanuvchi lokatsiyasidan berilgan radius (km) ichidagi restoranlarni topadi',
-        tags: ['🏠 Restoranlar'],
+        tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -147,7 +147,7 @@ class RestaurantDiscoveryController extends Controller
         path: '/api/restaurants/{id}',
         summary: 'Restoran batafsil ma\'lumotlari',
         description: 'Restoranning to\'liq ma\'lumotlari: rasmlar, brend, menyu, operating hours, reviews statistics va hokazo',
-        tags: ['🏠 Restoranlar'],
+        tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -198,7 +198,7 @@ class RestaurantDiscoveryController extends Controller
         path: '/api/restaurants/map',
         summary: 'Xarita uchun restoranlar',
         description: 'Xaritada ko\'rsatish uchun barcha restoranlarning koordinatalari',
-        tags: ['🏠 Restoranlar'],
+        tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -241,7 +241,7 @@ class RestaurantDiscoveryController extends Controller
         path: '/api/categories/{id}/top-restaurants',
         summary: 'Kategoriya bo\'yicha eng yuqori reytingli restoranlar',
         description: 'Berilgan kategoriyaga tegishli eng yuqori reytingli restoranlarni qaytaradi. Masalan: "Ommabop fast foodlar", "Ommabop restoranlar"',
-        tags: ['🏠 Restoranlar'],
+        tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -285,7 +285,7 @@ class RestaurantDiscoveryController extends Controller
         path: '/api/restaurants/nearest',
         summary: 'Eng yaqin 5 ta restoran',
         description: 'Foydalanuvchi lokatsiyasiga eng yaqin 5 ta restoranni qaytaradi',
-        tags: ['🏠 Restoranlar'],
+        tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',

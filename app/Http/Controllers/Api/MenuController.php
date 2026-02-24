@@ -19,7 +19,7 @@ class MenuController extends Controller
         path: '/api/restaurants/{id}/menu',
         summary: 'Restoran menyusini olish',
         description: 'Restoranning to\'liq menyusini menu section lar bilan guruhlanган holda qaytaradi',
-        tags: ['🍔 Menyu'],
+        tags: ['Menyu'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
@@ -57,7 +57,7 @@ class MenuController extends Controller
         path: '/api/menu-items/{id}',
         summary: 'Taom batafsil ma\'lumotlari',
         description: 'Bitta taomning to\'liq ma\'lumotlari: nomi, tavsif, narx, rasm, vazn',
-        tags: ['🍔 Menyu'],
+        tags: ['Menyu'],
         parameters: [
             new OA\Parameter(
                 name: 'Accept-Language',
