@@ -492,18 +492,39 @@
                     return;
                 }
 
-                console.log('Getting FCM token...');
+                // Wait for Service Worker to be active before getting token
+                console.log('Waiting for Service Worker to be active...');
+                const registration = await navigator.serviceWorker.ready;
+                console.log('Service Worker is active, getting FCM token...');
+
+                // Check IndexedDB availability
+                if (!window.indexedDB) {
+                    console.error('IndexedDB not available');
+                    statusBadge.textContent = 'Ошибка хранилища';
+                    statusBadge.className = 'badge bg-warning ms-2';
+                    enableBtn.style.display = 'inline-block';
+                    disableBtn.style.display = 'none';
+                    return;
+                }
 
                 let token;
                 try {
-                    token = await messaging.getToken({ vapidKey: vapidKey });
+                    token = await messaging.getToken({
+                        vapidKey: vapidKey,
+                        serviceWorkerRegistration: registration
+                    });
                 } catch (tokenError) {
                     console.error('Error getting FCM token:', tokenError);
 
-                    // IndexedDB yoki storage xatosi
-                    if (tokenError.message.includes('indexedDB') || tokenError.message.includes('backing store')) {
-                        console.log('IndexedDB error - possibly browser storage issue');
-                        statusBadge.textContent = 'Ошибка хранилища';
+                    // Service Worker yoki IndexedDB xatosi
+                    if (tokenError.message && (
+                        tokenError.message.includes('indexedDB') ||
+                        tokenError.message.includes('backing store') ||
+                        tokenError.message.includes('no active Service Worker') ||
+                        tokenError.message.includes('Subscription failed')
+                    )) {
+                        console.log('Storage or Service Worker error');
+                        statusBadge.textContent = 'Выключены';
                         statusBadge.className = 'badge bg-warning ms-2';
                         enableBtn.style.display = 'inline-block';
                         disableBtn.style.display = 'none';
@@ -603,18 +624,37 @@
             const permission = await Notification.requestPermission();
 
             if (permission === 'granted') {
+                // Check IndexedDB availability
+                if (!window.indexedDB) {
+                    swal('Ошибка', 'IndexedDB не поддерживается в этом браузере', 'error');
+                    enableBtn.disabled = false;
+                    enableBtn.innerHTML = '<i class="fa fa-bell-o"></i> Включить уведомления';
+                    return;
+                }
+
+                // Get Service Worker registration
+                const registration = await navigator.serviceWorker.ready;
+                console.log('Service Worker ready, getting token...');
+
                 // Get FCM token
                 let token;
                 try {
                     token = await messaging.getToken({
-                        vapidKey: vapidKey
+                        vapidKey: vapidKey,
+                        serviceWorkerRegistration: registration
                     });
                 } catch (tokenError) {
                     console.error('Error getting FCM token:', tokenError);
 
-                    // IndexedDB yoki storage xatosi
-                    if (tokenError.message && (tokenError.message.includes('indexedDB') || tokenError.message.includes('backing store'))) {
-                        swal('Ошибка хранилища браузера', 'Пожалуйста, очистите кеш и cookies браузера или попробуйте в режиме инкогнито', 'error');
+                    // IndexedDB, storage yoki Service Worker xatosi
+                    if (tokenError.message && (
+                        tokenError.message.includes('indexedDB') ||
+                        tokenError.message.includes('backing store') ||
+                        tokenError.message.includes('no active Service Worker') ||
+                        tokenError.message.includes('Subscription failed') ||
+                        tokenError.message.includes('Internal error')
+                    )) {
+                        swal('Ошибка хранилища браузера', 'Пожалуйста, очистите кеш и cookies браузера и перезагрузите страницу', 'error');
                     } else {
                         swal('Ошибка', 'Не удалось получить токен: ' + tokenError.message, 'error');
                     }
