@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReviewRequest;
 use App\Http\Resources\ReviewResource;
+use App\Services\FcmNotificationService;
 use App\Services\ReviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,7 +14,8 @@ use OpenApi\Attributes as OA;
 class ReviewController extends Controller
 {
     public function __construct(
-        protected ReviewService $reviewService
+        protected ReviewService $reviewService,
+        protected FcmNotificationService $fcmService
     ) {}
 
     #[OA\Get(
@@ -234,6 +236,14 @@ class ReviewController extends Controller
                 'ip_address' => $ipAddress,
             ]
         );
+
+        // Load restaurant and admin relationship for notification
+        $review->load('restaurant.admin');
+
+        // Send notification to restaurant admin
+        if ($review->restaurant && $review->restaurant->admin) {
+            $this->fcmService->sendNewReviewNotification($review->restaurant->admin, $review);
+        }
 
         return response()->json([
             'success' => true,

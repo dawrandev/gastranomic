@@ -92,3 +92,9 @@ Route::prefix('questions')->middleware(['auth', 'role:superadmin'])->name('quest
     Route::delete('/{question}/destroy', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'destroy'])->name('destroy');
     Route::get('/locale/{locale}', [App\Http\Controllers\SuperAdmin\QuestionController::class, 'setLocale'])->name('locale');
 });
+
+// FCM Push Notification routes
+Route::middleware(['auth'])->prefix('admin')->name('admin.fcm.')->group(function () {
+    Route::post('/fcm-token', [App\Http\Controllers\Admin\FcmController::class, 'store'])->name('store');
+    Route::delete('/fcm-token', [App\Http\Controllers\Admin\FcmController::class, 'destroy'])->name('destroy');
+});

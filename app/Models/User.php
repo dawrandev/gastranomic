@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'login',
         'password',
+        'fcm_token',
     ];
 
     public function restaurants()

@@ -188,6 +188,31 @@
                 </div>
             </div>
 
+            <!-- Push Notifications Card -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1"><i class="fa fa-bell"></i> Push уведомления</h5>
+                                    <p class="text-muted mb-0 small">Получайте мгновенные уведомления о новых отзывах</p>
+                                </div>
+                                <div>
+                                    <button id="enable-notifications-btn" class="btn btn-primary">
+                                        <i class="fa fa-bell-o"></i> Включить уведомления
+                                    </button>
+                                    <button id="disable-notifications-btn" class="btn btn-danger" style="display: none;">
+                                        <i class="fa fa-bell-slash-o"></i> Выключить
+                                    </button>
+                                    <span id="notification-status" class="badge bg-secondary ms-2"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Charts Row 1 -->
             <div class="row">
                 <!-- Chart 1: Reviews Trend (30 days) -->
@@ -247,6 +272,9 @@
 @endsection
 
 @push('scripts')
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-compat.js"></script>
 <script src="{{ asset('assets/js/chart/apex-chart/apex-chart.js') }}"></script>
 <script src="{{ asset('assets/js/chart/chartjs/chart.min.js') }}"></script>
 <script>
@@ -375,6 +403,173 @@
             guestVsRegOptions
         );
         guestVsRegChart.render();
+    });
+
+    // ============================================
+    // Firebase Cloud Messaging (FCM) Setup
+    // ============================================
+
+    // IMPORTANT: Replace these with your actual Firebase project credentials
+    // Get these from: Firebase Console > Project Settings > General > Your apps
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    // IMPORTANT: Replace with your VAPID key
+    // Get this from: Firebase Console > Project Settings > Cloud Messaging > Web Push certificates
+    const vapidKey = "YOUR_VAPID_KEY";
+
+    // Initialize Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+
+    const messaging = firebase.messaging();
+
+    // UI Elements
+    const enableBtn = document.getElementById('enable-notifications-btn');
+    const disableBtn = document.getElementById('disable-notifications-btn');
+    const statusBadge = document.getElementById('notification-status');
+
+    // Check current notification status on page load
+    checkNotificationStatus();
+
+    function checkNotificationStatus() {
+        if (!('Notification' in window)) {
+            statusBadge.textContent = 'Не поддерживается';
+            statusBadge.className = 'badge bg-secondary ms-2';
+            enableBtn.disabled = true;
+            return;
+        }
+
+        if (Notification.permission === 'granted') {
+            statusBadge.textContent = 'Включены';
+            statusBadge.className = 'badge bg-success ms-2';
+            enableBtn.style.display = 'none';
+            disableBtn.style.display = 'inline-block';
+        } else if (Notification.permission === 'denied') {
+            statusBadge.textContent = 'Заблокированы';
+            statusBadge.className = 'badge bg-danger ms-2';
+            enableBtn.disabled = true;
+        } else {
+            statusBadge.textContent = 'Выключены';
+            statusBadge.className = 'badge bg-warning ms-2';
+        }
+    }
+
+    // Enable notifications
+    enableBtn.addEventListener('click', async function() {
+        try {
+            enableBtn.disabled = true;
+            enableBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Загрузка...';
+
+            // Request permission
+            const permission = await Notification.requestPermission();
+
+            if (permission === 'granted') {
+                // Get FCM token
+                const token = await messaging.getToken({ vapidKey: vapidKey });
+
+                // Save token to backend
+                const response = await fetch('/admin/fcm-token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ fcm_token: token })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusBadge.textContent = 'Включены';
+                    statusBadge.className = 'badge bg-success ms-2';
+                    enableBtn.style.display = 'none';
+                    disableBtn.style.display = 'inline-block';
+
+                    // Show success notification
+                    new Notification('Уведомления включены!', {
+                        body: 'Теперь вы будете получать уведомления о новых отзывах',
+                        icon: '/favicon.ico'
+                    });
+                }
+            } else {
+                statusBadge.textContent = 'Заблокированы';
+                statusBadge.className = 'badge bg-danger ms-2';
+                alert('Разрешение на уведомления было отклонено');
+            }
+        } catch (error) {
+            console.error('Error enabling notifications:', error);
+            alert('Ошибка при включении уведомлений: ' + error.message);
+        } finally {
+            enableBtn.disabled = false;
+            enableBtn.innerHTML = '<i class="fa fa-bell-o"></i> Включить уведомления';
+        }
+    });
+
+    // Disable notifications
+    disableBtn.addEventListener('click', async function() {
+        try {
+            disableBtn.disabled = true;
+
+            // Remove token from backend
+            const response = await fetch('/admin/fcm-token', {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                statusBadge.textContent = 'Выключены';
+                statusBadge.className = 'badge bg-warning ms-2';
+                disableBtn.style.display = 'none';
+                enableBtn.style.display = 'inline-block';
+                alert('Уведомления отключены');
+            }
+        } catch (error) {
+            console.error('Error disabling notifications:', error);
+            alert('Ошибка при отключении уведомлений');
+        } finally {
+            disableBtn.disabled = false;
+        }
+    });
+
+    // Handle foreground messages (when admin panel is open)
+    messaging.onMessage((payload) => {
+        console.log('Message received:', payload);
+
+        const notificationTitle = payload.notification.title;
+        const notificationOptions = {
+            body: payload.notification.body,
+            icon: '/favicon.ico',
+            data: payload.data
+        };
+
+        // Show browser notification
+        if (Notification.permission === 'granted') {
+            const notification = new Notification(notificationTitle, notificationOptions);
+
+            // Handle notification click
+            notification.onclick = function(event) {
+                event.preventDefault();
+                window.focus();
+                if (payload.data.click_action) {
+                    window.location.href = payload.data.click_action;
+                }
+            };
+        }
+
+        // Optional: Show in-page alert or toast
+        alert(notificationTitle + '\n' + payload.notification.body);
     });
 </script>
 @endpush
