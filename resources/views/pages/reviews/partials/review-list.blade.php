@@ -52,6 +52,15 @@
             </p>
             @endif
 
+            {{-- Phone number --}}
+            @if($review->phone)
+            <div class="mb-1">
+                <span class="badge bg-light text-primary border border-primary border-opacity-25" style="font-size: 11px; padding: 3px 8px; font-weight: 500;">
+                    <i class="fa fa-phone me-1" style="font-size: 9px;"></i>{{ $review->phone }}
+                </span>
+            </div>
+            @endif
+
             {{-- Selected options --}}
             @if($review->selectedOptions && $review->selectedOptions->count() > 0)
             @php
