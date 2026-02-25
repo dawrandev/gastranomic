@@ -428,15 +428,34 @@
         firebase.initializeApp(firebaseConfig);
     }
 
-    const messaging = firebase.messaging();
+    let messaging = null;
+
+    // Register service worker first, then initialize messaging
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+            .then(() => {
+                console.log('Service Worker registered');
+                try {
+                    messaging = firebase.messaging();
+                    console.log('Firebase Messaging initialized');
+                    checkNotificationStatus();
+                } catch (error) {
+                    console.error('Firebase Messaging error:', error);
+                }
+            })
+            .catch((error) => {
+                console.error('Service Worker registration failed:', error);
+                checkNotificationStatusOffline();
+            });
+    } else {
+        console.error('Service Workers not supported');
+        checkNotificationStatusOffline();
+    }
 
     // UI Elements
     const enableBtn = document.getElementById('enable-notifications-btn');
     const disableBtn = document.getElementById('disable-notifications-btn');
     const statusBadge = document.getElementById('notification-status');
-
-    // Check current notification status on page load
-    checkNotificationStatus();
 
     function checkNotificationStatus() {
         if (!('Notification' in window)) {
@@ -461,9 +480,26 @@
         }
     }
 
+    function checkNotificationStatusOffline() {
+        if (!('Notification' in window)) {
+            statusBadge.textContent = 'Не поддерживается';
+            statusBadge.className = 'badge bg-secondary ms-2';
+            enableBtn.disabled = true;
+            return;
+        }
+        statusBadge.textContent = 'Service Worker failed';
+        statusBadge.className = 'badge bg-danger ms-2';
+        enableBtn.disabled = true;
+    }
+
     // Enable notifications
     enableBtn.addEventListener('click', async function() {
         try {
+            if (!messaging) {
+                alert('Service Worker is not ready. Please refresh the page.');
+                return;
+            }
+
             enableBtn.disabled = true;
             enableBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Загрузка...';
 
@@ -547,19 +583,20 @@
     });
 
     // Handle foreground messages (when admin panel is open)
-    messaging.onMessage((payload) => {
-        console.log('Message received:', payload);
+    if (messaging) {
+        messaging.onMessage((payload) => {
+            console.log('Message received:', payload);
 
-        const notificationTitle = payload.notification.title;
-        const notificationOptions = {
-            body: payload.notification.body,
-            icon: '/favicon.ico',
-            data: payload.data
-        };
+            const notificationTitle = payload.notification.title;
+            const notificationOptions = {
+                body: payload.notification.body,
+                icon: '/favicon.ico',
+                data: payload.data
+            };
 
-        // Show browser notification
-        if (Notification.permission === 'granted') {
-            const notification = new Notification(notificationTitle, notificationOptions);
+            // Show browser notification
+            if (Notification.permission === 'granted') {
+                const notification = new Notification(notificationTitle, notificationOptions);
 
             // Handle notification click
             notification.onclick = function(event) {
@@ -573,6 +610,7 @@
 
         // Optional: Show in-page alert or toast
         alert(notificationTitle + '\n' + payload.notification.body);
-    });
+        });
+    }
 </script>
 @endpush
