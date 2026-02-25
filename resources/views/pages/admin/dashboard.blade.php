@@ -615,9 +615,6 @@
                     }
                 };
             }
-
-            // Optional: Show in-page alert or toast
-            alert(notificationTitle + '\n' + payload.notification.body);
         });
 
         console.log('Message handler setup complete');
