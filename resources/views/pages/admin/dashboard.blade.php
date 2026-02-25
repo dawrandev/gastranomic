@@ -487,7 +487,24 @@
                 }
 
                 console.log('Getting FCM token...');
-                const token = await messaging.getToken({ vapidKey: vapidKey });
+
+                let token;
+                try {
+                    token = await messaging.getToken({ vapidKey: vapidKey });
+                } catch (tokenError) {
+                    console.error('Error getting FCM token:', tokenError);
+
+                    // IndexedDB yoki storage xatosi
+                    if (tokenError.message.includes('indexedDB') || tokenError.message.includes('backing store')) {
+                        console.log('IndexedDB error - possibly browser storage issue');
+                        statusBadge.textContent = 'Ошибка хранилища';
+                        statusBadge.className = 'badge bg-warning ms-2';
+                        enableBtn.style.display = 'inline-block';
+                        disableBtn.style.display = 'none';
+                        return;
+                    }
+                    throw tokenError;
+                }
 
                 if (!token) {
                     console.log('No token received from Firebase');
@@ -577,18 +594,27 @@
 
             if (permission === 'granted') {
                 // Get FCM token
-                const token = await messaging.getToken({
-                    vapidKey: vapidKey
-                });
+                let token;
+                try {
+                    token = await messaging.getToken({
+                        vapidKey: vapidKey
+                    });
+                } catch (tokenError) {
+                    console.error('Error getting FCM token:', tokenError);
+
+                    // IndexedDB yoki storage xatosi
+                    if (tokenError.message && (tokenError.message.includes('indexedDB') || tokenError.message.includes('backing store'))) {
+                        swal('Ошибка хранилища браузера', 'Пожалуйста, очистите кеш и cookies браузера или попробуйте в режиме инкогнито', 'error');
+                    } else {
+                        swal('Ошибка', 'Не удалось получить токен: ' + tokenError.message, 'error');
+                    }
+                    enableBtn.disabled = false;
+                    enableBtn.innerHTML = '<i class="fa fa-bell-o"></i> Включить уведомления';
+                    return;
+                }
 
                 currentToken = token; // Store for later use
-
-                // Detect browser type
-                const browserType = navigator.userAgent.includes('Chrome') ? 'Chrome' :
-                                  navigator.userAgent.includes('Firefox') ? 'Firefox' :
-                                  navigator.userAgent.includes('Safari') ? 'Safari' :
-                                  navigator.userAgent.includes('Edg') ? 'Edge' :
-                                  navigator.userAgent.includes('YaBrowser') ? 'Yandex' : 'Unknown';
+                console.log('FCM Token obtained:', token.substring(0, 50) + '...');
 
                 // Save token to backend
                 const response = await fetch('/admin/fcm-token', {
@@ -598,8 +624,7 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
                     body: JSON.stringify({
-                        fcm_token: token,
-                        device_type: browserType
+                        fcm_token: token
                     })
                 });
 

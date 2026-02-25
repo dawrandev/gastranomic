@@ -19,7 +19,6 @@ class FcmController extends Controller
     {
         $validated = $request->validate([
             'fcm_token' => 'required|string|max:500',
-            'device_type' => 'nullable|string|max:100',
         ]);
 
         $user = $request->user();
@@ -31,7 +30,7 @@ class FcmController extends Controller
                 'fcm_token' => $validated['fcm_token'],
             ],
             [
-                'device_type' => $validated['device_type'] ?? 'Unknown',
+                'device_type' => null,
             ]
         );
 
