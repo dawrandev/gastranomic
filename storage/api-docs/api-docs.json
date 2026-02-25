@@ -25,8 +25,8 @@
                 "tags": [
                     "Brandlar"
                 ],
-                "summary": "Barcha brandlar ro'yxati",
-                "description": "Accept-Language header orqali berilgan tildagi barcha brand tarjimalarini qaytaradi",
+                "summary": "Eng yuqori ratingli brandlar",
+                "description": "Restaurantlar va reviewlar asosida hisoblangan eng yuqori o'rtacha ratingga ega 7 ta brandni qaytaradi. Rating = barcha brand restaurantlaridagi barcha reviewlarning o'rtacha qiymati.",
                 "operationId": "130f2bd423b6fe2355253e2c39878d99",
                 "parameters": [
                     {
@@ -77,6 +77,12 @@
                                                     "logo": {
                                                         "type": "string",
                                                         "example": "https://example.com/storage/brands/logos/kfc.png",
+                                                        "nullable": true
+                                                    },
+                                                    "avg_rating": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 4.5,
                                                         "nullable": true
                                                     }
                                                 },

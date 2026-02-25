@@ -19,6 +19,7 @@ class BrandResource extends JsonResource
             'name' => $this->getTranslatedName($locale),
             'description' => $this->getTranslatedDescription($locale),
             'logo' => $this->logo ? asset('storage/' . $this->logo) : null,
+            'avg_rating' => $this->avg_rating ? round((float) $this->avg_rating, 1) : null,
         ];
     }
 }

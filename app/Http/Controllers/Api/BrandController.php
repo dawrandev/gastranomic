@@ -14,8 +14,8 @@ class BrandController extends Controller
 {
     #[OA\Get(
         path: '/api/brands',
-        summary: 'Barcha brandlar ro\'yxati',
-        description: 'Accept-Language header orqali berilgan tildagi barcha brand tarjimalarini qaytaradi',
+        summary: 'Eng yuqori ratingli brandlar',
+        description: 'Restaurantlar va reviewlar asosida hisoblangan eng yuqori o\'rtacha ratingga ega 7 ta brandni qaytaradi. Rating = barcha brand restaurantlaridagi barcha reviewlarning o\'rtacha qiymati.',
         tags: ['Brandlar'],
         parameters: [
             new OA\Parameter(
@@ -42,6 +42,7 @@ class BrandController extends Controller
                                     new OA\Property(property: 'name', type: 'string', example: 'KFC'),
                                     new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Kentucky Fried Chicken'),
                                     new OA\Property(property: 'logo', type: 'string', nullable: true, example: 'https://example.com/storage/brands/logos/kfc.png'),
+                                    new OA\Property(property: 'avg_rating', type: 'number', format: 'float', nullable: true, example: 4.5),
                                 ],
                                 type: 'object'
                             )
@@ -53,7 +54,14 @@ class BrandController extends Controller
     )]
     public function index(Request $request): JsonResponse
     {
-        $brands = Brand::with('translations')->get();
+        $brands = Brand::selectRaw('brands.*, AVG(reviews.rating) as avg_rating')
+            ->leftJoin('restaurants', 'brands.id', '=', 'restaurants.brand_id')
+            ->leftJoin('reviews', 'restaurants.id', '=', 'reviews.restaurant_id')
+            ->groupBy('brands.id', 'brands.name', 'brands.description', 'brands.logo', 'brands.created_at', 'brands.updated_at')
+            ->orderByDesc('avg_rating')
+            ->limit(7)
+            ->with('translations')
+            ->get();
 
         return response()->json([
             'success' => true,
