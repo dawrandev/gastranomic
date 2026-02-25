@@ -444,6 +444,9 @@
                     messaging = firebase.messaging();
                     console.log('Firebase Messaging initialized');
                     checkNotificationStatus();
+
+                    // Setup foreground message handler AFTER messaging is initialized
+                    setupMessageHandler();
                 } catch (error) {
                     console.error('Firebase Messaging error:', error);
                 }
@@ -582,8 +585,13 @@
         }
     });
 
-    // Handle foreground messages (when admin panel is open)
-    if (messaging) {
+    // Setup foreground message handler (called after messaging is initialized)
+    function setupMessageHandler() {
+        if (!messaging) {
+            console.error('Cannot setup message handler: messaging is null');
+            return;
+        }
+
         messaging.onMessage((payload) => {
             console.log('Message received:', payload);
 
@@ -598,19 +606,21 @@
             if (Notification.permission === 'granted') {
                 const notification = new Notification(notificationTitle, notificationOptions);
 
-            // Handle notification click
-            notification.onclick = function(event) {
-                event.preventDefault();
-                window.focus();
-                if (payload.data.click_action) {
-                    window.location.href = payload.data.click_action;
-                }
-            };
-        }
+                // Handle notification click
+                notification.onclick = function(event) {
+                    event.preventDefault();
+                    window.focus();
+                    if (payload.data.click_action) {
+                        window.location.href = payload.data.click_action;
+                    }
+                };
+            }
 
-        // Optional: Show in-page alert or toast
-        alert(notificationTitle + '\n' + payload.notification.body);
+            // Optional: Show in-page alert or toast
+            alert(notificationTitle + '\n' + payload.notification.body);
         });
+
+        console.log('Message handler setup complete');
     }
 </script>
 @endpush
