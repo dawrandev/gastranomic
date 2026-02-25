@@ -205,6 +205,9 @@
                                     <button id="disable-notifications-btn" class="btn btn-danger" style="display: none;">
                                         <i class="fa fa-bell-slash-o"></i> Выключить
                                     </button>
+                                    <button id="unblock-help-btn" class="btn btn-warning" style="display: none;">
+                                        <i class="fa fa-question-circle"></i> Как разблокировать?
+                                    </button>
                                     <span id="notification-status" class="badge bg-secondary ms-2"></span>
                                 </div>
                             </div>
@@ -434,6 +437,7 @@
     // UI Elements (declare before using them)
     const enableBtn = document.getElementById('enable-notifications-btn');
     const disableBtn = document.getElementById('disable-notifications-btn');
+    const unblockHelpBtn = document.getElementById('unblock-help-btn');
     const statusBadge = document.getElementById('notification-status');
 
     // Register service worker first, then initialize messaging
@@ -580,7 +584,9 @@
         } else if (Notification.permission === 'denied') {
             statusBadge.textContent = 'Заблокированы';
             statusBadge.className = 'badge bg-danger ms-2';
-            enableBtn.disabled = true;
+            enableBtn.style.display = 'none';
+            disableBtn.style.display = 'none';
+            unblockHelpBtn.style.display = 'inline-block';
         } else {
             statusBadge.textContent = 'Выключены';
             statusBadge.className = 'badge bg-warning ms-2';
@@ -735,6 +741,66 @@
         } finally {
             disableBtn.disabled = false;
         }
+    });
+
+    // Unblock help button - show instructions
+    unblockHelpBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Detect mobile and browser
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const isChrome = /Chrome/.test(navigator.userAgent);
+        const isFirefox = /Firefox/.test(navigator.userAgent);
+
+        let instructions = '';
+
+        if (isMobile && isChrome) {
+            // Android Chrome
+            instructions = '<b>Для Android Chrome:</b><br><br>' +
+                         '1. Нажмите на <b>иконку замка 🔒</b> в адресной строке<br>' +
+                         '2. Найдите <b>"Уведомления"</b> или <b>"Notifications"</b><br>' +
+                         '3. Выберите <b>"Разрешить"</b><br>' +
+                         '4. <b>Обновите страницу</b> (F5)';
+        } else if (isMobile && isFirefox) {
+            // Android Firefox
+            instructions = '<b>Для Android Firefox:</b><br><br>' +
+                         '1. Откройте меню (три точки)<br>' +
+                         '2. Настройки → Разрешения → Уведомления<br>' +
+                         '3. Найдите этот сайт и разрешите<br>' +
+                         '4. Обновите страницу';
+        } else if (isChrome) {
+            // Desktop Chrome
+            instructions = '<b>Для Chrome:</b><br><br>' +
+                         '<b>Способ 1 (быстрый):</b><br>' +
+                         '1. Нажмите на <b>иконку замка 🔒</b> слева от адреса<br>' +
+                         '2. Найдите <b>"Уведомления"</b><br>' +
+                         '3. Выберите <b>"Разрешить"</b><br>' +
+                         '4. <b>Обновите страницу</b><br><br>' +
+                         '<b>Способ 2 (через настройки):</b><br>' +
+                         'Откройте: <code>chrome://settings/content/notifications</code>';
+        } else if (isFirefox) {
+            // Desktop Firefox
+            instructions = '<b>Для Firefox:</b><br><br>' +
+                         '1. Нажмите на иконку рядом с адресом<br>' +
+                         '2. Найдите "Разрешения"<br>' +
+                         '3. Включите уведомления<br>' +
+                         '4. Обновите страницу';
+        } else {
+            // Other browsers
+            instructions = '<b>Общая инструкция:</b><br><br>' +
+                         '1. Откройте настройки браузера<br>' +
+                         '2. Найдите раздел "Уведомления" или "Разрешения"<br>' +
+                         '3. Найдите этот сайт в списке заблокированных<br>' +
+                         '4. Измените на "Разрешить"<br>' +
+                         '5. Обновите страницу';
+        }
+
+        swal({
+            title: 'Как разблокировать уведомления',
+            text: instructions,
+            html: true,
+            type: 'info'
+        });
     });
 
     // Setup foreground message handler (called after messaging is initialized)
