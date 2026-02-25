@@ -45,6 +45,30 @@ class FcmController extends Controller
     }
 
     /**
+     * Check if current browser has FCM token saved
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function checkStatus(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'fcm_token' => 'required|string|max:500',
+        ]);
+
+        $user = $request->user();
+
+        $exists = UserFcmToken::where('user_id', $user->id)
+            ->where('fcm_token', $validated['fcm_token'])
+            ->exists();
+
+        return response()->json([
+            'success' => true,
+            'has_token' => $exists,
+        ]);
+    }
+
+    /**
      * Remove FCM token for the authenticated admin user
      *
      * @param Request $request
