@@ -409,20 +409,19 @@
     // Firebase Cloud Messaging (FCM) Setup
     // ============================================
 
-    // IMPORTANT: Replace these with your actual Firebase project credentials
-    // Get these from: Firebase Console > Project Settings > General > Your apps
+    // Firebase configuration
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyBgMtPMATJwaA1IAgJef2nksTG_P-RJEnc",
+        authDomain: "gastranomic-6377c.firebaseapp.com",
+        projectId: "gastranomic-6377c",
+        storageBucket: "gastranomic-6377c.firebasestorage.app",
+        messagingSenderId: "911893928589",
+        appId: "1:911893928589:web:85db2725899d618eb320c4"
     };
 
     // IMPORTANT: Replace with your VAPID key
     // Get this from: Firebase Console > Project Settings > Cloud Messaging > Web Push certificates
-    const vapidKey = "YOUR_VAPID_KEY";
+    const vapidKey = "BJV3ahrybzgo2vD5NvZ2S1B4G4dzPIODRv7EIu1BDp4GeTJVNHdvRltzKB9tDFM_XLEuUgkHOS-YzD1tP4OAgOg";
 
     // Initialize Firebase
     if (!firebase.apps.length) {
@@ -473,7 +472,9 @@
 
             if (permission === 'granted') {
                 // Get FCM token
-                const token = await messaging.getToken({ vapidKey: vapidKey });
+                const token = await messaging.getToken({
+                    vapidKey: vapidKey
+                });
 
                 // Save token to backend
                 const response = await fetch('/admin/fcm-token', {
@@ -482,7 +483,9 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
-                    body: JSON.stringify({ fcm_token: token })
+                    body: JSON.stringify({
+                        fcm_token: token
+                    })
                 });
 
                 const data = await response.json();
