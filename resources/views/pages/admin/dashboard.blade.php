@@ -499,7 +499,12 @@
     enableBtn.addEventListener('click', async function() {
         try {
             if (!messaging) {
-                alert('Service Worker is not ready. Please refresh the page.');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Service Worker не готов',
+                    text: 'Пожалуйста, обновите страницу',
+                    confirmButtonText: 'OK'
+                });
                 return;
             }
 
@@ -544,11 +549,21 @@
             } else {
                 statusBadge.textContent = 'Заблокированы';
                 statusBadge.className = 'badge bg-danger ms-2';
-                alert('Разрешение на уведомления было отклонено');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Доступ запрещен',
+                    text: 'Разрешение на уведомления было отклонено',
+                    confirmButtonText: 'OK'
+                });
             }
         } catch (error) {
             console.error('Error enabling notifications:', error);
-            alert('Ошибка при включении уведомлений: ' + error.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Ошибка',
+                text: 'Ошибка при включении уведомлений: ' + error.message,
+                confirmButtonText: 'OK'
+            });
         } finally {
             enableBtn.disabled = false;
             enableBtn.innerHTML = '<i class="fa fa-bell-o"></i> Включить уведомления';
@@ -575,11 +590,22 @@
                 statusBadge.className = 'badge bg-warning ms-2';
                 disableBtn.style.display = 'none';
                 enableBtn.style.display = 'inline-block';
-                alert('Уведомления отключены');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Готово',
+                    text: 'Уведомления отключены',
+                    confirmButtonText: 'OK',
+                    timer: 3000
+                });
             }
         } catch (error) {
             console.error('Error disabling notifications:', error);
-            alert('Ошибка при отключении уведомлений');
+            Swal.fire({
+                icon: 'error',
+                title: 'Ошибка',
+                text: 'Ошибка при отключении уведомлений',
+                confirmButtonText: 'OK'
+            });
         } finally {
             disableBtn.disabled = false;
         }
