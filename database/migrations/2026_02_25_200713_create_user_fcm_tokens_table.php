@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('user_fcm_tokens', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->text('fcm_token');
-            $table->string('device_type')->nullable(); // browser name: Chrome, Firefox, etc.
+            $table->string('fcm_token', 500); // VARCHAR instead of TEXT for unique constraint
+            $table->string('device_type', 50)->nullable(); // browser name: Chrome, Firefox, etc.
             $table->timestamps();
 
             // Prevent duplicate tokens for same user
