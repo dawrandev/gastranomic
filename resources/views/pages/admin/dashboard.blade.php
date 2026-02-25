@@ -464,9 +464,29 @@
     async function checkNotificationStatus() {
 
         if (!('Notification' in window)) {
-            statusBadge.textContent = 'Не поддерживается';
-            statusBadge.className = 'badge bg-secondary ms-2';
+            // Detect iOS Safari
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+            if (isIOS && isSafari) {
+                statusBadge.textContent = 'iOS не поддерживает';
+                statusBadge.className = 'badge bg-secondary ms-2';
+                enableBtn.disabled = true;
+                enableBtn.title = 'Web push уведомления не поддерживаются в Safari на iOS';
+            } else {
+                statusBadge.textContent = 'Не поддерживается';
+                statusBadge.className = 'badge bg-secondary ms-2';
+                enableBtn.disabled = true;
+            }
+            return;
+        }
+
+        // Check HTTPS (except localhost)
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+            statusBadge.textContent = 'Требуется HTTPS';
+            statusBadge.className = 'badge bg-warning ms-2';
             enableBtn.disabled = true;
+            enableBtn.title = 'Push уведомления работают только на HTTPS';
             return;
         }
 
