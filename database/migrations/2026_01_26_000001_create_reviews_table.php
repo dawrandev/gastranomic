@@ -22,10 +22,8 @@ return new class extends Migration
             $table->text('comment')->nullable();
             $table->timestamps();
 
-            // Ensure one review per device per restaurant
             $table->unique(['device_id', 'restaurant_id'], 'unique_device_restaurant');
 
-            // Indexes for performance
             $table->index('restaurant_id');
             $table->index('rating');
             $table->index('ip_address');

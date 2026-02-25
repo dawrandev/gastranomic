@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BrandController;
 use App\Http\Controllers\Api\QuestionController;
+use App\Http\Controllers\Api\FavoriteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,11 +28,15 @@ Route::prefix('restaurants')->group(function () {
     Route::get('/{id}/menu', [MenuController::class, 'getRestaurantMenu']);
 
     Route::get('/{id}/reviews', [ReviewController::class, 'index']);
+
+    Route::post('/{id}/reviews', [ReviewController::class, 'store'])
+        ->middleware(['throttle:10,1']);
+
+    Route::post('/{id}/favorite', [FavoriteController::class, 'toggle'])
+        ->middleware(['throttle:20,1']);
 });
 
-// Categories
 Route::get('/categories', [CategoryController::class, 'index']);
-
 // Top restaurants by category
 Route::get('/categories/{id}/top-restaurants', [RestaurantDiscoveryController::class, 'topByCategory']);
 
@@ -47,8 +52,6 @@ Route::get('/menu-items/{id}', [MenuController::class, 'show']);
 
 Route::get('/search', [SearchController::class, 'search']);
 
-// Reviews (guest-only with device tracking)
-Route::prefix('restaurants')->group(function () {
-    Route::post('/{id}/reviews', [ReviewController::class, 'store'])
-        ->middleware(['throttle:10,1']); // 10 requests per minute
-});
+// Favorites
+Route::get('/favorites', [FavoriteController::class, 'index']);
+Route::get('/favorites/map', [FavoriteController::class, 'map']);

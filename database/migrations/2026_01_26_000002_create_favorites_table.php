@@ -13,12 +13,14 @@ return new class extends Migration
     {
         Schema::create('favorites', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->constrained()->onDelete('cascade');
             $table->foreignId('restaurant_id')->constrained()->onDelete('cascade');
+            $table->string('device_id', 100)->comment('Unique device identifier');
+            $table->string('ip_address', 45)->nullable()->comment('IP address (IPv4/IPv6)');
             $table->timestamps();
 
-            $table->unique(['client_id', 'restaurant_id'], 'unique_client_favorite');
-            $table->index('client_id');
+            $table->unique(['device_id', 'restaurant_id'], 'unique_device_favorite');
+            $table->index('device_id');
+            $table->index('ip_address');
         });
     }
 
