@@ -57,7 +57,7 @@ class BrandController extends Controller
         $brands = Brand::selectRaw('brands.*, AVG(reviews.rating) as avg_rating')
             ->leftJoin('restaurants', 'brands.id', '=', 'restaurants.brand_id')
             ->leftJoin('reviews', 'restaurants.id', '=', 'reviews.restaurant_id')
-            ->groupBy('brands.id', 'brands.name', 'brands.description', 'brands.logo', 'brands.created_at', 'brands.updated_at')
+            ->groupBy('brands.id', 'brands.logo', 'brands.created_at', 'brands.updated_at')
             ->orderByDesc('avg_rating')
             ->limit(7)
             ->with('translations')
