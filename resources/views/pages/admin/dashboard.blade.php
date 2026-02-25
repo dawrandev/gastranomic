@@ -439,8 +439,14 @@
     // Register service worker first, then initialize messaging
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/firebase-messaging-sw.js')
-            .then(() => {
+            .then((registration) => {
                 console.log('Service Worker registered');
+
+                // Wait for Service Worker to be fully active
+                return navigator.serviceWorker.ready;
+            })
+            .then((registration) => {
+                console.log('Service Worker is active and ready');
                 try {
                     messaging = firebase.messaging();
                     console.log('Firebase Messaging initialized');
@@ -588,6 +594,10 @@
 
             enableBtn.disabled = true;
             enableBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Загрузка...';
+
+            // Ensure Service Worker is ready before requesting permission
+            await navigator.serviceWorker.ready;
+            console.log('Service Worker ready for enabling notifications');
 
             // Request permission
             const permission = await Notification.requestPermission();
