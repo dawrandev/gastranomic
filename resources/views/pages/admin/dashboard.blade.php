@@ -462,17 +462,23 @@
     }
 
     async function checkNotificationStatus() {
+        console.log('=== Checking notification status ===');
+
         if (!('Notification' in window)) {
+            console.log('Notifications not supported');
             statusBadge.textContent = 'Не поддерживается';
             statusBadge.className = 'badge bg-secondary ms-2';
             enableBtn.disabled = true;
             return;
         }
 
+        console.log('Notification permission:', Notification.permission);
+
         if (Notification.permission === 'granted') {
             // Check if token exists in database
             try {
                 if (!messaging) {
+                    console.log('Messaging not initialized yet');
                     statusBadge.textContent = 'Выключены';
                     statusBadge.className = 'badge bg-warning ms-2';
                     enableBtn.style.display = 'inline-block';
@@ -480,9 +486,23 @@
                     return;
                 }
 
-                const token = await messaging.getToken({ vapidKey: 'BEd5l-_5SjQVRAZnJrY2RMN1OTHILl06FvqV91b5jSIbRiXcHXZXI_cUh_ZgS3x_t7UZb3jtBnJRCvVpgAWMTIA' });
+                console.log('Getting FCM token...');
+                const token = await messaging.getToken({ vapidKey: vapidKey });
+
+                if (!token) {
+                    console.log('No token received from Firebase');
+                    statusBadge.textContent = 'Выключены';
+                    statusBadge.className = 'badge bg-warning ms-2';
+                    enableBtn.style.display = 'inline-block';
+                    disableBtn.style.display = 'none';
+                    return;
+                }
+
+                console.log('Token received:', token.substring(0, 50) + '...');
+                currentToken = token; // Store for later use
 
                 // Verify token exists in database
+                console.log('Checking if token exists in database...');
                 const response = await fetch('/admin/fcm-token/check', {
                     method: 'POST',
                     headers: {
@@ -493,13 +513,16 @@
                 });
 
                 const data = await response.json();
+                console.log('Database check response:', data);
 
                 if (data.success && data.has_token) {
+                    console.log('Token exists in database - notifications enabled');
                     statusBadge.textContent = 'Включены';
                     statusBadge.className = 'badge bg-success ms-2';
                     enableBtn.style.display = 'none';
                     disableBtn.style.display = 'inline-block';
                 } else {
+                    console.log('Token not found in database - notifications disabled');
                     statusBadge.textContent = 'Выключены';
                     statusBadge.className = 'badge bg-warning ms-2';
                     enableBtn.style.display = 'inline-block';
@@ -513,10 +536,12 @@
                 disableBtn.style.display = 'none';
             }
         } else if (Notification.permission === 'denied') {
+            console.log('Notifications blocked by user');
             statusBadge.textContent = 'Заблокированы';
             statusBadge.className = 'badge bg-danger ms-2';
             enableBtn.disabled = true;
         } else {
+            console.log('Notifications not enabled yet');
             statusBadge.textContent = 'Выключены';
             statusBadge.className = 'badge bg-warning ms-2';
         }
