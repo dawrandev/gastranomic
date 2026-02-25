@@ -39,6 +39,11 @@ class User extends Authenticatable
         return $this->hasMany(Brand::class);
     }
 
+    public function fcmTokens()
+    {
+        return $this->hasMany(UserFcmToken::class);
+    }
+
     public function isSuperAdmin(): bool
     {
         return $this->hasRole('superadmin');

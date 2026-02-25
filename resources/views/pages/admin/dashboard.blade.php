@@ -429,6 +429,7 @@
     }
 
     let messaging = null;
+    let currentToken = null; // Store current FCM token
 
     // UI Elements (declare before using them)
     const enableBtn = document.getElementById('enable-notifications-btn');
@@ -499,12 +500,7 @@
     enableBtn.addEventListener('click', async function() {
         try {
             if (!messaging) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Service Worker не готов',
-                    text: 'Пожалуйста, обновите страницу',
-                    confirmButtonText: 'OK'
-                });
+                swal('Service Worker не готов', 'Пожалуйста, обновите страницу', 'warning');
                 return;
             }
 
@@ -520,6 +516,15 @@
                     vapidKey: vapidKey
                 });
 
+                currentToken = token; // Store for later use
+
+                // Detect browser type
+                const browserType = navigator.userAgent.includes('Chrome') ? 'Chrome' :
+                                  navigator.userAgent.includes('Firefox') ? 'Firefox' :
+                                  navigator.userAgent.includes('Safari') ? 'Safari' :
+                                  navigator.userAgent.includes('Edg') ? 'Edge' :
+                                  navigator.userAgent.includes('YaBrowser') ? 'Yandex' : 'Unknown';
+
                 // Save token to backend
                 const response = await fetch('/admin/fcm-token', {
                     method: 'POST',
@@ -528,7 +533,8 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                     },
                     body: JSON.stringify({
-                        fcm_token: token
+                        fcm_token: token,
+                        device_type: browserType
                     })
                 });
 
@@ -549,21 +555,11 @@
             } else {
                 statusBadge.textContent = 'Заблокированы';
                 statusBadge.className = 'badge bg-danger ms-2';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Доступ запрещен',
-                    text: 'Разрешение на уведомления было отклонено',
-                    confirmButtonText: 'OK'
-                });
+                swal('Доступ запрещен', 'Разрешение на уведомления было отклонено', 'error');
             }
         } catch (error) {
             console.error('Error enabling notifications:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Ошибка',
-                text: 'Ошибка при включении уведомлений: ' + error.message,
-                confirmButtonText: 'OK'
-            });
+            swal('Ошибка', 'Ошибка при включении уведомлений: ' + error.message, 'error');
         } finally {
             enableBtn.disabled = false;
             enableBtn.innerHTML = '<i class="fa fa-bell-o"></i> Включить уведомления';
@@ -573,14 +569,23 @@
     // Disable notifications
     disableBtn.addEventListener('click', async function() {
         try {
+            if (!currentToken) {
+                swal('Ошибка', 'Токен не найден', 'error');
+                return;
+            }
+
             disableBtn.disabled = true;
 
             // Remove token from backend
             const response = await fetch('/admin/fcm-token', {
                 method: 'DELETE',
                 headers: {
+                    'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                }
+                },
+                body: JSON.stringify({
+                    fcm_token: currentToken
+                })
             });
 
             const data = await response.json();
@@ -590,22 +595,11 @@
                 statusBadge.className = 'badge bg-warning ms-2';
                 disableBtn.style.display = 'none';
                 enableBtn.style.display = 'inline-block';
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Готово',
-                    text: 'Уведомления отключены',
-                    confirmButtonText: 'OK',
-                    timer: 3000
-                });
+                swal('Готово', 'Уведомления отключены', 'success');
             }
         } catch (error) {
             console.error('Error disabling notifications:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Ошибка',
-                text: 'Ошибка при отключении уведомлений',
-                confirmButtonText: 'OK'
-            });
+            swal('Ошибка', 'Ошибка при отключении уведомлений', 'error');
         } finally {
             disableBtn.disabled = false;
         }

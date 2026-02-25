@@ -20,9 +20,12 @@ class FcmNotificationService
      */
     public function sendNewReviewNotification(User $admin, Review $review): void
     {
-        // Skip if admin doesn't have FCM token
-        if (!$admin->fcm_token) {
-            Log::info('FCM: Skipped notification - admin has no FCM token', [
+        // Get all FCM tokens for this admin (supports multiple browsers)
+        $fcmTokens = $admin->fcmTokens()->pluck('fcm_token')->toArray();
+
+        // Skip if admin doesn't have any FCM tokens
+        if (empty($fcmTokens)) {
+            Log::info('FCM: Skipped notification - admin has no FCM tokens', [
                 'admin_id' => $admin->id,
                 'review_id' => $review->id,
             ]);
@@ -49,25 +52,45 @@ class FcmNotificationService
             $title = 'Новый отзыв';
             $body = "{$restaurantName}\n{$ratingStars}{$commentText}";
 
-            $message = CloudMessage::withTarget('token', $admin->fcm_token)
-                ->withNotification(
-                    Notification::create($title, $body)
-                )
-                ->withData([
-                    'type' => 'new_review',
-                    'review_id' => (string) $review->id,
-                    'restaurant_id' => (string) $review->restaurant_id,
-                    'rating' => (string) $review->rating,
-                    'restaurant_name' => $restaurantName,
-                    'click_action' => url("/admin/reviews/{$review->id}"),
-                ]);
+            // Send to all registered devices
+            $successCount = 0;
+            $failedCount = 0;
 
-            $messaging->send($message);
+            foreach ($fcmTokens as $token) {
+                try {
+                    $message = CloudMessage::withTarget('token', $token)
+                        ->withNotification(
+                            Notification::create($title, $body)
+                        )
+                        ->withData([
+                            'type' => 'new_review',
+                            'review_id' => (string) $review->id,
+                            'restaurant_id' => (string) $review->restaurant_id,
+                            'rating' => (string) $review->rating,
+                            'restaurant_name' => $restaurantName,
+                            'click_action' => url("/admin/reviews/{$review->id}"),
+                        ]);
 
-            Log::info('FCM: Notification sent successfully', [
+                    $messaging->send($message);
+                    $successCount++;
+                } catch (\Kreait\Firebase\Exception\MessagingException $e) {
+                    $failedCount++;
+
+                    // If token is invalid, remove it from database
+                    if (str_contains($e->getMessage(), 'not a valid FCM registration token')) {
+                        $admin->fcmTokens()->where('fcm_token', $token)->delete();
+                        Log::info('FCM: Invalid token removed', ['token' => substr($token, 0, 50)]);
+                    }
+                }
+            }
+
+            Log::info('FCM: Notification sent to multiple devices', [
                 'admin_id' => $admin->id,
                 'review_id' => $review->id,
                 'restaurant_id' => $review->restaurant_id,
+                'success_count' => $successCount,
+                'failed_count' => $failedCount,
+                'total_devices' => count($fcmTokens),
             ]);
         } catch (\Kreait\Firebase\Exception\MessagingException $e) {
             // Handle FCM-specific errors (invalid token, etc.)
