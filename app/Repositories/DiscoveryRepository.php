@@ -17,7 +17,8 @@ class DiscoveryRepository
         $query = Restaurant::query()
             ->where('is_active', true)
             ->with([
-                'brand:id,name,logo',
+                'brand:id,logo',
+                'brand.translations',
                 'city:id',
                 'city.translations',
                 'coverImage:id,restaurant_id,image_path,is_cover',
@@ -99,7 +100,8 @@ class DiscoveryRepository
             ->whereNotNull('location')
             ->having('distance', '<=', $radiusInKm)
             ->with([
-                'brand:id,name,logo',
+                'brand:id,logo',
+                'brand.translations',
                 'city:id',
                 'city.translations',
                 'coverImage:id,restaurant_id,image_path,is_cover',
@@ -129,7 +131,7 @@ class DiscoveryRepository
                 DB::raw('ST_X(location) as lat_coord'), // Nomini o'zgartirdik
                 DB::raw('ST_Y(location) as lng_coord'),
             ])
-            ->with(['brand:id,name'])
+            ->with(['brand:id,logo', 'brand.translations'])
             ->withAvg('reviews', 'rating');
 
         // Filter by category
@@ -166,7 +168,8 @@ class DiscoveryRepository
             ->where('id', $id)
             ->where('is_active', true)
             ->with([
-                'brand:id,name,logo,description',
+                'brand:id,logo',
+                'brand.translations',
                 'city:id',
                 'city.translations',
                 'images:id,restaurant_id,image_path,is_cover',
@@ -188,12 +191,13 @@ class DiscoveryRepository
             ->where('is_active', true)
             ->where(function ($q) use ($query) {
                 $q->where('branch_name', 'like', "%{$query}%")
-                    ->orWhereHas('brand', function ($q) use ($query) {
+                    ->orWhereHas('brand.translations', function ($q) use ($query) {
                         $q->where('name', 'like', "%{$query}%");
                     });
             })
             ->with([
-                'brand:id,name,logo',
+                'brand:id,logo',
+                'brand.translations',
                 'city:id',
                 'city.translations',
                 'coverImage:id,restaurant_id,image_path,is_cover',
@@ -217,7 +221,8 @@ class DiscoveryRepository
                 $q->where('categories.id', $categoryId);
             })
             ->with([
-                'brand:id,name,logo',
+                'brand:id,logo',
+                'brand.translations',
                 'city:id',
                 'city.translations',
                 'coverImage:id,restaurant_id,image_path,is_cover',
@@ -255,7 +260,8 @@ class DiscoveryRepository
             ->where('is_active', true)
             ->whereNotNull('location')
             ->with([
-                'brand:id,name,logo',
+                'brand:id,logo',
+                'brand.translations',
                 'city:id',
                 'city.translations',
                 'coverImage:id,restaurant_id,image_path,is_cover',
