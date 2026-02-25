@@ -430,6 +430,11 @@
 
     let messaging = null;
 
+    // UI Elements (declare before using them)
+    const enableBtn = document.getElementById('enable-notifications-btn');
+    const disableBtn = document.getElementById('disable-notifications-btn');
+    const statusBadge = document.getElementById('notification-status');
+
     // Register service worker first, then initialize messaging
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/firebase-messaging-sw.js')
@@ -451,11 +456,6 @@
         console.error('Service Workers not supported');
         checkNotificationStatusOffline();
     }
-
-    // UI Elements
-    const enableBtn = document.getElementById('enable-notifications-btn');
-    const disableBtn = document.getElementById('disable-notifications-btn');
-    const statusBadge = document.getElementById('notification-status');
 
     function checkNotificationStatus() {
         if (!('Notification' in window)) {

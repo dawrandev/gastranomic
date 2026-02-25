@@ -3,16 +3,20 @@ importScripts('https://www.gstatic.com/firebasejs/10.7.0/firebase-messaging-comp
 
 // Initialize the Firebase app in the service worker
 // IMPORTANT: Replace these values with your actual Firebase project credentials
-firebase.initializeApp({
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-});
+// Import the functions you need from the SDKs you need
 
-// Retrieve an instance of Firebase Messaging
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBgMtPMATJwaA1IAgJef2nksTG_P-RJEnc",
+    authDomain: "gastranomic-6377c.firebaseapp.com",
+    projectId: "gastranomic-6377c",
+    storageBucket: "gastranomic-6377c.firebasestorage.app",
+    messagingSenderId: "911893928589",
+    appId: "1:911893928589:web:85db2725899d618eb320c4"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 // Handle background messages
