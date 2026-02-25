@@ -2,47 +2,26 @@
 
 namespace App\Services;
 
-use App\Repositories\AuthRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
-    public function __construct(
-        protected AuthRepository $authRepository
-    ) {}
-
-    public function login(array $data): string
+    /**
+     * Handle admin login.
+     */
+    public function login(array $credentials): string
     {
-        if (!Auth::attempt([
-            'login' => $data['login'],
-            'password' => $data['password'],
-        ])) {
-            throw ValidationException::withMessages([
-                'login' => __('auth.failed'),
-            ]);
+        if (!Auth::attempt($credentials)) {
+            throw new \Exception('Invalid credentials');
         }
 
         $user = Auth::user();
 
-        return $this->determineRedirect($user);
-    }
-
-    protected function determineRedirect($user): string
-    {
+        // Redirect based on user role
         if ($user->hasRole('superadmin')) {
             return route('superadmin.dashboard');
         }
 
-        if ($user->hasRole('admin')) {
-            if ($user->restaurants->isEmpty()) {
-                return route('restaurants.index', ['create' => 1]);
-            }
-
-            return route('admin.dashboard');
-        }
-
-        Auth::logout();
-        throw ValidationException::withMessages(['login' => __('Access denied.')]);
+        return route('admin.dashboard');
     }
 }

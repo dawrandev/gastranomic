@@ -14,18 +14,7 @@ class ReviewRepository
     public function getByRestaurantId(int $restaurantId, int $perPage = 15): LengthAwarePaginator
     {
         return Review::where('restaurant_id', $restaurantId)
-            ->with(['client:id,first_name,last_name,image_path', 'selectedOptions.translations'])
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
-    }
-
-    /**
-     * Get all reviews by a client.
-     */
-    public function getByClientId(int $clientId, int $perPage = 15): LengthAwarePaginator
-    {
-        return Review::where('client_id', $clientId)
-            ->with(['restaurant:id,branch_name'])
+            ->with(['selectedOptions.translations'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
     }
@@ -35,17 +24,7 @@ class ReviewRepository
      */
     public function findById(int $id): ?Review
     {
-        return Review::with(['client', 'restaurant'])->find($id);
-    }
-
-    /**
-     * Find review by client and restaurant.
-     */
-    public function findByClientAndRestaurant(int $clientId, int $restaurantId): ?Review
-    {
-        return Review::where('client_id', $clientId)
-            ->where('restaurant_id', $restaurantId)
-            ->first();
+        return Review::with(['restaurant'])->find($id);
     }
 
     /**
@@ -54,23 +33,6 @@ class ReviewRepository
     public function create(array $data): Review
     {
         return Review::create($data);
-    }
-
-    /**
-     * Update an existing review.
-     */
-    public function update(Review $review, array $data): Review
-    {
-        $review->update($data);
-        return $review->fresh(['client', 'restaurant']);
-    }
-
-    /**
-     * Delete a review.
-     */
-    public function delete(Review $review): bool
-    {
-        return $review->delete();
     }
 
     /**
@@ -115,7 +77,7 @@ class ReviewRepository
     public function getPaginatedByRestaurantIds(array $restaurantIds, int $perPage = 15, ?int $rating = null): LengthAwarePaginator
     {
         $query = Review::whereIn('restaurant_id', $restaurantIds)
-            ->with(['client:id,first_name,last_name,image_path', 'restaurant:id,branch_name', 'selectedOptions.translations']);
+            ->with(['restaurant:id,branch_name', 'selectedOptions.translations']);
 
         if ($rating) {
             $query->where('rating', $rating);
@@ -129,7 +91,7 @@ class ReviewRepository
      */
     public function getAllPaginated(int $perPage = 15, ?int $rating = null, ?int $restaurantId = null): LengthAwarePaginator
     {
-        $query = Review::with(['client:id,first_name,last_name,image_path', 'restaurant:id,branch_name']);
+        $query = Review::with(['restaurant:id,branch_name']);
 
         if ($rating) {
             $query->where('rating', $rating);

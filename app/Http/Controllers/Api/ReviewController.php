@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReviewRequest;
-use App\Http\Requests\UpdateReviewRequest;
 use App\Http\Resources\ReviewResource;
 use App\Services\ReviewService;
 use Illuminate\Http\JsonResponse;
@@ -67,7 +66,6 @@ class ReviewController extends Controller
         path: '/api/restaurants/{id}/reviews',
         summary: 'Restoranga sharh qoldirish',
         description: 'Restoranga reyting, izoh va savollar javoblarini qoldirish. Avval GET /api/questions endpoint\'dan savollarni oling. selected_option_ids arrayiga faqat multiple-choice savollari (options mavjud bo\'lgan savollar) uchun option ID\'larini kiriting. Limit: 3 sharh/kun per restaurant.',
-        security: [['bearerAuth' => []], []],
         tags: ['Sharhlar'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -228,12 +226,8 @@ class ReviewController extends Controller
             ], 429);
         }
 
-        // Get authenticated client if exists (nullable for guest support)
-        // OptionalAuthMiddleware automatically sets user if token is valid
-        $clientId = $request->user()?->id;
-
         $review = $this->reviewService->createOrUpdateReview(
-            $clientId,
+            null,
             $restaurantId,
             [
                 ...$validated,
@@ -252,159 +246,4 @@ class ReviewController extends Controller
         ], 201);
     }
 
-    #[OA\Put(
-        path: '/api/reviews/{id}',
-        summary: 'Sharhni yangilash',
-        description: 'O\'z sharhingizni yangilash. Faqat authenticated users uchun.',
-        security: [['sanctum' => []]],
-        tags: ['Sharhlar'],
-        requestBody: new OA\RequestBody(
-            required: false,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(
-                        property: 'rating',
-                        type: 'integer',
-                        description: 'Reyting (1 dan 5 gacha)',
-                        minimum: 1,
-                        maximum: 5,
-                        example: 4,
-                        nullable: true
-                    ),
-                    new OA\Property(
-                        property: 'comment',
-                        type: 'string',
-                        description: 'Izoh (ixtiyoriy, maksimum 1000 belgi)',
-                        maxLength: 1000,
-                        nullable: true,
-                        example: 'Yangilangan izoh'
-                    ),
-                    new OA\Property(
-                        property: 'phone',
-                        type: 'string',
-                        description: 'Telefon raqami (ixtiyoriy, maksimum 20 belgi)',
-                        maxLength: 20,
-                        nullable: true,
-                        example: '+998901234567'
-                    )
-                ]
-            )
-        ),
-        parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Review updated',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string'),
-                        new OA\Property(property: 'data', type: 'object'),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Unauthenticated'
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Forbidden'
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Review not found'
-            )
-        ]
-    )]
-    public function update(UpdateReviewRequest $request, int $id): JsonResponse
-    {
-        $client = $request->user();
-        $review = \App\Models\Review::find($id);
-
-        if (!$review) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Review not found',
-            ], 404);
-        }
-
-        if ($review->client_id !== $client->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You do not have permission to edit this review',
-            ], 403);
-        }
-
-        $review = $this->reviewService->updateReview($review, $request->validated());
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Review updated successfully',
-            'data' => new ReviewResource($review),
-        ]);
-    }
-
-    #[OA\Delete(
-        path: '/api/reviews/{id}',
-        summary: 'Sharhni o\'chirish',
-        description: 'O\'z sharhingizni o\'chirish. Faqat authenticated users uchun.',
-        security: [['sanctum' => []]],
-        tags: ['Sharhlar'],
-        parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Review deleted',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'message', type: 'string'),
-                    ]
-                )
-            ),
-            new OA\Response(
-                response: 401,
-                description: 'Unauthenticated'
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Forbidden'
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Review not found'
-            )
-        ]
-    )]
-    public function destroy(Request $request, int $id): JsonResponse
-    {
-        $client = $request->user();
-        $review = \App\Models\Review::find($id);
-
-        if (!$review) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Review not found',
-            ], 404);
-        }
-
-        if ($review->client_id !== $client->id) {
-            return response()->json([
-                'success' => false,
-                'message' => 'You do not have permission to delete this review',
-            ], 403);
-        }
-
-        $this->reviewService->deleteReview($review);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Review deleted successfully',
-        ]);
-    }
 }

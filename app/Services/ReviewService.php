@@ -21,14 +21,6 @@ class ReviewService
     }
 
     /**
-     * Get all reviews by a client.
-     */
-    public function getClientReviews(int $clientId, int $perPage = 15): LengthAwarePaginator
-    {
-        return $this->reviewRepository->getByClientId($clientId, $perPage);
-    }
-
-    /**
      * Create a new review (always creates new, never updates based on device_id).
      * Clients can leave multiple reviews per restaurant.
      */
@@ -53,22 +45,6 @@ class ReviewService
         }
 
         return $review;
-    }
-
-    /**
-     * Update a review.
-     */
-    public function updateReview(Review $review, array $data): Review
-    {
-        return $this->reviewRepository->update($review, $data);
-    }
-
-    /**
-     * Delete a review.
-     */
-    public function deleteReview(Review $review): bool
-    {
-        return $this->reviewRepository->delete($review);
     }
 
     /**

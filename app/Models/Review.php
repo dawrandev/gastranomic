@@ -12,7 +12,6 @@ class Review extends Model
     use HasFactory;
 
     protected $fillable = [
-        'client_id',
         'restaurant_id',
         'device_id',
         'ip_address',
@@ -24,14 +23,6 @@ class Review extends Model
     protected $casts = [
         'rating' => 'integer',
     ];
-
-    /**
-     * Get the client that owns the review.
-     */
-    public function client(): BelongsTo
-    {
-        return $this->belongsTo(Client::class);
-    }
 
     /**
      * Get the restaurant that owns the review.

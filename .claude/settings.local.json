@@ -13,7 +13,8 @@
       "Bash(grep:*)",
       "Bash(git commit:*)",
       "Bash(php -l:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(composer dump-autoload:*)"
     ]
   }
 }

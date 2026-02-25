@@ -160,9 +160,9 @@ class DiscoveryRepository
     /**
      * Get restaurant by ID with full details.
      */
-    public function getRestaurantById(int $id, ?int $clientId = null): ?Restaurant
+    public function getRestaurantById(int $id): ?Restaurant
     {
-        $restaurant = Restaurant::query()
+        return Restaurant::query()
             ->where('id', $id)
             ->where('is_active', true)
             ->with([
@@ -177,15 +177,6 @@ class DiscoveryRepository
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->first();
-
-        if ($restaurant && $clientId) {
-            // Add is_favorited attribute
-            $restaurant->is_favorited = $restaurant->favorites()
-                ->where('client_id', $clientId)
-                ->exists();
-        }
-
-        return $restaurant;
     }
 
     /**

@@ -63,7 +63,6 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $userData) {
-            // Role ma'lumotini ajratib olamiz
             $role = $userData['role'];
             unset($userData['role']);
 
