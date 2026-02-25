@@ -34,7 +34,6 @@ class ReviewService
         // Allows multiple reviews per device per restaurant
         // Rate limiting is handled separately in canDeviceReview()
         $review = $this->reviewRepository->create([
-            'client_id' => $clientId,
             'restaurant_id' => $restaurantId,
             ...$data,
         ]);

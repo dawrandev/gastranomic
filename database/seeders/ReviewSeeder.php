@@ -58,7 +58,6 @@ class ReviewSeeder extends Seeder
             DB::table('reviews')->updateOrInsert(
                 ['id' => $review['id']],
                 [
-                    'client_id'     => null,
                     'restaurant_id' => $review['restaurant_id'],
                     'device_id'     => $review['device_id'],
                     'ip_address'    => $review['ip'],

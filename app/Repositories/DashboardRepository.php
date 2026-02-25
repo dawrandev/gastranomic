@@ -20,11 +20,11 @@ class DashboardRepository
     }
 
     /**
-     * Get guest reviews count (client_id is null)
+     * Get guest reviews count (all reviews are guest reviews now)
      */
     public function getGuestReviewsCount(): int
     {
-        return Review::whereNull('client_id')->count();
+        return Review::count();
     }
 
     /**
@@ -217,7 +217,7 @@ class DashboardRepository
             ->selectRaw('
                 COUNT(*) as total_reviews,
                 AVG(rating) as average_rating,
-                SUM(CASE WHEN client_id IS NULL THEN 1 ELSE 0 END) as guest_reviews,
+                COUNT(*) as guest_reviews,
                 SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as five_star,
                 SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as today_reviews
             ', [$today])
@@ -396,21 +396,17 @@ class DashboardRepository
 
     /**
      * Get guest vs registered reviews for admin's restaurants
+     * (All reviews are guest reviews now)
      */
     public function getAdminGuestVsRegistered(array $restaurantIds): array
     {
-        $stats = Review::whereIn('restaurant_id', $restaurantIds)
-            ->selectRaw('
-                SUM(CASE WHEN client_id IS NULL THEN 1 ELSE 0 END) as guest_count,
-                SUM(CASE WHEN client_id IS NOT NULL THEN 1 ELSE 0 END) as registered_count
-            ')
-            ->first();
+        $guestCount = Review::whereIn('restaurant_id', $restaurantIds)->count();
 
         return [
             'labels' => ['Гостевые', 'Зарегистрированные'],
             'data' => [
-                $stats->guest_count ?? 0,
-                $stats->registered_count ?? 0
+                $guestCount,
+                0  // No registered reviews anymore
             ],
         ];
     }
