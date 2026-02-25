@@ -411,17 +411,19 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Get locale from localStorage or URL or default
-    const urlParams = new URLSearchParams(window.location.search);
-    let currentLocale = localStorage.getItem('reviews_locale') || urlParams.get('locale') || '{{ $locale ?? "ru" }}';
-
-    // Update button text on page load
+    // Locale labels (global in this scope)
     const localeLabels = {
         'uz': 'O\'zbek',
         'ru': 'Русский',
         'en': 'English',
         'kk': 'Қарақалпақ'
     };
+
+    // Get locale from localStorage or URL or default
+    const urlParams = new URLSearchParams(window.location.search);
+    let currentLocale = localStorage.getItem('reviews_locale') || urlParams.get('locale') || '{{ $locale ?? "ru" }}';
+
+    // Update button text on page load
     $('#languageDropdown').html('<i class="fa fa-globe me-1"></i> ' + localeLabels[currentLocale]);
     $('.locale-switch[data-locale="' + currentLocale + '"]').addClass('active');
 
@@ -501,6 +503,10 @@ $(document).ready(function() {
         // Update active state
         $('.locale-switch').removeClass('active');
         $(this).addClass('active');
+
+        // Close dropdown manually
+        $button.dropdown('hide');
+        $('.dropdown-menu').removeClass('show');
 
         // Load reviews with new locale
         loadReviews(1, locale);

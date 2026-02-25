@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
                 'brand_id' => null,
                 'name' => 'Asosiy Boshqaruvchi',
                 'login' => 'superadmin',
-                'password' => '$2y$12$iciKt8Q26TF5R2j8QNTJKemaBK.pBxCxJnoZCDPMN/XVg0retsVmG',
+                'password' => 'superadmin123',
                 'created_at' => '2026-01-29 00:44:04',
                 'role' => 'superadmin',
             ],
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
                 'brand_id' => 1,
                 'name' => 'Cake Bumer Admin',
                 'login' => 'cakebumer',
-                'password' => '$2y$12$nRXMEWySSxzl/tbDHblghe9r7vA0UA7cIoFNPy8zt9dd8QVtVPL8C',
+                'password' => 'cakebumer123',
                 'created_at' => '2026-01-29 00:45:14',
                 'role' => 'admin',
             ],
@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
                 'brand_id' => 2,
                 'name' => 'Grand Lavash Admini',
                 'login' => 'grand123',
-                'password' => '$2y$12$mX2XUHqJaEupp6fJW0SGdOEzM0LCed.cssnMtMwAWNd7s/iEFvIoK',
+                'password' => 'grand123',
                 'created_at' => '2026-01-29 01:55:54',
                 'role' => 'admin',
             ],
@@ -47,7 +47,7 @@ class UserSeeder extends Seeder
                 'brand_id' => 3,
                 'name' => 'Neo Admin',
                 'login' => 'neo12345',
-                'password' => '$2y$12$PJNusANyMe4u7mblVlYAGOYAtNXCyt.uELHOvC//zn4Wl/I1OAtQu',
+                'password' => 'neo12345',
                 'created_at' => '2026-01-29 02:29:44',
                 'role' => 'admin',
             ],
@@ -55,32 +55,30 @@ class UserSeeder extends Seeder
                 'id' => 5,
                 'brand_id' => 4,
                 'name' => 'Qaraqalpaǵım Admin',
-                'login' => 'qaraqalpaq',
-                'password' => '$2y$12$DqGRxXI0xEJYYUSbe5F8Xew4XXVDWAzCL6z8MJe2QZXTzu/gKxLvy',
+                'login' => 'qaraqalpagim',
+                'password' => 'qaraqalpagim123',
                 'created_at' => '2026-01-29 02:35:51',
                 'role' => 'admin',
             ],
         ];
 
         foreach ($users as $userData) {
-            // Extract role from user data
+            // Role ma'lumotini ajratib olamiz
             $role = $userData['role'];
             unset($userData['role']);
 
-            // Create or update user
             $user = User::updateOrCreate(
                 ['id' => $userData['id']],
                 [
-                    'brand_id'      => $userData['brand_id'],
-                    'name'          => $userData['name'],
-                    'login'         => $userData['login'],
-                    'password'      => $userData['password'],
-                    'created_at'    => $userData['created_at'],
-                    'updated_at'    => $userData['created_at'],
+                    'brand_id'   => $userData['brand_id'],
+                    'name'       => $userData['name'],
+                    'login'      => $userData['login'],
+                    'password'   => Hash::make($userData['password']),
+                    'created_at' => $userData['created_at'],
+                    'updated_at' => $userData['created_at'],
                 ]
             );
 
-            // Assign role to user
             if (!$user->hasRole($role)) {
                 $user->assignRole($role);
             }
