@@ -33,20 +33,32 @@ class FcmNotificationService
             $factory = (new Factory)->withServiceAccount(storage_path('app/firebase-credentials.json'));
             $messaging = $factory->createMessaging();
 
+            // Build notification content
             $ratingStars = str_repeat('⭐', $review->rating);
+            $restaurantName = $review->restaurant->branch_name;
+
+            // Include comment if exists (limit to 100 chars)
+            $commentText = '';
+            if (!empty($review->comment)) {
+                $commentText = "\n" . mb_substr($review->comment, 0, 100);
+                if (mb_strlen($review->comment) > 100) {
+                    $commentText .= '...';
+                }
+            }
+
+            $title = 'Новый отзыв';
+            $body = "{$restaurantName}\n{$ratingStars}{$commentText}";
 
             $message = CloudMessage::withTarget('token', $admin->fcm_token)
                 ->withNotification(
-                    Notification::create(
-                        'Yangi sharh!',
-                        "Restoraningizga yangi {$ratingStars} sharh qoldirildi"
-                    )
+                    Notification::create($title, $body)
                 )
                 ->withData([
                     'type' => 'new_review',
                     'review_id' => (string) $review->id,
                     'restaurant_id' => (string) $review->restaurant_id,
                     'rating' => (string) $review->rating,
+                    'restaurant_name' => $restaurantName,
                     'click_action' => url("/admin/reviews/{$review->id}"),
                 ]);
 
