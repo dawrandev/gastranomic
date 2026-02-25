@@ -12,10 +12,12 @@ class RestaurantResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        $locale = $request->header('Accept-Language', 'kk');
+
         return [
             'id' => $this->id,
             'brand_id' => $this->brand_id,
-            'brand' => $this->brand->name ?? 'N/A',
+            'brand' => $this->brand ? $this->brand->getTranslatedName($locale) : 'N/A',
             'city_id' => $this->city_id,
             'city' => $this->city->translations->first()->name ?? 'N/A',
             'branch_name' => $this->branch_name,

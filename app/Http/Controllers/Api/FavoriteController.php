@@ -70,7 +70,7 @@ class FavoriteController extends Controller
         $perPage = $request->input('per_page', 15);
 
         $favorites = Favorite::where('device_id', $deviceId)
-            ->with(['restaurant.city', 'restaurant.brand', 'restaurant.categories'])
+            ->with(['restaurant.city', 'restaurant.brand.translations', 'restaurant.categories'])
             ->latest()
             ->paginate($perPage);
 
@@ -139,7 +139,7 @@ class FavoriteController extends Controller
         $deviceId = $request->input('device_id');
 
         $favorites = Favorite::where('device_id', $deviceId)
-            ->with(['restaurant.city', 'restaurant.brand', 'restaurant.categories'])
+            ->with(['restaurant.city', 'restaurant.brand.translations', 'restaurant.categories'])
             ->get();
 
         $restaurants = $favorites->map(fn($favorite) => $favorite->restaurant);
