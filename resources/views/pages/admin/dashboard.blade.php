@@ -560,7 +560,9 @@
     }
 
     // Enable notifications
-    enableBtn.addEventListener('click', async function() {
+    enableBtn.addEventListener('click', async function(e) {
+        e.preventDefault(); // Prevent page reload
+
         try {
             if (!messaging) {
                 swal('Service Worker не готов', 'Пожалуйста, обновите страницу', 'warning');
@@ -630,7 +632,9 @@
     });
 
     // Disable notifications
-    disableBtn.addEventListener('click', async function() {
+    disableBtn.addEventListener('click', async function(e) {
+        e.preventDefault(); // Prevent page reload
+
         try {
             if (!currentToken) {
                 swal('Ошибка', 'Токен не найден', 'error');
