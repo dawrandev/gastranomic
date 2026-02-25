@@ -68,7 +68,7 @@ class FcmNotificationService
                             'restaurant_id' => (string) $review->restaurant_id,
                             'rating' => (string) $review->rating,
                             'restaurant_name' => $restaurantName,
-                            'click_action' => url("/admin/reviews/{$review->id}"),
+                            'click_action' => url('/reviews'),
                         ]);
 
                     $messaging->send($message);

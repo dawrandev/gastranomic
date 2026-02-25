@@ -440,51 +440,41 @@
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/firebase-messaging-sw.js')
             .then((registration) => {
-                console.log('Service Worker registered');
 
                 // Wait for Service Worker to be fully active
                 return navigator.serviceWorker.ready;
             })
             .then((registration) => {
-                console.log('Service Worker is active and ready');
                 try {
                     messaging = firebase.messaging();
-                    console.log('Firebase Messaging initialized');
                     checkNotificationStatus();
 
                     // Setup foreground message handler AFTER messaging is initialized
                     setupMessageHandler();
                 } catch (error) {
-                    console.error('Firebase Messaging error:', error);
                 }
             })
             .catch((error) => {
-                console.error('Service Worker registration failed:', error);
                 checkNotificationStatusOffline();
             });
     } else {
-        console.error('Service Workers not supported');
         checkNotificationStatusOffline();
     }
 
     async function checkNotificationStatus() {
-        console.log('=== Checking notification status ===');
 
         if (!('Notification' in window)) {
-            console.log('Notifications not supported');
             statusBadge.textContent = 'Не поддерживается';
             statusBadge.className = 'badge bg-secondary ms-2';
             enableBtn.disabled = true;
             return;
         }
 
-        console.log('Notification permission:', Notification.permission);
 
         if (Notification.permission === 'granted') {
             // Check if token exists in database
             try {
                 if (!messaging) {
-                    console.log('Messaging not initialized yet');
                     statusBadge.textContent = 'Выключены';
                     statusBadge.className = 'badge bg-warning ms-2';
                     enableBtn.style.display = 'inline-block';
@@ -493,13 +483,10 @@
                 }
 
                 // Wait for Service Worker to be active before getting token
-                console.log('Waiting for Service Worker to be active...');
                 const registration = await navigator.serviceWorker.ready;
-                console.log('Service Worker is active, getting FCM token...');
 
                 // Check IndexedDB availability
                 if (!window.indexedDB) {
-                    console.error('IndexedDB not available');
                     statusBadge.textContent = 'Ошибка хранилища';
                     statusBadge.className = 'badge bg-warning ms-2';
                     enableBtn.style.display = 'inline-block';
@@ -514,7 +501,6 @@
                         serviceWorkerRegistration: registration
                     });
                 } catch (tokenError) {
-                    console.error('Error getting FCM token:', tokenError);
 
                     // Service Worker yoki IndexedDB xatosi
                     if (tokenError.message && (
@@ -523,7 +509,6 @@
                         tokenError.message.includes('no active Service Worker') ||
                         tokenError.message.includes('Subscription failed')
                     )) {
-                        console.log('Storage or Service Worker error');
                         statusBadge.textContent = 'Выключены';
                         statusBadge.className = 'badge bg-warning ms-2';
                         enableBtn.style.display = 'inline-block';
@@ -534,7 +519,6 @@
                 }
 
                 if (!token) {
-                    console.log('No token received from Firebase');
                     statusBadge.textContent = 'Выключены';
                     statusBadge.className = 'badge bg-warning ms-2';
                     enableBtn.style.display = 'inline-block';
@@ -542,11 +526,9 @@
                     return;
                 }
 
-                console.log('Token received:', token.substring(0, 50) + '...');
                 currentToken = token; // Store for later use
 
                 // Verify token exists in database
-                console.log('Checking if token exists in database...');
                 const response = await fetch('/admin/fcm-token/check', {
                     method: 'POST',
                     headers: {
@@ -557,35 +539,29 @@
                 });
 
                 const data = await response.json();
-                console.log('Database check response:', data);
 
                 if (data.success && data.has_token) {
-                    console.log('Token exists in database - notifications enabled');
                     statusBadge.textContent = 'Включены';
                     statusBadge.className = 'badge bg-success ms-2';
                     enableBtn.style.display = 'none';
                     disableBtn.style.display = 'inline-block';
                 } else {
-                    console.log('Token not found in database - notifications disabled');
                     statusBadge.textContent = 'Выключены';
                     statusBadge.className = 'badge bg-warning ms-2';
                     enableBtn.style.display = 'inline-block';
                     disableBtn.style.display = 'none';
                 }
             } catch (error) {
-                console.error('Error checking token status:', error);
                 statusBadge.textContent = 'Выключены';
                 statusBadge.className = 'badge bg-warning ms-2';
                 enableBtn.style.display = 'inline-block';
                 disableBtn.style.display = 'none';
             }
         } else if (Notification.permission === 'denied') {
-            console.log('Notifications blocked by user');
             statusBadge.textContent = 'Заблокированы';
             statusBadge.className = 'badge bg-danger ms-2';
             enableBtn.disabled = true;
         } else {
-            console.log('Notifications not enabled yet');
             statusBadge.textContent = 'Выключены';
             statusBadge.className = 'badge bg-warning ms-2';
         }
@@ -618,7 +594,6 @@
 
             // Ensure Service Worker is ready before requesting permission
             await navigator.serviceWorker.ready;
-            console.log('Service Worker ready for enabling notifications');
 
             // Request permission
             const permission = await Notification.requestPermission();
@@ -634,7 +609,6 @@
 
                 // Get Service Worker registration
                 const registration = await navigator.serviceWorker.ready;
-                console.log('Service Worker ready, getting token...');
 
                 // Get FCM token
                 let token;
@@ -644,7 +618,6 @@
                         serviceWorkerRegistration: registration
                     });
                 } catch (tokenError) {
-                    console.error('Error getting FCM token:', tokenError);
 
                     // IndexedDB, storage yoki Service Worker xatosi
                     if (tokenError.message && (
@@ -664,7 +637,6 @@
                 }
 
                 currentToken = token; // Store for later use
-                console.log('FCM Token obtained:', token.substring(0, 50) + '...');
 
                 // Save token to backend
                 const response = await fetch('/admin/fcm-token', {
@@ -698,7 +670,6 @@
                 swal('Доступ запрещен', 'Разрешение на уведомления было отклонено', 'error');
             }
         } catch (error) {
-            console.error('Error enabling notifications:', error);
             swal('Ошибка', 'Ошибка при включении уведомлений: ' + error.message, 'error');
         } finally {
             enableBtn.disabled = false;
@@ -740,7 +711,6 @@
                 swal('Готово', 'Уведомления отключены', 'success');
             }
         } catch (error) {
-            console.error('Error disabling notifications:', error);
             swal('Ошибка', 'Ошибка при отключении уведомлений', 'error');
         } finally {
             disableBtn.disabled = false;
@@ -750,12 +720,10 @@
     // Setup foreground message handler (called after messaging is initialized)
     function setupMessageHandler() {
         if (!messaging) {
-            console.error('Cannot setup message handler: messaging is null');
             return;
         }
 
         messaging.onMessage((payload) => {
-            console.log('Message received:', payload);
 
             const notificationTitle = payload.notification.title;
             const notificationOptions = {
@@ -779,7 +747,6 @@
             }
         });
 
-        console.log('Message handler setup complete');
     }
 </script>
 @endpush

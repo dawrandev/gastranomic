@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
@@ -12,7 +13,9 @@ class AuthService
     public function login(array $credentials): string
     {
         if (!Auth::attempt($credentials)) {
-            throw new \Exception('Invalid credentials');
+            throw ValidationException::withMessages([
+                'login' => ['Неверный логин или пароль'],
+            ]);
         }
 
         $user = Auth::user();

@@ -30,10 +30,10 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'login.required' => __('The :attribute field is required.', ['attribute' => __('login')]),
-            'login.string' => __('The :attribute must be a string.', ['attribute' => __('login')]),
-            'password.required' => __('The :attribute field is required.', ['attribute' => __('password')]),
-            'password.string' => __('The :attribute must be a string.', ['attribute' => __('password')]),
+            'login.required' => 'Поле логин обязательно для заполнения',
+            'login.string' => 'Логин должен быть строкой',
+            'password.required' => 'Поле пароль обязательно для заполнения',
+            'password.string' => 'Пароль должен быть строкой',
         ];
     }
 }
