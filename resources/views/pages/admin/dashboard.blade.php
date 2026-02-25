@@ -461,7 +461,7 @@
         checkNotificationStatusOffline();
     }
 
-    function checkNotificationStatus() {
+    async function checkNotificationStatus() {
         if (!('Notification' in window)) {
             statusBadge.textContent = 'Не поддерживается';
             statusBadge.className = 'badge bg-secondary ms-2';
@@ -470,10 +470,48 @@
         }
 
         if (Notification.permission === 'granted') {
-            statusBadge.textContent = 'Включены';
-            statusBadge.className = 'badge bg-success ms-2';
-            enableBtn.style.display = 'none';
-            disableBtn.style.display = 'inline-block';
+            // Check if token exists in database
+            try {
+                if (!messaging) {
+                    statusBadge.textContent = 'Выключены';
+                    statusBadge.className = 'badge bg-warning ms-2';
+                    enableBtn.style.display = 'inline-block';
+                    disableBtn.style.display = 'none';
+                    return;
+                }
+
+                const token = await messaging.getToken({ vapidKey: 'BEd5l-_5SjQVRAZnJrY2RMN1OTHILl06FvqV91b5jSIbRiXcHXZXI_cUh_ZgS3x_t7UZb3jtBnJRCvVpgAWMTIA' });
+
+                // Verify token exists in database
+                const response = await fetch('/admin/fcm-token/check', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({ fcm_token: token })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.has_token) {
+                    statusBadge.textContent = 'Включены';
+                    statusBadge.className = 'badge bg-success ms-2';
+                    enableBtn.style.display = 'none';
+                    disableBtn.style.display = 'inline-block';
+                } else {
+                    statusBadge.textContent = 'Выключены';
+                    statusBadge.className = 'badge bg-warning ms-2';
+                    enableBtn.style.display = 'inline-block';
+                    disableBtn.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error checking token status:', error);
+                statusBadge.textContent = 'Выключены';
+                statusBadge.className = 'badge bg-warning ms-2';
+                enableBtn.style.display = 'inline-block';
+                disableBtn.style.display = 'none';
+            }
         } else if (Notification.permission === 'denied') {
             statusBadge.textContent = 'Заблокированы';
             statusBadge.className = 'badge bg-danger ms-2';

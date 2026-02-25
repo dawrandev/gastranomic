@@ -96,5 +96,6 @@ Route::prefix('questions')->middleware(['auth', 'role:superadmin'])->name('quest
 // FCM Push Notification routes
 Route::middleware(['auth'])->prefix('admin')->name('admin.fcm.')->group(function () {
     Route::post('/fcm-token', [App\Http\Controllers\Admin\FcmController::class, 'store'])->name('store');
+    Route::post('/fcm-token/check', [App\Http\Controllers\Admin\FcmController::class, 'checkStatus'])->name('check');
     Route::delete('/fcm-token', [App\Http\Controllers\Admin\FcmController::class, 'destroy'])->name('destroy');
 });
