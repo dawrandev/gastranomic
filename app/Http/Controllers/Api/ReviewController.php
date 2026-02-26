@@ -67,7 +67,7 @@ class ReviewController extends Controller
     #[OA\Post(
         path: '/api/restaurants/{id}/reviews',
         summary: 'Restoranga sharh qoldirish',
-        description: 'Restoranga reyting, izoh va savollar javoblarini qoldirish. Qadamlar: 1) GET /api/questions dan savollarni oling. 2) Foydalanuvchi har bir savol uchun javob tanlashi kerak. 3) Tanlangan optionlarning ID\'larini selected_option_ids arrayiga qo\'ying. Limit: 3 sharh/kun per restaurant.',
+        description: 'Restoranga reyting, izoh va savollar javoblarini qoldirish. Qadamlar: 1) GET /api/questions dan savollarni oling. 2) Foydalanuvchi har bir savol uchun javob tanlashi kerak. 3) Tanlangan optionlarning ID\'larini selected_option_ids arrayiga qo\'ying. Limit: 10 sharh/kun per restaurant.',
         tags: ['Sharhlar'],
         requestBody: new OA\RequestBody(
             required: true,
@@ -76,9 +76,12 @@ class ReviewController extends Controller
                 example: [
                     'device_id' => 'device-uuid-123',
                     'rating' => 5,
-                    'comment' => 'Juda zo\'r restoran!',
+                    'comments' => [
+                        ['question_id' => 6, 'text' => 'Juda zo\'r restoran, hammasi yoqdi!'],
+                        ['question_id' => 7, 'text' => 'Xodimlarning mehribonligi esda qoldi']
+                    ],
                     'phone' => '+998901234567',
-                    'selected_option_ids' => [1, 5, 12, 15]
+                    'selected_option_ids' => [14, 15, 18, 26]
                 ],
                 properties: [
                     new OA\Property(
@@ -99,10 +102,40 @@ class ReviewController extends Controller
                     new OA\Property(
                         property: 'comment',
                         type: 'string',
-                        description: 'Foydalanuvchining izohи (ixtiyoriy, max 1000 belgi)',
+                        description: 'Foydalanuvchining umum izohи (ixtiyoriy, max 1000 belgi). DEPRECATED: comments arrayni ishlating',
                         maxLength: 1000,
                         nullable: true,
                         example: 'Juda zo\'r restoran! Taomlar mazali edi.'
+                    ),
+                    new OA\Property(
+                        property: 'comments',
+                        type: 'array',
+                        description: 'Savolga javob izohlar (ixtiyoriy, maksimal 3 ta). Open-ended questions uchun javoblangan izohlar array\'i.',
+                        maxItems: 3,
+                        nullable: true,
+                        items: new OA\Items(
+                            type: 'object',
+                            required: ['question_id', 'text'],
+                            properties: [
+                                new OA\Property(
+                                    property: 'question_id',
+                                    type: 'integer',
+                                    description: 'Open-ended question\'ning ID\'si (GET /api/questions dan olgan ID)',
+                                    example: 4
+                                ),
+                                new OA\Property(
+                                    property: 'text',
+                                    type: 'string',
+                                    description: 'Savol uchun foydalanuvchining javob matni (max 1000 belgi)',
+                                    maxLength: 1000,
+                                    example: 'Juda zo\'r restoran, hammasi yoqdi!'
+                                )
+                            ]
+                        ),
+                        example: [
+                            ['question_id' => 6, 'text' => 'Juda zo\'r restoran, hammasi yoqdi!'],
+                            ['question_id' => 7, 'text' => 'Xodimlarning mehribonligi esda qoldi']
+                        ]
                     ),
                     new OA\Property(
                         property: 'phone',
@@ -144,7 +177,20 @@ class ReviewController extends Controller
                             properties: [
                                 new OA\Property(property: 'id', type: 'integer', example: 42),
                                 new OA\Property(property: 'rating', type: 'integer', example: 5),
-                                new OA\Property(property: 'comment', type: 'string', example: 'Juda zo\'r!'),
+                                new OA\Property(property: 'comment', type: 'string', nullable: true, example: 'Juda zo\'r!'),
+                                new OA\Property(
+                                    property: 'comments',
+                                    type: 'array',
+                                    description: 'Savolga javob izohlar (tarjimada question_title bilan)',
+                                    items: new OA\Items(
+                                        type: 'object',
+                                        properties: [
+                                            new OA\Property(property: 'question_id', type: 'integer', example: 4),
+                                            new OA\Property(property: 'question_title', type: 'string', description: 'Savol sarlavhasi (tanlangan tilga qarab)', example: 'Restoran haqida nimani yoqti?'),
+                                            new OA\Property(property: 'text', type: 'string', example: 'Juda zo\'r restoran, hammasi yoqdi!')
+                                        ]
+                                    )
+                                ),
                                 new OA\Property(
                                     property: 'selected_answers',
                                     type: 'array',
@@ -193,7 +239,7 @@ class ReviewController extends Controller
             ),
             new OA\Response(
                 response: 429,
-                description: 'Rate limit exceeded - Foydalanuvchi bu restoranga kun\'da maksimal miqdorda sharh qoldirgan (limit: 3 ta)',
+                description: 'Rate limit exceeded - Foydalanuvchi bu restoranga kun\'da maksimal miqdorda sharh qoldirgan (limit: 10 ta)',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: false),
@@ -204,7 +250,7 @@ class ReviewController extends Controller
                             description: 'Limit haqida ma\'lumotlar',
                             properties: [
                                 new OA\Property(property: 'can_review', type: 'boolean', example: false, description: 'Sharh qoldirishi mumkinmi?'),
-                                new OA\Property(property: 'reviews_count', type: 'integer', example: 3, description: 'Bu kun qoldirgan sharh soni'),
+                                new OA\Property(property: 'reviews_count', type: 'integer', example: 10, description: 'Bu kun qoldirgan sharh soni'),
                                 new OA\Property(property: 'remaining', type: 'integer', example: 0, description: 'Qolgan sharh soni (0 = limit to\'ldi)'),
                                 new OA\Property(property: 'reset_at', type: 'string', example: '2024-01-16 00:00:00', description: 'Limit qayta tiklanish vaqti (keyingi kun boshida)'),
                             ]

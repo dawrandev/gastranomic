@@ -181,7 +181,7 @@
                         <div class="card-header">
                             <h5>Информация</h5>
                         </div>
-                        <div class="card-body small">
+                        <div class="card-body small text-dark">
                             <p><strong>ID:</strong> {{ $question->id }}</p>
                             <p><strong>Всего вариантов:</strong> {{ $question->options()->count() }}</p>
                             <p><strong>Языков:</strong> {{ $question->translations->count() }}</p>

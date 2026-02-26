@@ -25,7 +25,7 @@
         {{-- Content --}}
         <div class="flex-grow-1 min-w-0">
 
-            {{-- Top row: name + restaurant --}}
+            {{-- Top row: user name + restaurant name --}}
             <div class="d-flex align-items-center flex-wrap gap-2 mb-2">
                 @if($review->client)
                 <span class="fw-semibold text-dark" style="font-size: 14px;">
@@ -62,8 +62,29 @@
             </div>
             @endif
 
-            {{-- Comment --}}
-            @if($review->comment)
+            {{-- Comments linked to questions --}}
+            @php
+            $commentsWithQuestions = $review->getCommentsWithQuestions($locale ?? 'ru');
+            @endphp
+
+            @if(count($commentsWithQuestions) > 0)
+            <div class="mb-2">
+                @foreach($commentsWithQuestions as $comment)
+                <div class="mb-2 p-2 bg-light rounded" style="border-left: 3px solid #0d6efd;">
+                    <div class="text-muted mb-1" style="font-size: 11px; font-weight: 600;">
+                        <i class="fa fa-question-circle me-1"></i>
+                        {{ $comment['question_title'] }}
+                    </div>
+                    <p class="mb-0 text-dark" style="font-size: 13px; line-height: 1.6;">
+                        <i class="fa fa-quote-left text-muted me-2" style="opacity: 0.5;"></i>
+                        {{ $comment['text'] }}
+                    </p>
+                </div>
+                @endforeach
+            </div>
+
+            {{-- Fallback to old single comment for backward compatibility --}}
+            @elseif($review->comment)
             <div class="mb-2 p-2 bg-light rounded" style="border-left: 3px solid #0d6efd;">
                 <p class="mb-0 text-dark" style="font-size: 13px; line-height: 1.6;">
                     <i class="fa fa-quote-left text-muted me-2" style="opacity: 0.5;"></i>

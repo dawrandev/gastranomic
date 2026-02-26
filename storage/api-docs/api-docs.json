@@ -714,8 +714,8 @@
                 "tags": [
                     "Savollar"
                 ],
-                "summary": "Sharh formasining savollarini olish",
-                "description": "Restoran sharhi qoldirganda foydalanuvchiga ko'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi.",
+                "summary": "Sharh formasining savollarini olish (Получить вопросы для формы отзыва)",
+                "description": "Restoran sharhi qoldirganda foydalanuvchiga ko'rsatiladigan BARCHA savollar va ularning javob variantlarini qaytaradi.\r\n\r\n🌟 ASOSIY SAVOLLAR (har doim ko'rsatiladi):\r\n1. \"В целом всё понравилось?\" - Reyting (1-5 yulduz) - MAJBURI\r\n2. \"Qaysi kategoriya bo'yicha?\" - Breakfast/Lunch/Dinner/Coffee/Dessert - ixtiyoriy\r\n3. \"Yana kelib kelasizmi?\" - Yes/Maybe/No - ixtiyoriy\r\n4. \"Qo'shimcha fikr qoldirmoqchisiz?\" - Text input - ixtiyoriy\r\n\r\n⭐ SHARTLI SUB-SAVOLLAR (Ratingga qarab ko'rsatiladi):\r\n\r\n🔴 AGAR REYTING 1-3 (PAST BAHOLASH) BO'LSA:\r\n  → A. \"Sizga nima yoqmadi?\" (Mehrali tanlash)\r\n    - Medlenno obsluzhivanie, Grubiy personal, Oshibki v zakaze, etc.\r\n  → B. \"Nima aniq norozilikka sabab?\" (Mehrali tanlash)\r\n    - Еда/napitki, Vreme ozhidaniya, Vezhlivost ofitsianta, etc.\r\n  → C. \"Nimani yaxshilash mumkin?\" (Ochiq matn - ixtiyoriy)\r\n\r\n✅ AGAR REYTING 4-5 (YUQORI BAHOLASH) BO'LSA:\r\n  → D. \"Sizga nima yoqdi?\" (Mehrali tanlash)\r\n    - Vkus blyud, Krasivoe oformlenie, Vezhliviy personal, Bystrое obsluzhivanie, etc.\r\n  → E. \"Nima ayniqsa esda qoldi?\" (Ochiq matn - ixtiyoriy)\r\n  → F. \"Nimani yaxshilash mumkin edi?\" (Ochiq matn - ixtiyoriy)",
                 "operationId": "860331f8e4b6d740293483a82e52fc5a",
                 "parameters": [
                     {
@@ -816,7 +816,7 @@
                                                                     "example": true
                                                                 },
                                                                 "condition": {
-                                                                    "description": "Qachon ko'rsatish: \"rating\" <= 3 yoki >= 4",
+                                                                    "description": "MUHIM! Bu savol qachon ko'rsatilishini belgilaydi:\r\n- \"field\": \"rating\" (foydalanuvchi kirgan reyting)\r\n- \"operator\": \"<=\" (kichik yoki teng) yoki \">=\" (katta yoki teng)\r\n- \"value\": 3 (rating <= 3 uchun) yoki 4 (rating >= 4 uchun)\r\n\r\nMISOL: {\"field\":\"rating\",\"operator\":\"<=\",\"value\":3}\r\n= Bu savol FAQAT rating 1,2,3 bo'lsa ko'rsatiladi",
                                                                     "type": "object",
                                                                     "example": {
                                                                         "field": "rating",
@@ -1486,10 +1486,46 @@
                                         "example": 5
                                     },
                                     "comment": {
-                                        "description": "Foydalanuvchining izohи (ixtiyoriy, max 1000 belgi)",
+                                        "description": "Foydalanuvchining umum izohи (ixtiyoriy, max 1000 belgi). DEPRECATED: comments arrayni ishlating",
                                         "type": "string",
                                         "maxLength": 1000,
                                         "example": "Juda zo'r restoran! Taomlar mazali edi.",
+                                        "nullable": true
+                                    },
+                                    "comments": {
+                                        "description": "Savolga javob izohlar (ixtiyoriy, maksimal 3 ta). Open-ended questions uchun javoblangan izohlar array'i.",
+                                        "type": "array",
+                                        "items": {
+                                            "required": [
+                                                "question_id",
+                                                "text"
+                                            ],
+                                            "properties": {
+                                                "question_id": {
+                                                    "description": "Open-ended question'ning ID'si (GET /api/questions dan olgan ID)",
+                                                    "type": "integer",
+                                                    "example": 4
+                                                },
+                                                "text": {
+                                                    "description": "Savol uchun foydalanuvchining javob matni (max 1000 belgi)",
+                                                    "type": "string",
+                                                    "maxLength": 1000,
+                                                    "example": "Juda zo'r restoran, hammasi yoqdi!"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "maxItems": 3,
+                                        "example": [
+                                            {
+                                                "question_id": 6,
+                                                "text": "Juda zo'r restoran, hammasi yoqdi!"
+                                            },
+                                            {
+                                                "question_id": 7,
+                                                "text": "Xodimlarning mehribonligi esda qoldi"
+                                            }
+                                        ],
                                         "nullable": true
                                     },
                                     "phone": {
@@ -1520,13 +1556,22 @@
                             "example": {
                                 "device_id": "device-uuid-123",
                                 "rating": 5,
-                                "comment": "Juda zo'r restoran!",
+                                "comments": [
+                                    {
+                                        "question_id": 6,
+                                        "text": "Juda zo'r restoran, hammasi yoqdi!"
+                                    },
+                                    {
+                                        "question_id": 7,
+                                        "text": "Xodimlarning mehribonligi esda qoldi"
+                                    }
+                                ],
                                 "phone": "+998901234567",
                                 "selected_option_ids": [
-                                    1,
-                                    5,
-                                    12,
-                                    15
+                                    14,
+                                    15,
+                                    18,
+                                    26
                                 ]
                             }
                         }
@@ -1560,7 +1605,30 @@
                                                 },
                                                 "comment": {
                                                     "type": "string",
-                                                    "example": "Juda zo'r!"
+                                                    "example": "Juda zo'r!",
+                                                    "nullable": true
+                                                },
+                                                "comments": {
+                                                    "description": "Savolga javob izohlar (tarjimada question_title bilan)",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "question_id": {
+                                                                "type": "integer",
+                                                                "example": 4
+                                                            },
+                                                            "question_title": {
+                                                                "description": "Savol sarlavhasi (tanlangan tilga qarab)",
+                                                                "type": "string",
+                                                                "example": "Restoran haqida nimani yoqti?"
+                                                            },
+                                                            "text": {
+                                                                "type": "string",
+                                                                "example": "Juda zo'r restoran, hammasi yoqdi!"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
                                                 },
                                                 "selected_answers": {
                                                     "description": "Foydalanuvchi tanlagan javob variantlari (tarjimada)",
@@ -1795,6 +1863,126 @@
         }
     },
     "components": {
+        "schemas": {
+            "Brand": {
+                "required": [
+                    "id",
+                    "name",
+                    "logo"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Brand ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Brand nomi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "KFC"
+                    },
+                    "description": {
+                        "description": "Brand tavsifi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Kentucky Fried Chicken",
+                        "nullable": true
+                    },
+                    "logo": {
+                        "description": "Brand logotipi URL (MAJBURIY - admin panel orqali yuklanadi)",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/storage/brands/logos/kfc.png"
+                    },
+                    "avg_rating": {
+                        "description": "O'rtacha reyting (agar reviewlar bo'lsa)",
+                        "type": "number",
+                        "format": "float",
+                        "maximum": 5,
+                        "minimum": 0,
+                        "example": 4.5,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Category": {
+                "required": [
+                    "id",
+                    "name",
+                    "icon"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Kategoriya ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Kategoriya nomi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Fast Food"
+                    },
+                    "description": {
+                        "description": "Kategoriya tavsifi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Tez tayyorlaniladigan ovqatlar",
+                        "nullable": true
+                    },
+                    "icon": {
+                        "description": "Kategoriya icon URL (MAJBURIY - admin panel orqali yuklanadi)",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/storage/categories/icons/fastfood.png"
+                    }
+                },
+                "type": "object"
+            },
+            "MenuItem": {
+                "required": [
+                    "id",
+                    "name",
+                    "image_path",
+                    "base_price"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Menu item ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Taom nomi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Burger"
+                    },
+                    "description": {
+                        "description": "Taom tavsifi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Mazali beef burger kartoshka bilan",
+                        "nullable": true
+                    },
+                    "image_path": {
+                        "description": "Taom rasmi URL (MAJBURIY - admin panel orqali yuklanadi)",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/storage/menu-items/burger.jpg"
+                    },
+                    "base_price": {
+                        "description": "Taom bazaviy narxi (so'm)",
+                        "type": "number",
+                        "format": "decimal",
+                        "example": 25000
+                    },
+                    "weight": {
+                        "description": "Taom og'irligi (gramm)",
+                        "type": "integer",
+                        "example": 350,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            }
+        },
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",

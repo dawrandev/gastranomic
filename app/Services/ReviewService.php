@@ -59,7 +59,7 @@ class ReviewService
     }
 
     /**
-     * Check if device can review (rate limiting: 3 reviews per day per restaurant).
+     * Check if device can review (rate limiting: 10 reviews per day per restaurant).
      */
     public function canDeviceReview(string $deviceId, string $ipAddress, int $restaurantId): array
     {
@@ -76,8 +76,8 @@ class ReviewService
             ->where('created_at', '>=', $today)
             ->count();
 
-        // Maximum 3 reviews per day per restaurant
-        $maxReviews = 3;
+        // Maximum 10 reviews per day per restaurant
+        $maxReviews = 10;
         $canReview = $reviewCount < $maxReviews && $ipReviewCount < $maxReviews;
 
         return [

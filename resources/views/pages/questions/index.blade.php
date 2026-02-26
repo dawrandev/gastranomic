@@ -172,10 +172,10 @@
                                     <div class="modal-dialog modal-lg">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="optionsModalLabel{{ $question->id }}">
-                                                    <strong>{{ $question->key }}</strong>
+                                                <h5 class="modal-title text-dark" id="optionsModalLabel{{ $question->id }}">
+                                                    <strong class="text-dark">{{ $question->key }}</strong>
                                                     <br>
-                                                    <small class="text-muted modal-question-title">
+                                                    <small class="text-dark modal-question-title">
                                                         {{ $question->translations->firstWhere('lang_code', session('locale', 'ru'))?->title ?? $question->key }}
                                                     </small>
                                                 </h5>
@@ -310,6 +310,41 @@
     font-weight: 600;
     color: #0d6efd;
     margin-right: 0.3rem;
+}
+
+.sub-question-card .card-header {
+    background-color: #f8f9fa !important;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.sub-question-card .card-header .badge {
+    font-size: 14px;
+    padding: 6px 10px;
+    font-weight: 600;
+}
+
+.sub-question-title {
+    color: #1a1a1a;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.sub-question-card .badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.modal-title {
+    color: #1a1a1a !important;
+}
+
+.modal-title strong {
+    color: #1a1a1a !important;
+}
+
+.modal-question-title {
+    color: #1a1a1a !important;
 }
 </style>
 @endpush

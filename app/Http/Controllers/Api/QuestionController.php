@@ -13,8 +13,29 @@ class QuestionController extends Controller
 {
     #[OA\Get(
         path: '/api/questions',
-        summary: 'Sharh formasining savollarini olish',
-        description: 'Restoran sharhi qoldirganda foydalanuvchiga ko\'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi.',
+        summary: 'Sharh formasining savollarini olish (Получить вопросы для формы отзыва)',
+        description: 'Restoran sharhi qoldirganda foydalanuvchiga ko\'rsatiladigan BARCHA savollar va ularning javob variantlarini qaytaradi.
+
+🌟 ASOSIY SAVOLLAR (har doim ko\'rsatiladi):
+1. "В целом всё понравилось?" - Reyting (1-5 yulduz) - MAJBURI
+2. "Qaysi kategoriya bo\'yicha?" - Breakfast/Lunch/Dinner/Coffee/Dessert - ixtiyoriy
+3. "Yana kelib kelasizmi?" - Yes/Maybe/No - ixtiyoriy
+4. "Qo\'shimcha fikr qoldirmoqchisiz?" - Text input - ixtiyoriy
+
+⭐ SHARTLI SUB-SAVOLLAR (Ratingga qarab ko\'rsatiladi):
+
+🔴 AGAR REYTING 1-3 (PAST BAHOLASH) BO\'LSA:
+  → A. "Sizga nima yoqmadi?" (Mehrali tanlash)
+    - Medlenno obsluzhivanie, Grubiy personal, Oshibki v zakaze, etc.
+  → B. "Nima aniq norozilikka sabab?" (Mehrali tanlash)
+    - Еда/napitki, Vreme ozhidaniya, Vezhlivost ofitsianta, etc.
+  → C. "Nimani yaxshilash mumkin?" (Ochiq matn - ixtiyoriy)
+
+✅ AGAR REYTING 4-5 (YUQORI BAHOLASH) BO\'LSA:
+  → D. "Sizga nima yoqdi?" (Mehrali tanlash)
+    - Vkus blyud, Krasivoe oformlenie, Vezhliviy personal, Bystrое obsluzhivanie, etc.
+  → E. "Nima ayniqsa esda qoldi?" (Ochiq matn - ixtiyoriy)
+  → F. "Nimani yaxshilash mumkin edi?" (Ochiq matn - ixtiyoriy)',
         tags: ['Savollar'],
         parameters: [
             new OA\Parameter(
@@ -121,7 +142,13 @@ class QuestionController extends Controller
                                                 new OA\Property(
                                                     property: 'condition',
                                                     type: 'object',
-                                                    description: 'Qachon ko\'rsatish: "rating" <= 3 yoki >= 4',
+                                                    description: 'MUHIM! Bu savol qachon ko\'rsatilishini belgilaydi:
+- "field": "rating" (foydalanuvchi kirgan reyting)
+- "operator": "<=" (kichik yoki teng) yoki ">=" (katta yoki teng)
+- "value": 3 (rating <= 3 uchun) yoki 4 (rating >= 4 uchun)
+
+MISOL: {"field":"rating","operator":"<=","value":3}
+= Bu savol FAQAT rating 1,2,3 bo\'lsa ko\'rsatiladi',
                                                     example: ['field' => 'rating', 'operator' => '<=', 'value' => 3]
                                                 ),
                                                 new OA\Property(
