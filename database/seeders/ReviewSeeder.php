@@ -14,70 +14,372 @@ class ReviewSeeder extends Seeder
      */
     public function run(): void
     {
-        // Get option IDs by key for use in reviews
-        $optionIds = QuestionOption::pluck('id', 'key')->toArray();
+        // Get all options grouped by question
+        $allOptions = QuestionOption::with('questionCategory')->get();
 
-        // Helper function to get option IDs
-        $getOptionIds = function(array $keys) use ($optionIds) {
-            return array_map(fn($key) => $optionIds[$key] ?? null, $keys);
-        };
-
+        // 25 ta review: 5 ta har bir restoranga
+        // Restaurant IDs: 1, 2, 4, 5, 6
         $reviews = [
-            ['id' => 1, 'restaurant_id' => 2, 'device_id' => 'afef4bbd-d845-4096-aa9d-e1084290f6dd', 'ip' => '213.230.87.45', 'rating' => 3, 'comment' => 'Taza ónimler. jaqsi', 'created' => '2026-01-31 18:57:30', 'answer_keys' => ['lunch', 'maybe']],
-            ['id' => 2, 'restaurant_id' => 1, 'device_id' => '550e8400-e29b-41d4-a716-446655440000', 'ip' => '213.230.87.45', 'rating' => 5, 'comment' => "Juda zo'r restoran, taomlar mazali!", 'created' => '2026-01-31 19:03:50', 'answer_keys' => ['breakfast', 'yes']],
-            ['id' => 3, 'restaurant_id' => 4, 'device_id' => 'afef4bbd-d845-4096-aa9d-e1084290f6dd', 'ip' => '213.230.87.45', 'rating' => 4, 'comment' => 'Taza ónimler. bb', 'created' => '2026-01-31 19:06:51', 'answer_keys' => ['dinner', 'yes']],
-            ['id' => 4, 'restaurant_id' => 4, 'device_id' => '550e8400-e29b-41d4-a716-446655440000', 'ip' => '213.230.87.45', 'rating' => 2, 'comment' => 'Juda boladi epleb!', 'created' => '2026-01-31 19:09:12', 'answer_keys' => ['lunch', 'no']],
-            ['id' => 5, 'restaurant_id' => 6, 'device_id' => 'afef4bbd-d845-4096-aa9d-e1084290f6dd', 'ip' => '213.230.87.45', 'rating' => 5, 'comment' => 'jaman', 'created' => '2026-01-31 19:10:04', 'answer_keys' => ['breakfast', 'yes']],
-            ['id' => 6, 'restaurant_id' => 1, 'device_id' => '6b10fc17-0021-4714-bf27-c1a9407b5b61', 'ip' => '84.54.73.218', 'rating' => 4, 'comment' => 'allow', 'created' => '2026-02-01 10:19:23', 'answer_keys' => ['lunch', 'yes', 'coffee']],
-            ['id' => 7, 'restaurant_id' => 5, 'device_id' => '6b10fc17-0021-4714-bf27-c1a9407b5b61', 'ip' => '84.54.73.218', 'rating' => 3, 'comment' => null, 'created' => '2026-02-01 10:19:36', 'answer_keys' => ['dinner', 'maybe']],
-            ['id' => 8, 'restaurant_id' => 5, 'device_id' => 'ff308f4d-a26d-46bf-9e1c-a159b47bde6d', 'ip' => '213.230.87.45', 'rating' => 1, 'comment' => 'Porsiya kichik', 'created' => '2026-02-01 16:44:17', 'answer_keys' => ['lunch', 'no']],
-            ['id' => 9, 'restaurant_id' => 4, 'device_id' => 'ff308f4d-a26d-46bf-9e1c-a159b47bde6d', 'ip' => '213.230.87.45', 'rating' => 5, 'comment' => null, 'created' => '2026-02-01 16:44:30', 'answer_keys' => ['breakfast', 'yes']],
-            ['id' => 10, 'restaurant_id' => 6, 'device_id' => 'ff308f4d-a26d-46bf-9e1c-a159b47bde6d', 'ip' => '213.230.87.45', 'rating' => 5, 'comment' => 'yaqshi', 'created' => '2026-02-01 19:23:45', 'answer_keys' => ['dinner', 'yes', 'dessert']],
-            ['id' => 11, 'restaurant_id' => 1, 'device_id' => 'b5576a4f-5777-479c-91a0-9219fbac0c9e', 'ip' => '213.230.92.114', 'rating' => 4, 'comment' => 'Xızmetkerler dosane. ficufufufu', 'created' => '2026-02-02 04:47:36', 'answer_keys' => ['lunch', 'yes', 'coffee']],
-            ['id' => 12, 'restaurant_id' => 6, 'device_id' => 'e09ec613-5b4b-4317-a739-1f9facf8e01d', 'ip' => '37.110.214.74', 'rating' => 5, 'comment' => null, 'created' => '2026-02-02 13:45:35', 'answer_keys' => ['breakfast', 'yes']],
-            ['id' => 13, 'restaurant_id' => 6, 'device_id' => '6b10fc17-0021-4714-bf27-c1a9407b5b61', 'ip' => '84.54.73.218', 'rating' => 5, 'comment' => null, 'created' => '2026-02-03 15:38:20', 'answer_keys' => ['breakfast', 'yes']],
-            ['id' => 14, 'restaurant_id' => 1, 'device_id' => '6b4e935d-906e-43e5-9baa-ca616a419ac5', 'ip' => '84.54.73.218', 'rating' => 3, 'comment' => 'minaw Dilafruzga jaqpadi', 'created' => '2026-02-04 02:32:24', 'answer_keys' => ['dinner', 'maybe', 'other']],
-            ['id' => 15, 'restaurant_id' => 2, 'device_id' => '6b4e935d-906e-43e5-9baa-ca616a419ac5', 'ip' => '84.54.73.218', 'rating' => 5, 'comment' => 'Xızmet tez hám sıpatlí', 'created' => '2026-02-04 02:32:44', 'answer_keys' => ['lunch', 'yes']],
-            ['id' => 16, 'restaurant_id' => 6, 'device_id' => '6b4e935d-906e-43e5-9baa-ca616a419ac5', 'ip' => '84.54.73.218', 'rating' => 1, 'comment' => 'xaxaxaxxaxaxa', 'created' => '2026-02-04 06:53:08', 'answer_keys' => ['lunch', 'no']],
-            ['id' => 17, 'restaurant_id' => 5, 'device_id' => '6b4e935d-906e-43e5-9baa-ca616a419ac5', 'ip' => '84.54.73.218', 'rating' => 5, 'comment' => null, 'created' => '2026-02-04 16:54:14', 'answer_keys' => ['dinner', 'yes']],
-            ['id' => 18, 'restaurant_id' => 1, 'device_id' => '02bbe252-6457-4b5e-80d8-b2741df1bfa4', 'ip' => '84.54.71.66', 'rating' => 5, 'comment' => 'Clean and cozy. Beautiful atmosphere', 'created' => '2026-02-05 02:52:36', 'answer_keys' => ['breakfast', 'yes', 'coffee']],
-            ['id' => 19, 'restaurant_id' => 6, 'device_id' => '02bbe252-6457-4b5e-80d8-b2741df1bfa4', 'ip' => '84.54.72.227', 'rating' => 4, 'comment' => null, 'created' => '2026-02-05 04:42:33', 'answer_keys' => ['dinner', 'yes']],
-            ['id' => 20, 'restaurant_id' => 1, 'device_id' => '6de9cc76-15f0-4df4-88fa-2e1716e5d4e3', 'ip' => '213.230.86.180', 'rating' => 5, 'comment' => 'Taza hám qolaylí', 'created' => '2026-02-05 05:31:35', 'answer_keys' => ['breakfast', 'yes']],
-            ['id' => 21, 'restaurant_id' => 5, 'device_id' => '02bbe252-6457-4b5e-80d8-b2741df1bfa4', 'ip' => '84.54.72.227', 'rating' => 5, 'comment' => 'Красивая атмосфера. uuu', 'created' => '2026-02-05 12:01:25', 'answer_keys' => ['lunch', 'yes', 'dessert']],
-            ['id' => 22, 'restaurant_id' => 5, 'device_id' => '21eb932a-ac4a-48aa-aa3a-2b3f27a173e7', 'ip' => '213.230.93.19', 'rating' => 5, 'comment' => 'Taza ónimlerden tayarlanǵan. unadi', 'created' => '2026-02-06 01:28:24', 'answer_keys' => ['dinner', 'yes']],
-            ['id' => 23, 'restaurant_id' => 1, 'device_id' => '21eb932a-ac4a-48aa-aa3a-2b3f27a173e7', 'ip' => '213.230.93.19', 'rating' => 5, 'comment' => 'nmnn', 'created' => '2026-02-06 01:33:46', 'answer_keys' => ['breakfast', 'yes', 'coffee']],
-            ['id' => 24, 'restaurant_id' => 2, 'device_id' => '21eb932a-ac4a-48aa-aa3a-2b3f27a173e7', 'ip' => '213.230.93.19', 'rating' => 5, 'comment' => "xor\n\nz", 'created' => '2026-02-06 01:34:33', 'answer_keys' => ['breakfast', 'yes']],
-            ['id' => 25, 'restaurant_id' => 4, 'device_id' => '21eb932a-ac4a-48aa-aa3a-2b3f27a173e7', 'ip' => '213.230.93.19', 'rating' => 5, 'comment' => 'nmmmmm', 'created' => '2026-02-06 01:35:05', 'answer_keys' => ['lunch', 'yes']],
-            ['id' => 26, 'restaurant_id' => 4, 'device_id' => '02bbe252-6457-4b5e-80d8-b2741df1bfa4', 'ip' => '84.54.72.227', 'rating' => 3, 'comment' => 'Taam suwıq edi. sbhs', 'created' => '2026-02-06 07:28:02', 'answer_keys' => ['dinner', 'maybe']],
+            // RESTORAN 1 - Cake Bumer №1 (5 ta review)
+            [
+                'restaurant_id' => 1,
+                'device_id' => 'device-1-1',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Juda zo\'r restoran! Taomlar mazali, atmosfera chiroyli.',
+                    'ru' => 'Отличный ресторан! Вкусная еда, уютная атмосфера.',
+                    'kk' => 'Ótken restorani! Dámi tamaq, qulay atmosfera.',
+                    'en' => 'Excellent restaurant! Delicious food, cozy atmosphere.'
+                ],
+                'phone' => '+998901234001',
+                'option_ids' => [14, 16, 18, 22]  // taste, staff, comfort, breakfast
+            ],
+            [
+                'restaurant_id' => 1,
+                'device_id' => 'device-1-2',
+                'rating' => 4,
+                'comments' => [
+                    'uz' => 'Yaxshi xizmat va tezkor jihozlar. Baho bir oz yuqori.',
+                    'ru' => 'Хороший сервис и быстрое обслуживание. Цена немного высокая.',
+                    'kk' => 'Jaqsi xyzmet jáne tez qyzmet körsetuw. Baha bir az jóqary.',
+                    'en' => 'Good service and quick delivery. Price is a bit high.'
+                ],
+                'phone' => '+998901234002',
+                'option_ids' => [17, 20, 23]  // fast service, location, lunch
+            ],
+            [
+                'restaurant_id' => 1,
+                'device_id' => 'device-1-3',
+                'rating' => 3,
+                'comments' => [
+                    'uz' => 'O\'rtacha. Xizmat yaxshi, ammo taom bir oz saliq edi.',
+                    'ru' => 'Средне. Сервис хороший, но еда слегка холодная.',
+                    'kk' => 'Ortashá. Xyzmet jaqsi, bírem tamaq bir az suwıq edi.',
+                    'en' => 'Average. Service is good, but food was a bit cold.'
+                ],
+                'phone' => '+998901234003',
+                'option_ids' => [1, 2, 25]  // low rating: slow service, rude staff, coffee
+            ],
+            [
+                'restaurant_id' => 1,
+                'device_id' => 'device-1-4',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Hammasini yoqdi! Tazalik, yangi taomlar, mohirlar.',
+                    'ru' => 'Все понравилось! Чистота, свежие блюда, профессионалы.',
+                    'kk' => 'Hamnasi unaǵan! Tazalıq, jáńa tamaqlar, biliki.',
+                    'en' => 'I loved everything! Cleanliness, fresh dishes, professionals.'
+                ],
+                'phone' => '+998901234004',
+                'option_ids' => [14, 15, 19, 28]  // taste, presentation, cleanliness, yes
+            ],
+            [
+                'restaurant_id' => 1,
+                'device_id' => 'device-1-5',
+                'rating' => 2,
+                'comments' => [
+                    'uz' => 'Juda sariqo\'z xizmat. Qamoq uchun ko\'p pul olish.',
+                    'ru' => 'Медленный сервис. Дорого за качество.',
+                    'kk' => 'Asta xyzmet. Bahasına nisbattan qımmat.',
+                    'en' => 'Slow service. Expensive for the quality.'
+                ],
+                'phone' => '+998901234005',
+                'option_ids' => [1, 6, 13, 30]  // slow, poor cleanliness, price, no
+            ],
+
+            // RESTORAN 2 - Grand Lavash Main (5 ta review)
+            [
+                'restaurant_id' => 2,
+                'device_id' => 'device-2-1',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Lavash bemalol! Yangi va toza, xizmat super!',
+                    'ru' => 'Лаваш восхитительный! Свежий и чистый, сервис супер!',
+                    'kk' => 'Lavash zeriksiń! Jáńa jáne taza, xyzmet super!',
+                    'en' => 'Lavash is amazing! Fresh and clean, service is super!'
+                ],
+                'phone' => '+998901234010',
+                'option_ids' => [14, 17, 19, 23]  // taste, service, cleanliness, lunch
+            ],
+            [
+                'restaurant_id' => 2,
+                'device_id' => 'device-2-2',
+                'rating' => 4,
+                'comments' => [
+                    'uz' => 'Yaxshi tanlovlar, tez tayyorlanadi, uyali xodimlar.',
+                    'ru' => 'Хороший выбор, быстро готовят, вежливые сотрудники.',
+                    'kk' => 'Jaqsi tanlawlar, tez tayarlanadi, sáwleli ishchilar.',
+                    'en' => 'Good selection, quick preparation, polite employees.'
+                ],
+                'phone' => '+998901234011',
+                'option_ids' => [16, 22, 25]  // staff, breakfast, coffee
+            ],
+            [
+                'restaurant_id' => 2,
+                'device_id' => 'device-2-3',
+                'rating' => 3,
+                'comments' => [
+                    'uz' => 'Narma-narma restoran. Yaxshi, lekin ko\'p tanlov yo\'q.',
+                    'ru' => 'Обычный ресторан. Нормально, но не очень большой выбор.',
+                    'kk' => 'Odday restoran. Normal, bírem ósi çoq emes.',
+                    'en' => 'Regular restaurant. Okay, but not much selection.'
+                ],
+                'phone' => '+998901234012',
+                'option_ids' => [5, 23]  // noisy, lunch
+            ],
+            [
+                'restaurant_id' => 2,
+                'device_id' => 'device-2-4',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Eng yaxshi lavash joylatuvchi! Qaytaman albatta.',
+                    'ru' => 'Лучший лавашный ресторан! Вернусь обязательно.',
+                    'kk' => 'Enmesi jaqsi lavash restoran! Jáne kelemen bilipsiz.',
+                    'en' => 'Best lavash restaurant! I\'ll definitely return.'
+                ],
+                'phone' => '+998901234013',
+                'option_ids' => [15, 18, 20, 28]  // presentation, comfort, location, yes
+            ],
+            [
+                'restaurant_id' => 2,
+                'device_id' => 'device-2-5',
+                'rating' => 2,
+                'comments' => [
+                    'uz' => 'Lavash quruq edi. Sous yo\'q. Kechiktirilgan xizmat.',
+                    'ru' => 'Лаваш сухой был. Соуса нет. Задержанный сервис.',
+                    'kk' => 'Lavash quru edi. Sous joq. Gecikmegen xyzmet.',
+                    'en' => 'Lavash was dry. No sauce. Delayed service.'
+                ],
+                'phone' => '+998901234014',
+                'option_ids' => [3, 9, 13, 30]  // order mistake, food quality, price, no
+            ],
+
+            // RESTORAN 4 - Grand Lavash 26 (5 ta review)
+            [
+                'restaurant_id' => 4,
+                'device_id' => 'device-4-1',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Yangi filial, hammasiga yaxshi! Clean va modernish!',
+                    'ru' => 'Новый филиал, все хорошо! Чистый и современный!',
+                    'kk' => 'Jáńa filial, hamnasi jaqsi! Taza jáne zamandas!',
+                    'en' => 'New branch, everything is good! Clean and modern!'
+                ],
+                'phone' => '+998901234020',
+                'option_ids' => [14, 19, 20, 24]  // taste, cleanliness, location, dinner
+            ],
+            [
+                'restaurant_id' => 4,
+                'device_id' => 'device-4-2',
+                'rating' => 4,
+                'comments' => [
+                    'uz' => 'Chiroyli ichki bezak, yaxshi ovqat, xizmat tez.',
+                    'ru' => 'Красивый интерьер, хорошая еда, быстрый сервис.',
+                    'kk' => 'Adem interer, jaqsi tamaq, tez xyzmet.',
+                    'en' => 'Beautiful interior, good food, fast service.'
+                ],
+                'phone' => '+998901234021',
+                'option_ids' => [15, 17, 22]  // presentation, service, breakfast
+            ],
+            [
+                'restaurant_id' => 4,
+                'device_id' => 'device-4-3',
+                'rating' => 3,
+                'comments' => [
+                    'uz' => 'Nomi nomi, lekin qiymati bir oz baland.',
+                    'ru' => 'Хорошие названия, но цена немного завышена.',
+                    'kk' => 'Jaqsi atalar, bírem baha bir az jóqary.',
+                    'en' => 'Good names, but price is a bit overpriced.'
+                ],
+                'phone' => '+998901234022',
+                'option_ids' => [2, 4, 23]  // rude staff, poor cleanliness, lunch
+            ],
+            [
+                'restaurant_id' => 4,
+                'device_id' => 'device-4-4',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Filialning eng yaxshisi! Tabriklaymiz jamiyatga!',
+                    'ru' => 'Лучший из всех филиалов! Поздравляем команду!',
+                    'kk' => 'Filialning enmesi jaqsisi! Kútelik komandaya!',
+                    'en' => 'Best of all branches! Congratulations to the team!'
+                ],
+                'phone' => '+998901234023',
+                'option_ids' => [16, 18, 21, 28]  // staff, comfort, good, yes
+            ],
+            [
+                'restaurant_id' => 4,
+                'device_id' => 'device-4-5',
+                'rating' => 1,
+                'comments' => [
+                    'uz' => 'Hech qanday yaxshi narsa yo\'q. Pula ayb.',
+                    'ru' => 'Ничего хорошего нет. Деньги впустую потрачены.',
+                    'kk' => 'Hesh qanday jaqsi narsa joq. Pul bosqa sarpaladı.',
+                    'en' => 'Nothing good. Money wasted.'
+                ],
+                'phone' => '+998901234024',
+                'option_ids' => [1, 3, 5, 30]  // low: slow, mistakes, noise, no
+            ],
+
+            // RESTORAN 5 - Neo (5 ta review)
+            [
+                'restaurant_id' => 5,
+                'device_id' => 'device-5-1',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Neo nomi talaasdagi! Zamonaviy, chiroyli, mazali!',
+                    'ru' => 'Neo оправдывает название! Современный, красивый, вкусный!',
+                    'kk' => 'Neo atlı talaasdın! Zamandas, adem, dámili!',
+                    'en' => 'Neo lives up to its name! Modern, beautiful, tasty!'
+                ],
+                'phone' => '+998901234030',
+                'option_ids' => [14, 15, 18, 26]  // taste, presentation, comfort, dessert
+            ],
+            [
+                'restaurant_id' => 5,
+                'device_id' => 'device-5-2',
+                'rating' => 4,
+                'comments' => [
+                    'uz' => 'Yaxshi joyda joylashgan, toza, professionali xizmat.',
+                    'ru' => 'Хорошо расположен, чистый, профессиональный сервис.',
+                    'kk' => 'Jaqsi ornında joylaskan, taza, professionaldy xyzmet.',
+                    'en' => 'Well located, clean, professional service.'
+                ],
+                'phone' => '+998901234031',
+                'option_ids' => [17, 20, 25]  // service, location, coffee
+            ],
+            [
+                'restaurant_id' => 5,
+                'device_id' => 'device-5-3',
+                'rating' => 3,
+                'comments' => [
+                    'uz' => 'Qiziqarli design, lekin qiymati qiymati yuqori.',
+                    'ru' => 'Интересный дизайн, но цена довольно высокая.',
+                    'kk' => 'Qaiziqtırıw dizayn, bírem baha jóqary.',
+                    'en' => 'Interesting design, but the price is quite high.'
+                ],
+                'phone' => '+998901234032',
+                'option_ids' => [6, 7, 24]  // poor lighting, uncomfortable seating, dinner
+            ],
+            [
+                'restaurant_id' => 5,
+                'device_id' => 'device-5-4',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Neo o\'z soʻz beradi! Yangi, zamonaviy, hamma yaxshi!',
+                    'ru' => 'Neo свое слово держит! Новый, современный, все хорошо!',
+                    'kk' => 'Neo óziniń sózi tutádi! Jáńa, zamandas, hamnasi jaqsi!',
+                    'en' => 'Neo keeps its word! New, modern, everything is good!'
+                ],
+                'phone' => '+998901234033',
+                'option_ids' => [16, 19, 21, 28]  // staff, cleanliness, good, yes
+            ],
+            [
+                'restaurant_id' => 5,
+                'device_id' => 'device-5-5',
+                'rating' => 2,
+                'comments' => [
+                    'uz' => 'Zamonaviy lekin sovuq xizmat. Ovqat sifati pastroq.',
+                    'ru' => 'Современный, но холодный сервис. Качество еды ниже.',
+                    'kk' => 'Zamandas, bírem sowuq xyzmet. Tamaq sápasy tómen.',
+                    'en' => 'Modern but cold service. Food quality is lower.'
+                ],
+                'phone' => '+998901234034',
+                'option_ids' => [2, 9, 12, 29]  // rude staff, food quality, impression, maybe
+            ],
+
+            // RESTORAN 6 - Qaraqalpaǵım 1-filial (5 ta review)
+            [
+                'restaurant_id' => 6,
+                'device_id' => 'device-6-1',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Qaraqalpak ovqatining asli! Ot chog\'ida tayyorlangan!',
+                    'ru' => 'Настоящая каракалпакская еда! Готовится с душой!',
+                    'kk' => 'Shınjılı qaraqalpaq tamağı! Júrek bilen tayarlanǵan!',
+                    'en' => 'Real Karakalpak cuisine! Prepared with love!'
+                ],
+                'phone' => '+998901234040',
+                'option_ids' => [14, 16, 19, 22]  // taste, staff, cleanliness, breakfast
+            ],
+            [
+                'restaurant_id' => 6,
+                'device_id' => 'device-6-2',
+                'rating' => 4,
+                'comments' => [
+                    'uz' => 'Mamlakatiy taom, yaxshi tadiga, qulay joyda.',
+                    'ru' => 'Национальное блюдо, хороший вкус, удобное место.',
+                    'kk' => 'Ellik tamaq, jaqsi dámi, qulay ornında.',
+                    'en' => 'National dish, good taste, comfortable place.'
+                ],
+                'phone' => '+998901234041',
+                'option_ids' => [15, 20, 27]  // presentation, location, other
+            ],
+            [
+                'restaurant_id' => 6,
+                'device_id' => 'device-6-3',
+                'rating' => 3,
+                'comments' => [
+                    'uz' => 'Taom yaxshi lekin atmosfera shovqinli edi.',
+                    'ru' => 'Еда хорошая, но атмосфера шумная была.',
+                    'kk' => 'Tamaq jaqsi, bírem atmosfera shovqınlı edi.',
+                    'en' => 'Food is good, but atmosphere was noisy.'
+                ],
+                'phone' => '+998901234042',
+                'option_ids' => [5, 8, 23]  // noise, other reasons, lunch
+            ],
+            [
+                'restaurant_id' => 6,
+                'device_id' => 'device-6-4',
+                'rating' => 5,
+                'comments' => [
+                    'uz' => 'Haqiqiy qaraqalpak roh! Bevosita vatanning ta\'mi!',
+                    'ru' => 'Истинный каракалпакский дух! Вкус родины!',
+                    'kk' => 'Shınjılı qaraqalpaq pnewmasy! Watannıń dámi!',
+                    'en' => 'True Karakalpak spirit! Taste of homeland!'
+                ],
+                'phone' => '+998901234043',
+                'option_ids' => [14, 18, 21, 28]  // taste, comfort, good, yes
+            ],
+            [
+                'restaurant_id' => 6,
+                'device_id' => 'device-6-5',
+                'rating' => 1,
+                'comments' => [
+                    'uz' => 'Nomi yaxshi lekin ta\'mi yo\'q. Pul bosganda!',
+                    'ru' => 'Название хорошее, но вкуса нет. Деньги даром!',
+                    'kk' => 'Atı jaqsi, bírem dámi joq. Pul bosdań!',
+                    'en' => 'Good name, but no taste. Money wasted!'
+                ],
+                'phone' => '+998901234044',
+                'option_ids' => [1, 4, 10, 30]  // slow, cleanliness, wait time, no
+            ],
         ];
 
-        foreach ($reviews as $review) {
-            $answerKeys = $review['answer_keys'] ?? [];
-            unset($review['answer_keys']);
+        // Create reviews
+        foreach ($reviews as $index => $reviewData) {
+            $comments = $reviewData['comments'];
+            $comment = $comments['ru']; // Default: Russian
+            $phone = $reviewData['phone'] ?? null;
+            $optionIds = $reviewData['option_ids'] ?? [];
 
-            DB::table('reviews')->updateOrInsert(
-                ['id' => $review['id']],
-                [
-                    'restaurant_id' => $review['restaurant_id'],
-                    'device_id'     => $review['device_id'],
-                    'ip_address'    => $review['ip'],
-                    'rating'        => $review['rating'],
-                    'comment'       => $review['comment'],
-                    'created_at'    => $review['created'],
-                    'updated_at'    => $review['created'],
-                ]
-            );
+            $review = Review::create([
+                'restaurant_id' => $reviewData['restaurant_id'],
+                'device_id' => $reviewData['device_id'],
+                'ip_address' => '127.0.0.1',
+                'rating' => $reviewData['rating'],
+                'comment' => $comment,
+                'phone' => $phone,
+            ]);
 
-            // Attach selected answers to review
-            if (!empty($answerKeys)) {
-                $answerIds = $getOptionIds($answerKeys);
-                $answerIds = array_filter($answerIds); // Remove null values
-
-                $reviewModel = Review::find($review['id']);
-                if ($reviewModel && !empty($answerIds)) {
-                    $reviewModel->selectedOptions()->sync($answerIds);
-                }
+            // Attach selected options
+            if (!empty($optionIds)) {
+                $review->selectedOptions()->sync($optionIds);
             }
+
+            $this->command->info("✓ Review #{$review->id} created (Rating: {$review->rating}/5, Restaurant: {$reviewData['restaurant_id']})");
         }
+
+        $this->command->info("\n✅ 25 ta testovyye otzivy muvaffaqiyatli yaratildi!");
     }
 }

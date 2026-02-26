@@ -13,8 +13,8 @@ class QuestionController extends Controller
 {
     #[OA\Get(
         path: '/api/questions',
-        summary: 'Savollarni olish',
-        description: 'Restoran sharhi qoldirganda foydalanuvchiga ko\'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi. Har bir savol options arrayida bo\'sh (open-ended) yoki to\'li (multiple-choice) bo\'ladi. is_required field\'i majburi yoki ixtiyoriy ekanligini ko\'rsatadi.',
+        summary: 'Sharh formasining savollarini olish',
+        description: 'Restoran sharhi qoldirganda foydalanuvchiga ko\'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi.',
         tags: ['Savollar'],
         parameters: [
             new OA\Parameter(
@@ -22,7 +22,7 @@ class QuestionController extends Controller
                 in: 'header',
                 required: false,
                 schema: new OA\Schema(type: 'string', enum: ['uz', 'ru', 'kk', 'en']),
-                description: 'Til tanlang. Qiymatlari: uz, ru, kk, en. Default: ru'
+                description: 'Javob tilini tanlang (default: ru). Barcha savol va option textlari bu tilda qaytariladi'
             )
         ],
         responses: [
@@ -35,8 +35,9 @@ class QuestionController extends Controller
                         new OA\Property(
                             property: 'data',
                             type: 'array',
-                            description: 'Savol kategoriyalarining massivi',
+                            description: 'Asosiy savollar ro\'yxati (4 ta savol: overall_satisfied, visit_category, would_return_again, additional_comments)',
                             items: new OA\Items(
+                                type: 'object',
                                 properties: [
                                     new OA\Property(
                                         property: 'id',
@@ -45,84 +46,122 @@ class QuestionController extends Controller
                                         example: 1
                                     ),
                                     new OA\Property(
-                                        property: 'key',
-                                        type: 'string',
-                                        description: 'Savolning unikal kaliti. Frontend POST request\'da selected_option_ids\'ni jo\'natishda ishlatiladi',
-                                        example: 'overall_satisfied'
-                                    ),
-                                    new OA\Property(
                                         property: 'title',
                                         type: 'string',
-                                        description: 'Savolning tarjimali nomi (Accept-Language bo\'yicha)',
+                                        description: 'Savol matni (tanlangan tilga qarab)',
                                         example: 'В целом всё понравилось?'
-                                    ),
-                                    new OA\Property(
-                                        property: 'description',
-                                        type: 'string',
-                                        nullable: true,
-                                        description: 'Savolning qo\'shimcha izohи (agar mavjud bo\'lsa)',
-                                        example: null
                                     ),
                                     new OA\Property(
                                         property: 'is_required',
                                         type: 'boolean',
-                                        description: 'Majburi savol - TRUE bo\'lsa, RED * asterisk ko\'rsating. FALSE bo\'lsa, asterisk ko\'rsatmang',
+                                        description: 'Majburi savol (TRUE = red asterisk ko\'rsating)',
                                         example: true
+                                    ),
+                                    new OA\Property(
+                                        property: 'allow_multiple',
+                                        type: 'boolean',
+                                        description: 'Bir nechta javob tanlash mumkinmi (checkbox uchun)',
+                                        example: false
                                     ),
                                     new OA\Property(
                                         property: 'sort_order',
                                         type: 'integer',
-                                        description: 'Savol taribi (qaysi ketma-ketlikda ko\'rsatish kerak)',
+                                        description: 'Ko\'rsatish tartibi (0 = birinchi)',
                                         example: 1
                                     ),
                                     new OA\Property(
                                         property: 'options',
                                         type: 'array',
-                                        description: 'Javob variantlari. BOŠ bo\'lsa - text input ko\'rsating. TO\'LI bo\'lsa - radio/dropdown ko\'rsating',
+                                        description: 'Javob variantlari (bo\'sh = text input, to\'li = radio/dropdown/checkbox)',
                                         items: new OA\Items(
+                                            type: 'object',
                                             properties: [
                                                 new OA\Property(
                                                     property: 'id',
                                                     type: 'integer',
-                                                    description: 'Javob variantining ID\'si. POST request\'da selected_option_ids\'ga kiriting',
+                                                    description: 'Option ID - BUNI POST request\'da selected_option_ids\'ga kiriting',
                                                     example: 1
-                                                ),
-                                                new OA\Property(
-                                                    property: 'key',
-                                                    type: 'string',
-                                                    description: 'Variantning unikal kaliti',
-                                                    example: 'breakfast'
                                                 ),
                                                 new OA\Property(
                                                     property: 'text',
                                                     type: 'string',
-                                                    description: 'Variantning tarjimali nomi',
+                                                    description: 'Option matni',
                                                     example: 'Завтрак'
-                                                ),
-                                                new OA\Property(
-                                                    property: 'sort_order',
-                                                    type: 'integer',
-                                                    description: 'Variantni ko\'rsatish taribi',
-                                                    example: 0
                                                 ),
                                             ]
                                         )
-                                    )
+                                    ),
+                                    new OA\Property(
+                                        property: 'sub_questions',
+                                        type: 'array',
+                                        description: 'Shartli sub-savollar (faqat rating bo\'yicha ko\'rsatiladi)',
+                                        items: new OA\Items(
+                                            type: 'object',
+                                            properties: [
+                                                new OA\Property(
+                                                    property: 'id',
+                                                    type: 'integer',
+                                                    example: 2
+                                                ),
+                                                new OA\Property(
+                                                    property: 'title',
+                                                    type: 'string',
+                                                    example: 'A. Sizga nima yoqmadi?'
+                                                ),
+                                                new OA\Property(
+                                                    property: 'is_required',
+                                                    type: 'boolean',
+                                                    example: false
+                                                ),
+                                                new OA\Property(
+                                                    property: 'allow_multiple',
+                                                    type: 'boolean',
+                                                    example: true
+                                                ),
+                                                new OA\Property(
+                                                    property: 'condition',
+                                                    type: 'object',
+                                                    description: 'Qachon ko\'rsatish: "rating" <= 3 yoki >= 4',
+                                                    example: ['field' => 'rating', 'operator' => '<=', 'value' => 3]
+                                                ),
+                                                new OA\Property(
+                                                    property: 'options',
+                                                    type: 'array',
+                                                    items: new OA\Items(type: 'object')
+                                                ),
+                                            ]
+                                        )
+                                    ),
                                 ]
                             )
                         ),
                     ]
                 )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Server xatosi'
             )
         ]
     )]
     public function index(): JsonResponse
     {
         $categories = QuestionCategory::where('is_active', true)
-            ->with(['options' => function ($query) {
-                $query->where('is_active', true)
-                    ->orderBy('sort_order');
-            }])
+            ->whereNull('parent_category_id') // Only parent questions
+            ->with([
+                'options' => function ($query) {
+                    $query->where('is_active', true)
+                        ->orderBy('sort_order');
+                },
+                'children' => function ($query) {
+                    $query->where('is_active', true)
+                        ->orderBy('sort_order');
+                },
+                'children.options' => function ($query) {
+                    $query->where('is_active', true)
+                        ->orderBy('sort_order');
+                }
+            ])
             ->orderBy('sort_order')
             ->get();
 

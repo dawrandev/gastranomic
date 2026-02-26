@@ -14,7 +14,13 @@ class QuestionController extends Controller
     {
         $search = $request->get('search');
 
-        $questions = QuestionCategory::with('translations', 'options.translations')
+        $questions = QuestionCategory::with([
+                'translations',
+                'options.translations',
+                'children.translations',
+                'children.options.translations'
+            ])
+            ->whereNull('parent_category_id') // Only load parent categories
             ->when($search, function ($query) use ($search) {
                 $query->whereHas('translations', function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%");

@@ -4,21 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class QuestionCategory extends Model
 {
     protected $table = 'questions_categories';
 
     protected $fillable = [
+        'parent_category_id',
         'key',
         'sort_order',
         'is_required',
         'is_active',
+        'condition',
+        'allow_multiple',
     ];
 
     protected $casts = [
         'is_required' => 'boolean',
         'is_active' => 'boolean',
+        'allow_multiple' => 'boolean',
+        'condition' => 'array',
     ];
 
     /**
@@ -35,6 +41,22 @@ class QuestionCategory extends Model
     public function options(): HasMany
     {
         return $this->hasMany(QuestionOption::class, 'questions_category_id');
+    }
+
+    /**
+     * Get parent category (for sub-questions).
+     */
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(QuestionCategory::class, 'parent_category_id');
+    }
+
+    /**
+     * Get child categories (sub-questions).
+     */
+    public function children(): HasMany
+    {
+        return $this->hasMany(QuestionCategory::class, 'parent_category_id');
     }
 
     /**

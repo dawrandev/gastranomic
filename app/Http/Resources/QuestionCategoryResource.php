@@ -14,14 +14,24 @@ class QuestionCategoryResource extends JsonResource
     {
         $locale = app()->getLocale();
 
-        return [
+        $data = [
             'id' => $this->id,
-            'key' => $this->key,
             'title' => $this->getTranslatedTitle($locale),
-            'description' => $this->getTranslatedDescription($locale),
             'is_required' => $this->is_required,
+            'allow_multiple' => $this->allow_multiple,
             'sort_order' => $this->sort_order,
-            'options' => QuestionOptionResource::collection($this->whenLoaded('options')),
         ];
+
+        // Include options only if this is a parent question (not a sub-question)
+        if (!$this->parent_category_id) {
+            $data['options'] = QuestionOptionResource::collection($this->whenLoaded('options'));
+            $data['sub_questions'] = QuestionCategoryResource::collection($this->whenLoaded('children'));
+        } else {
+            // For sub-questions, include condition info
+            $data['condition'] = $this->condition;
+            $data['options'] = QuestionOptionResource::collection($this->whenLoaded('options'));
+        }
+
+        return $data;
     }
 }

@@ -129,4 +129,9 @@ class Restaurant extends Model
     {
         return $this->reviews()->count();
     }
+
+    public function getNameAttribute()
+    {
+        return $this->brand?->title ?? $this->branch_name;
+    }
 }

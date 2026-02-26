@@ -154,7 +154,7 @@
                                 @forelse($question->options as $option)
                                 <div class="list-group-item d-flex justify-content-between align-items-center">
                                     <div>
-                                        <small class="text-muted">{{ strtoupper($option->key) }}</small>
+                                        <small class="text-muted"><strong>ID: {{ $option->id }}</strong></small>
                                         <div class="small">
                                             @foreach($option->translations->take(1) as $trans)
                                             {{ $trans->text }}

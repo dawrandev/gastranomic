@@ -67,31 +67,31 @@ class ReviewController extends Controller
     #[OA\Post(
         path: '/api/restaurants/{id}/reviews',
         summary: 'Restoranga sharh qoldirish',
-        description: 'Restoranga reyting, izoh va savollar javoblarini qoldirish. Avval GET /api/questions endpoint\'dan savollarni oling. selected_option_ids arrayiga faqat multiple-choice savollari (options mavjud bo\'lgan savollar) uchun option ID\'larini kiriting. Limit: 3 sharh/kun per restaurant.',
+        description: 'Restoranga reyting, izoh va savollar javoblarini qoldirish. Qadamlar: 1) GET /api/questions dan savollarni oling. 2) Foydalanuvchi har bir savol uchun javob tanlashi kerak. 3) Tanlangan optionlarning ID\'larini selected_option_ids arrayiga qo\'ying. Limit: 3 sharh/kun per restaurant.',
         tags: ['Sharhlar'],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ['device_id', 'rating'],
                 example: [
-                    'device_id' => 'device-123',
+                    'device_id' => 'device-uuid-123',
                     'rating' => 5,
-                    'comment' => 'Juda zo\'r restoran, taomlar mazali!',
+                    'comment' => 'Juda zo\'r restoran!',
                     'phone' => '+998901234567',
-                    'selected_option_ids' => [2, 7]
+                    'selected_option_ids' => [1, 5, 12, 15]
                 ],
                 properties: [
                     new OA\Property(
                         property: 'device_id',
                         type: 'string',
-                        description: 'Qurilmaning unikal ID\'si (UUID yoki fingerprint). Limit o\'rnatishda ishlatiladi',
+                        description: 'Qurilmaning unikal ID\'si (UUID, fingerprint yoki MAC address). Kuniga 3 dan ko\'proq sharh qoldirmaslik uchun',
                         maxLength: 100,
-                        example: 'device-123'
+                        example: 'device-uuid-123'
                     ),
                     new OA\Property(
                         property: 'rating',
                         type: 'integer',
-                        description: 'Restoran reytingi (1 = juda yomon, 5 = ajoyib)',
+                        description: 'Restoran reytingi (MAJBURI). 1=yomon, 2=yaxshi emas, 3=normal, 4=yaxshi, 5=ajoyib',
                         minimum: 1,
                         maximum: 5,
                         example: 5
@@ -99,15 +99,15 @@ class ReviewController extends Controller
                     new OA\Property(
                         property: 'comment',
                         type: 'string',
-                        description: 'Foydalanuvchining izohи (ixtiyoriy, maksimum 1000 belgi)',
+                        description: 'Foydalanuvchining izohи (ixtiyoriy, max 1000 belgi)',
                         maxLength: 1000,
                         nullable: true,
-                        example: 'Juda zo\'r restoran, taomlar mazali!'
+                        example: 'Juda zo\'r restoran! Taomlar mazali edi.'
                     ),
                     new OA\Property(
                         property: 'phone',
                         type: 'string',
-                        description: 'Foydalanuvchining telefon raqami (ixtiyoriy, maksimum 20 belgi)',
+                        description: 'Telefon raqami (ixtiyoriy, max 20 belgi)',
                         maxLength: 20,
                         nullable: true,
                         example: '+998901234567'
@@ -115,10 +115,13 @@ class ReviewController extends Controller
                     new OA\Property(
                         property: 'selected_option_ids',
                         type: 'array',
-                        description: 'Tanlangan savol variantlarining ID\'lari (ixtiyoriy). GET /api/questions\'dan olgan option ID\'larini kiriting',
+                        description: 'Tanlangan savol optionlarining ID\'lari. GET /api/questions dan olgan ID\'larni kiriting. Misol: rating=5 bo\'lsa "Sizga nima yoqdi?" sub-savol ko\'rsatiladi, shu sub-savolning option ID\'larini kiriting.',
                         nullable: true,
-                        items: new OA\Items(type: 'integer', description: 'Javob variantining ID\'si'),
-                        example: [2, 7]
+                        items: new OA\Items(
+                            type: 'integer',
+                            description: 'Option ID - GET /api/questions dan olgan ID'
+                        ),
+                        example: [1, 5, 12, 15]
                     )
                 ]
             )
@@ -147,10 +150,10 @@ class ReviewController extends Controller
                                     type: 'array',
                                     description: 'Foydalanuvchi tanlagan javob variantlari (tarjimada)',
                                     items: new OA\Items(
+                                        type: 'object',
                                         properties: [
-                                            new OA\Property(property: 'id', type: 'integer', description: 'Javob variantining ID\'si', example: 7),
-                                            new OA\Property(property: 'key', type: 'string', description: 'Variantning unikal kaliti', example: 'lunch'),
-                                            new OA\Property(property: 'text', type: 'string', description: 'Variantning tarjimali nomи (tanlangan tilga qarab)', example: 'Ланч'),
+                                            new OA\Property(property: 'id', type: 'integer', description: 'Option ID', example: 7),
+                                            new OA\Property(property: 'text', type: 'string', description: 'Option matni (tanlangan tilga qarab)', example: 'Ланч'),
                                         ]
                                     )
                                 ),

@@ -16,9 +16,7 @@ class QuestionOptionResource extends JsonResource
 
         return [
             'id' => $this->id,
-            'key' => $this->key,
             'text' => $this->getTranslatedText($locale),
-            'sort_order' => $this->sort_order,
         ];
     }
 }

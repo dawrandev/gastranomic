@@ -714,14 +714,14 @@
                 "tags": [
                     "Savollar"
                 ],
-                "summary": "Savollarni olish",
-                "description": "Restoran sharhi qoldirganda foydalanuvchiga ko'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi. Har bir savol options arrayida bo'sh (open-ended) yoki to'li (multiple-choice) bo'ladi. is_required field'i majburi yoki ixtiyoriy ekanligini ko'rsatadi.",
+                "summary": "Sharh formasining savollarini olish",
+                "description": "Restoran sharhi qoldirganda foydalanuvchiga ko'rsatiladigan barcha savollar va ularning javob variantlarini qaytaradi.",
                 "operationId": "860331f8e4b6d740293483a82e52fc5a",
                 "parameters": [
                     {
                         "name": "Accept-Language",
                         "in": "header",
-                        "description": "Til tanlang. Qiymatlari: uz, ru, kk, en. Default: ru",
+                        "description": "Javob tilini tanlang (default: ru). Barcha savol va option textlari bu tilda qaytariladi",
                         "required": false,
                         "schema": {
                             "type": "string",
@@ -746,7 +746,7 @@
                                             "example": true
                                         },
                                         "data": {
-                                            "description": "Savol kategoriyalarining massivi",
+                                            "description": "Asosiy savollar ro'yxati (4 ta savol: overall_satisfied, visit_category, would_return_again, additional_comments)",
                                             "type": "array",
                                             "items": {
                                                 "properties": {
@@ -755,56 +755,80 @@
                                                         "type": "integer",
                                                         "example": 1
                                                     },
-                                                    "key": {
-                                                        "description": "Savolning unikal kaliti. Frontend POST request'da selected_option_ids'ni jo'natishda ishlatiladi",
-                                                        "type": "string",
-                                                        "example": "overall_satisfied"
-                                                    },
                                                     "title": {
-                                                        "description": "Savolning tarjimali nomi (Accept-Language bo'yicha)",
+                                                        "description": "Savol matni (tanlangan tilga qarab)",
                                                         "type": "string",
                                                         "example": "В целом всё понравилось?"
                                                     },
-                                                    "description": {
-                                                        "description": "Savolning qo'shimcha izohи (agar mavjud bo'lsa)",
-                                                        "type": "string",
-                                                        "example": null,
-                                                        "nullable": true
-                                                    },
                                                     "is_required": {
-                                                        "description": "Majburi savol - TRUE bo'lsa, RED * asterisk ko'rsating. FALSE bo'lsa, asterisk ko'rsatmang",
+                                                        "description": "Majburi savol (TRUE = red asterisk ko'rsating)",
                                                         "type": "boolean",
                                                         "example": true
                                                     },
+                                                    "allow_multiple": {
+                                                        "description": "Bir nechta javob tanlash mumkinmi (checkbox uchun)",
+                                                        "type": "boolean",
+                                                        "example": false
+                                                    },
                                                     "sort_order": {
-                                                        "description": "Savol taribi (qaysi ketma-ketlikda ko'rsatish kerak)",
+                                                        "description": "Ko'rsatish tartibi (0 = birinchi)",
                                                         "type": "integer",
                                                         "example": 1
                                                     },
                                                     "options": {
-                                                        "description": "Javob variantlari. BOŠ bo'lsa - text input ko'rsating. TO'LI bo'lsa - radio/dropdown ko'rsating",
+                                                        "description": "Javob variantlari (bo'sh = text input, to'li = radio/dropdown/checkbox)",
                                                         "type": "array",
                                                         "items": {
                                                             "properties": {
                                                                 "id": {
-                                                                    "description": "Javob variantining ID'si. POST request'da selected_option_ids'ga kiriting",
+                                                                    "description": "Option ID - BUNI POST request'da selected_option_ids'ga kiriting",
                                                                     "type": "integer",
                                                                     "example": 1
                                                                 },
-                                                                "key": {
-                                                                    "description": "Variantning unikal kaliti",
-                                                                    "type": "string",
-                                                                    "example": "breakfast"
-                                                                },
                                                                 "text": {
-                                                                    "description": "Variantning tarjimali nomi",
+                                                                    "description": "Option matni",
                                                                     "type": "string",
                                                                     "example": "Завтрак"
-                                                                },
-                                                                "sort_order": {
-                                                                    "description": "Variantni ko'rsatish taribi",
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "sub_questions": {
+                                                        "description": "Shartli sub-savollar (faqat rating bo'yicha ko'rsatiladi)",
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
                                                                     "type": "integer",
-                                                                    "example": 0
+                                                                    "example": 2
+                                                                },
+                                                                "title": {
+                                                                    "type": "string",
+                                                                    "example": "A. Sizga nima yoqmadi?"
+                                                                },
+                                                                "is_required": {
+                                                                    "type": "boolean",
+                                                                    "example": false
+                                                                },
+                                                                "allow_multiple": {
+                                                                    "type": "boolean",
+                                                                    "example": true
+                                                                },
+                                                                "condition": {
+                                                                    "description": "Qachon ko'rsatish: \"rating\" <= 3 yoki >= 4",
+                                                                    "type": "object",
+                                                                    "example": {
+                                                                        "field": "rating",
+                                                                        "operator": "<=",
+                                                                        "value": 3
+                                                                    }
+                                                                },
+                                                                "options": {
+                                                                    "type": "array",
+                                                                    "items": {
+                                                                        "type": "object"
+                                                                    }
                                                                 }
                                                             },
                                                             "type": "object"
@@ -819,6 +843,9 @@
                                 }
                             }
                         }
+                    },
+                    "500": {
+                        "description": "Server xatosi"
                     }
                 }
             }
@@ -1423,7 +1450,7 @@
                     "Sharhlar"
                 ],
                 "summary": "Restoranga sharh qoldirish",
-                "description": "Restoranga reyting, izoh va savollar javoblarini qoldirish. Avval GET /api/questions endpoint'dan savollarni oling. selected_option_ids arrayiga faqat multiple-choice savollari (options mavjud bo'lgan savollar) uchun option ID'larini kiriting. Limit: 3 sharh/kun per restaurant.",
+                "description": "Restoranga reyting, izoh va savollar javoblarini qoldirish. Qadamlar: 1) GET /api/questions dan savollarni oling. 2) Foydalanuvchi har bir savol uchun javob tanlashi kerak. 3) Tanlangan optionlarning ID'larini selected_option_ids arrayiga qo'ying. Limit: 3 sharh/kun per restaurant.",
                 "operationId": "c3b04e826aeafcf34ff32c7c1df8e4f0",
                 "parameters": [
                     {
@@ -1446,42 +1473,44 @@
                                 ],
                                 "properties": {
                                     "device_id": {
-                                        "description": "Qurilmaning unikal ID'si (UUID yoki fingerprint). Limit o'rnatishda ishlatiladi",
+                                        "description": "Qurilmaning unikal ID'si (UUID, fingerprint yoki MAC address). Kuniga 3 dan ko'proq sharh qoldirmaslik uchun",
                                         "type": "string",
                                         "maxLength": 100,
-                                        "example": "device-123"
+                                        "example": "device-uuid-123"
                                     },
                                     "rating": {
-                                        "description": "Restoran reytingi (1 = juda yomon, 5 = ajoyib)",
+                                        "description": "Restoran reytingi (MAJBURI). 1=yomon, 2=yaxshi emas, 3=normal, 4=yaxshi, 5=ajoyib",
                                         "type": "integer",
                                         "maximum": 5,
                                         "minimum": 1,
                                         "example": 5
                                     },
                                     "comment": {
-                                        "description": "Foydalanuvchining izohи (ixtiyoriy, maksimum 1000 belgi)",
+                                        "description": "Foydalanuvchining izohи (ixtiyoriy, max 1000 belgi)",
                                         "type": "string",
                                         "maxLength": 1000,
-                                        "example": "Juda zo'r restoran, taomlar mazali!",
+                                        "example": "Juda zo'r restoran! Taomlar mazali edi.",
                                         "nullable": true
                                     },
                                     "phone": {
-                                        "description": "Foydalanuvchining telefon raqami (ixtiyoriy, maksimum 20 belgi)",
+                                        "description": "Telefon raqami (ixtiyoriy, max 20 belgi)",
                                         "type": "string",
                                         "maxLength": 20,
                                         "example": "+998901234567",
                                         "nullable": true
                                     },
                                     "selected_option_ids": {
-                                        "description": "Tanlangan savol variantlarining ID'lari (ixtiyoriy). GET /api/questions'dan olgan option ID'larini kiriting",
+                                        "description": "Tanlangan savol optionlarining ID'lari. GET /api/questions dan olgan ID'larni kiriting. Misol: rating=5 bo'lsa \"Sizga nima yoqdi?\" sub-savol ko'rsatiladi, shu sub-savolning option ID'larini kiriting.",
                                         "type": "array",
                                         "items": {
-                                            "description": "Javob variantining ID'si",
+                                            "description": "Option ID - GET /api/questions dan olgan ID",
                                             "type": "integer"
                                         },
                                         "example": [
-                                            2,
-                                            7
+                                            1,
+                                            5,
+                                            12,
+                                            15
                                         ],
                                         "nullable": true
                                     }
@@ -1489,13 +1518,15 @@
                                 "type": "object"
                             },
                             "example": {
-                                "device_id": "device-123",
+                                "device_id": "device-uuid-123",
                                 "rating": 5,
-                                "comment": "Juda zo'r restoran, taomlar mazali!",
+                                "comment": "Juda zo'r restoran!",
                                 "phone": "+998901234567",
                                 "selected_option_ids": [
-                                    2,
-                                    7
+                                    1,
+                                    5,
+                                    12,
+                                    15
                                 ]
                             }
                         }
@@ -1537,17 +1568,12 @@
                                                     "items": {
                                                         "properties": {
                                                             "id": {
-                                                                "description": "Javob variantining ID'si",
+                                                                "description": "Option ID",
                                                                 "type": "integer",
                                                                 "example": 7
                                                             },
-                                                            "key": {
-                                                                "description": "Variantning unikal kaliti",
-                                                                "type": "string",
-                                                                "example": "lunch"
-                                                            },
                                                             "text": {
-                                                                "description": "Variantning tarjimali nomи (tanlangan tilga qarab)",
+                                                                "description": "Option matni (tanlangan tilga qarab)",
                                                                 "type": "string",
                                                                 "example": "Ланч"
                                                             }
