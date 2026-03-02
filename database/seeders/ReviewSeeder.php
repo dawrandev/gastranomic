@@ -30,6 +30,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Excellent restaurant! Delicious food, cozy atmosphere.'
                 ],
                 'phone' => '+998901234001',
+                'email' => 'review001@example.com',
                 'option_ids' => [14, 16, 18, 22]
             ],
             [
@@ -43,6 +44,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Good service and quick delivery. Price is a bit high.'
                 ],
                 'phone' => '+998901234002',
+                'email' => 'review002@example.com',
                 'option_ids' => [17, 20, 23]
             ],
             [
@@ -56,6 +58,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Average. Service is good, but food was a bit cold.'
                 ],
                 'phone' => '+998901234003',
+                'email' => 'review003@example.com',
                 'option_ids' => [1, 2, 25]
             ],
             [
@@ -69,6 +72,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'I loved everything! Cleanliness, fresh dishes, professionals.'
                 ],
                 'phone' => '+998901234004',
+                'email' => 'review004@example.com',
                 'option_ids' => [14, 15, 19, 28]
             ],
             [
@@ -82,6 +86,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Slow service. Expensive for the quality.'
                 ],
                 'phone' => '+998901234005',
+                'email' => 'review005@example.com',
                 'option_ids' => [1, 6, 13, 30]
             ],
 
@@ -97,6 +102,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Lavash is amazing! Fresh and clean, service is super!'
                 ],
                 'phone' => '+998901234010',
+                'email' => 'review010@example.com',
                 'option_ids' => [14, 17, 19, 23]
             ],
             [
@@ -110,6 +116,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Good selection, quick preparation, polite employees.'
                 ],
                 'phone' => '+998901234011',
+                'email' => 'review011@example.com',
                 'option_ids' => [16, 22, 25]
             ],
             [
@@ -123,6 +130,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Regular restaurant. Okay, but not much selection.'
                 ],
                 'phone' => '+998901234012',
+                'email' => 'review012@example.com',
                 'option_ids' => [5, 23]
             ],
             [
@@ -136,6 +144,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Best lavash restaurant! I\'ll definitely return.'
                 ],
                 'phone' => '+998901234013',
+                'email' => 'review013@example.com',
                 'option_ids' => [15, 18, 20, 28]
             ],
             [
@@ -149,6 +158,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Lavash was dry. No sauce. Delayed service.'
                 ],
                 'phone' => '+998901234014',
+                'email' => 'review014@example.com',
                 'option_ids' => [3, 9, 13, 30]
             ],
 
@@ -164,6 +174,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'New branch, everything is good! Clean and modern!'
                 ],
                 'phone' => '+998901234020',
+                'email' => 'review020@example.com',
                 'option_ids' => [14, 19, 20, 24]
             ],
             [
@@ -177,6 +188,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Beautiful interior, good food, fast service.'
                 ],
                 'phone' => '+998901234021',
+                'email' => 'review021@example.com',
                 'option_ids' => [15, 17, 22]
             ],
             [
@@ -190,6 +202,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Good names, but price is a bit overpriced.'
                 ],
                 'phone' => '+998901234022',
+                'email' => 'review022@example.com',
                 'option_ids' => [2, 4, 23]
             ],
             [
@@ -203,6 +216,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Best of all branches! Congratulations to the team!'
                 ],
                 'phone' => '+998901234023',
+                'email' => 'review023@example.com',
                 'option_ids' => [16, 18, 21, 28]
             ],
             [
@@ -216,6 +230,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Nothing good. Money wasted.'
                 ],
                 'phone' => '+998901234024',
+                'email' => 'review024@example.com',
                 'option_ids' => [1, 3, 5, 30]
             ],
 
@@ -231,6 +246,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Neo lives up to its name! Modern, beautiful, tasty!'
                 ],
                 'phone' => '+998901234030',
+                'email' => 'review030@example.com',
                 'option_ids' => [14, 15, 18, 26]
             ],
             [
@@ -244,6 +260,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Well located, clean, professional service.'
                 ],
                 'phone' => '+998901234031',
+                'email' => 'review031@example.com',
                 'option_ids' => [17, 20, 25]
             ],
             [
@@ -257,6 +274,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Interesting design, but the price is quite high.'
                 ],
                 'phone' => '+998901234032',
+                'email' => 'review032@example.com',
                 'option_ids' => [6, 7, 24]
             ],
             [
@@ -270,6 +288,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Neo keeps its word! New, modern, everything is good!'
                 ],
                 'phone' => '+998901234033',
+                'email' => 'review033@example.com',
                 'option_ids' => [16, 19, 21, 28]
             ],
             [
@@ -283,6 +302,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Modern but cold service. Food quality is lower.'
                 ],
                 'phone' => '+998901234034',
+                'email' => 'review034@example.com',
                 'option_ids' => [2, 9, 12, 29]
             ],
 
@@ -298,6 +318,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Real Karakalpak cuisine! Prepared with love!'
                 ],
                 'phone' => '+998901234040',
+                'email' => 'review040@example.com',
                 'option_ids' => [14, 16, 19, 22]
             ],
             [
@@ -311,6 +332,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'National dish, good taste, comfortable place.'
                 ],
                 'phone' => '+998901234041',
+                'email' => 'review041@example.com',
                 'option_ids' => [15, 20, 27]
             ],
             [
@@ -324,6 +346,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Food is good, but atmosphere was noisy.'
                 ],
                 'phone' => '+998901234042',
+                'email' => 'review042@example.com',
                 'option_ids' => [5, 8, 23]
             ],
             [
@@ -337,6 +360,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'True Karakalpak spirit! Taste of homeland!'
                 ],
                 'phone' => '+998901234043',
+                'email' => 'review043@example.com',
                 'option_ids' => [14, 18, 21, 28]
             ],
             [
@@ -350,6 +374,7 @@ class ReviewSeeder extends Seeder
                     'en' => 'Good name, but no taste. Money wasted!'
                 ],
                 'phone' => '+998901234044',
+                'email' => 'review044@example.com',
                 'option_ids' => [1, 4, 10, 30]
             ],
         ];
@@ -358,6 +383,7 @@ class ReviewSeeder extends Seeder
         foreach ($reviews as $reviewData) {
             $comment = $reviewData['comments']['kk']; // Backward compatibility: eski comment field uchun
             $phone = $reviewData['phone'] ?? null;
+            $email = $reviewData['email'] ?? null;
             $optionIds = $reviewData['option_ids'] ?? [];
 
             // Build comments array for open-ended questions
@@ -389,6 +415,7 @@ class ReviewSeeder extends Seeder
                 'comment' => $comment,  // Keep for backward compatibility
                 'comments' => !empty($commentsArray) ? $commentsArray : null,  // NEW: JSON array format
                 'phone' => $phone,
+                'email' => $email,
             ]);
 
             if (!empty($optionIds)) {

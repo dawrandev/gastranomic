@@ -62,6 +62,15 @@
             </div>
             @endif
 
+            {{-- Email address --}}
+            @if($review->email)
+            <div class="mb-2">
+                <span class="badge bg-light text-primary border border-primary border-opacity-25" style="font-size: 12px; padding: 4px 10px; font-weight: 500;">
+                    <i class="fa fa-envelope me-1" style="font-size: 10px;"></i>{{ $review->email }}
+                </span>
+            </div>
+            @endif
+
             {{-- Comments linked to questions --}}
             @php
             $commentsWithQuestions = $review->getCommentsWithQuestions($locale ?? 'ru');

@@ -31,60 +31,70 @@ class ReviewTestDataSeeder extends Seeder
                 'rating' => 5,
                 'comment' => 'Очень вкусная еда! Персонал был вежлив и внимателен. Атмосфера в ресторане просто замечательная.',
                 'phone' => '+998901234501',
+                'email' => 'test001@example.com',
                 'option_ids' => [14, 15, 17], // High rating: taste, presentation, service
             ],
             [
                 'rating' => 5,
                 'comment' => 'Прекрасный ресторан! Рекомендую всем своим друзьям.',
                 'phone' => '+998901234502',
+                'email' => 'test002@example.com',
                 'option_ids' => [16, 18, 20], // High rating: polite staff, comfort, cleanliness
             ],
             [
                 'rating' => 4,
                 'comment' => 'Хорошее обслуживание, только цена немного высокая.',
                 'phone' => '+998901234503',
+                'email' => 'test003@example.com',
                 'option_ids' => [17, 19], // Fast service, nice location
             ],
             [
                 'rating' => 4,
                 'comment' => 'Очень понравился обед. Буду часто приходить.',
                 'phone' => '+998901234504',
+                'email' => 'test004@example.com',
                 'option_ids' => [14, 18], // Taste, comfort
             ],
             [
                 'rating' => 2,
                 'comment' => 'Еда была холодной. Официант долго нас игнорировал.',
                 'phone' => '+998901234505',
+                'email' => 'test005@example.com',
                 'option_ids' => [1, 2, 6, 10], // Low rating: slow service, rude staff, poor cleanliness, wait time
             ],
             [
                 'rating' => 3,
                 'comment' => 'Средний ресторан. Есть проблемы с чистотой.',
                 'phone' => '+998901234506',
+                'email' => 'test006@example.com',
                 'option_ids' => [4, 5], // Low rating: poor cleanliness, noisy atmosphere
             ],
             [
                 'rating' => 5,
                 'comment' => 'Лучший ресторан в городе! Все супер!',
                 'phone' => '+998901234507',
+                'email' => 'test007@example.com',
                 'option_ids' => [14, 16, 20, 21], // All positive
             ],
             [
                 'rating' => 1,
                 'comment' => 'Ужасное качество. Деньги потратил впустую.',
                 'phone' => '+998901234508',
+                'email' => 'test008@example.com',
                 'option_ids' => [3, 6, 9, 13], // Low: order mistakes, poor cleanliness, food quality, price
             ],
             [
                 'rating' => 4,
                 'comment' => 'Вкусная еда и хороший сервис. Спасибо!',
                 'phone' => '+998901234509',
+                'email' => 'test009@example.com',
                 'option_ids' => [15, 17, 19], // Presentation, service, location
             ],
             [
                 'rating' => 3,
                 'comment' => 'Нормально. Но можно было бы улучшить.',
                 'phone' => '+998901234510',
+                'email' => 'test010@example.com',
                 'option_ids' => [2, 7], // Rude staff, uncomfortable seating
             ],
         ];
@@ -98,6 +108,7 @@ class ReviewTestDataSeeder extends Seeder
                 'rating' => $data['rating'],
                 'comment' => $data['comment'],
                 'phone' => $data['phone'],
+                'email' => $data['email'] ?? null,
             ]);
 
             // Attach selected options

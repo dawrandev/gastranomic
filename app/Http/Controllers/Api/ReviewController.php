@@ -81,6 +81,7 @@ class ReviewController extends Controller
                         ['question_id' => 7, 'text' => 'Xodimlarning mehribonligi esda qoldi']
                     ],
                     'phone' => '+998901234567',
+                    'email' => 'user@example.com',
                     'selected_option_ids' => [14, 15, 18, 26]
                 ],
                 properties: [
@@ -144,6 +145,14 @@ class ReviewController extends Controller
                         maxLength: 20,
                         nullable: true,
                         example: '+998901234567'
+                    ),
+                    new OA\Property(
+                        property: 'email',
+                        type: 'string',
+                        description: 'Email manzil (ixtiyoriy, max 255 belgi)',
+                        maxLength: 255,
+                        nullable: true,
+                        example: 'user@example.com'
                     ),
                     new OA\Property(
                         property: 'selected_option_ids',

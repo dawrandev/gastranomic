@@ -27,6 +27,7 @@ class StoreReviewRequest extends FormRequest
             'comments.*.question_id' => ['required', 'integer', 'exists:questions_categories,id'],
             'comments.*.text' => ['required', 'string', 'max:1000'],
             'phone' => ['nullable', 'string', 'max:20'],
+            'email' => ['nullable', 'email', 'max:255'],
             'selected_option_ids' => ['nullable', 'array'],
             'selected_option_ids.*' => ['integer', 'exists:questions_options,id'],
         ];
@@ -55,6 +56,8 @@ class StoreReviewRequest extends FormRequest
             'comments.*.text.max' => 'Текст комментария не должен превышать 1000 символов.',
             'phone.string' => 'Номер телефона должен быть строкой.',
             'phone.max' => 'Номер телефона не должен превышать 20 символов.',
+            'email.email' => 'Email адрес должен быть действительным.',
+            'email.max' => 'Email адрес не должен превышать 255 символов.',
             'selected_option_ids.array' => 'selected_option_ids должен быть массивом.',
             'selected_option_ids.*.integer' => 'Каждый ID опции должен быть числом.',
             'selected_option_ids.*.exists' => 'Один или несколько выбранных вариантов ответа не существуют.',

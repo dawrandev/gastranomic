@@ -16,6 +16,7 @@ class Review extends Model
         'device_id',
         'ip_address',
         'phone',
+        'email',
         'rating',
         'comment',
         'comments',

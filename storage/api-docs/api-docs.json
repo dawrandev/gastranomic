@@ -1450,7 +1450,7 @@
                     "Sharhlar"
                 ],
                 "summary": "Restoranga sharh qoldirish",
-                "description": "Restoranga reyting, izoh va savollar javoblarini qoldirish. Qadamlar: 1) GET /api/questions dan savollarni oling. 2) Foydalanuvchi har bir savol uchun javob tanlashi kerak. 3) Tanlangan optionlarning ID'larini selected_option_ids arrayiga qo'ying. Limit: 3 sharh/kun per restaurant.",
+                "description": "Restoranga reyting, izoh va savollar javoblarini qoldirish. Qadamlar: 1) GET /api/questions dan savollarni oling. 2) Foydalanuvchi har bir savol uchun javob tanlashi kerak. 3) Tanlangan optionlarning ID'larini selected_option_ids arrayiga qo'ying. Limit: 10 sharh/kun per restaurant.",
                 "operationId": "c3b04e826aeafcf34ff32c7c1df8e4f0",
                 "parameters": [
                     {
@@ -1535,6 +1535,13 @@
                                         "example": "+998901234567",
                                         "nullable": true
                                     },
+                                    "email": {
+                                        "description": "Email manzil (ixtiyoriy, max 255 belgi)",
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "user@example.com",
+                                        "nullable": true
+                                    },
                                     "selected_option_ids": {
                                         "description": "Tanlangan savol optionlarining ID'lari. GET /api/questions dan olgan ID'larni kiriting. Misol: rating=5 bo'lsa \"Sizga nima yoqdi?\" sub-savol ko'rsatiladi, shu sub-savolning option ID'larini kiriting.",
                                         "type": "array",
@@ -1567,6 +1574,7 @@
                                     }
                                 ],
                                 "phone": "+998901234567",
+                                "email": "user@example.com",
                                 "selected_option_ids": [
                                     14,
                                     15,
@@ -1728,7 +1736,7 @@
                         }
                     },
                     "429": {
-                        "description": "Rate limit exceeded - Foydalanuvchi bu restoranga kun'da maksimal miqdorda sharh qoldirgan (limit: 3 ta)",
+                        "description": "Rate limit exceeded - Foydalanuvchi bu restoranga kun'da maksimal miqdorda sharh qoldirgan (limit: 10 ta)",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1752,7 +1760,7 @@
                                                 "reviews_count": {
                                                     "description": "Bu kun qoldirgan sharh soni",
                                                     "type": "integer",
-                                                    "example": 3
+                                                    "example": 10
                                                 },
                                                 "remaining": {
                                                     "description": "Qolgan sharh soni (0 = limit to'ldi)",
