@@ -1945,6 +1945,37 @@
                 },
                 "type": "object"
             },
+            "City": {
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Shahar ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Shahar nomi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Toshkent"
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
             "MenuItem": {
                 "required": [
                     "id",
@@ -1986,6 +2017,541 @@
                         "type": "integer",
                         "example": 350,
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "MenuSection": {
+                "required": [
+                    "id",
+                    "brand_id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Menyu bo'limi ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "brand_id": {
+                        "description": "Brand ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Bo'lim nomi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Burgerlar"
+                    },
+                    "description": {
+                        "description": "Bo'lim tavsifi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Turli xil burgerlar",
+                        "nullable": true
+                    },
+                    "sort_order": {
+                        "description": "Tartiblash raqami",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "OperatingHour": {
+                "required": [
+                    "id",
+                    "restaurant_id",
+                    "day_of_week"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Ish vaqti ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "restaurant_id": {
+                        "description": "Restoran ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "day_of_week": {
+                        "description": "Hafta kuni (0=Yakshanba, 1=Dushanba, ..., 6=Shanba)",
+                        "type": "integer",
+                        "maximum": 6,
+                        "minimum": 0,
+                        "example": 1
+                    },
+                    "opening_time": {
+                        "description": "Ochilish vaqti (HH:MM format)",
+                        "type": "string",
+                        "format": "time",
+                        "example": "09:00",
+                        "nullable": true
+                    },
+                    "closing_time": {
+                        "description": "Yopilish vaqti (HH:MM format)",
+                        "type": "string",
+                        "format": "time",
+                        "example": "22:00",
+                        "nullable": true
+                    },
+                    "is_closed": {
+                        "description": "Dam olish kunimi",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "QuestionCategory": {
+                "required": [
+                    "id",
+                    "key",
+                    "is_active"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Savol kategoriyasi ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "parent_category_id": {
+                        "description": "Asosiy kategoriya ID (sub-question uchun)",
+                        "type": "integer",
+                        "example": null,
+                        "nullable": true
+                    },
+                    "key": {
+                        "description": "Savol kalit nomi (tarjimalar uchun)",
+                        "type": "string",
+                        "example": "what_did_you_like"
+                    },
+                    "title": {
+                        "description": "Savol sarlavhasi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Sizga nima yoqdi?"
+                    },
+                    "description": {
+                        "description": "Savol tavsifi (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Iltimos, yoqqan narsalarni tanlang",
+                        "nullable": true
+                    },
+                    "sort_order": {
+                        "description": "Tartiblash raqami",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "is_required": {
+                        "description": "Majburiy savol yoki yo'q",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "is_active": {
+                        "description": "Faolmi",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "condition": {
+                        "description": "Savol ko'rsatish sharti (masalan, rating <= 3 bo'lsa)",
+                        "properties": {
+                            "field": {
+                                "type": "string",
+                                "example": "rating"
+                            },
+                            "operator": {
+                                "type": "string",
+                                "example": "<="
+                            },
+                            "value": {
+                                "type": "integer",
+                                "example": 3
+                            }
+                        },
+                        "type": "object",
+                        "nullable": true
+                    },
+                    "allow_multiple": {
+                        "description": "Ko'p variant tanlash mumkinmi",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "options": {
+                        "description": "Javob variantlari (multiple choice questions uchun)",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/QuestionOption"
+                        }
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "QuestionOption": {
+                "required": [
+                    "id",
+                    "questions_category_id",
+                    "key"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Javob varianti ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "questions_category_id": {
+                        "description": "Savol kategoriyasi ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "key": {
+                        "description": "Javob kalit nomi (tarjimalar uchun)",
+                        "type": "string",
+                        "example": "delicious_food"
+                    },
+                    "text": {
+                        "description": "Javob matni (tarjima qilingan)",
+                        "type": "string",
+                        "example": "Mazali taomlar"
+                    },
+                    "sort_order": {
+                        "description": "Tartiblash raqami",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "is_active": {
+                        "description": "Faolmi",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "RestaurantImage": {
+                "required": [
+                    "id",
+                    "restaurant_id",
+                    "image_path"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Rasm ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "restaurant_id": {
+                        "description": "Restoran ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "image_path": {
+                        "description": "Rasm URL",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://example.com/storage/restaurants/images/restaurant-1.jpg"
+                    },
+                    "is_cover": {
+                        "description": "Asosiy (cover) rasmmi",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Restaurant": {
+                "required": [
+                    "id",
+                    "brand_id",
+                    "city_id",
+                    "branch_name",
+                    "phone",
+                    "address"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Restoran ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "description": "Admin foydalanuvchi ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "brand_id": {
+                        "description": "Brand ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "city_id": {
+                        "description": "Shahar ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "branch_name": {
+                        "description": "Filial nomi",
+                        "type": "string",
+                        "example": "Chilonzor filiali"
+                    },
+                    "phone": {
+                        "description": "Telefon raqami",
+                        "type": "string",
+                        "example": "+998712345678"
+                    },
+                    "description": {
+                        "description": "Restoran tavsifi",
+                        "type": "string",
+                        "example": "Eng mazali taomlar",
+                        "nullable": true
+                    },
+                    "address": {
+                        "description": "Manzil",
+                        "type": "string",
+                        "example": "Chilonzor ko'chasi, 12"
+                    },
+                    "latitude": {
+                        "description": "Kenglik (latitude)",
+                        "type": "number",
+                        "format": "float",
+                        "example": 41.311151,
+                        "nullable": true
+                    },
+                    "longitude": {
+                        "description": "Uzunlik (longitude)",
+                        "type": "number",
+                        "format": "float",
+                        "example": 69.240562,
+                        "nullable": true
+                    },
+                    "is_active": {
+                        "description": "Faolmi",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "qr_code": {
+                        "description": "QR kod URL",
+                        "type": "string",
+                        "example": "https://example.com/storage/qr-codes/restaurant-1.png",
+                        "nullable": true
+                    },
+                    "avg_rating": {
+                        "description": "O'rtacha reyting",
+                        "type": "number",
+                        "format": "float",
+                        "maximum": 5,
+                        "minimum": 0,
+                        "example": 4.5,
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "Review": {
+                "required": [
+                    "id",
+                    "restaurant_id",
+                    "device_id",
+                    "rating"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Sharh ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "restaurant_id": {
+                        "description": "Restoran ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "device_id": {
+                        "description": "Qurilma ID (UUID, fingerprint yoki MAC address)",
+                        "type": "string",
+                        "example": "device-uuid-123"
+                    },
+                    "ip_address": {
+                        "description": "IP manzil",
+                        "type": "string",
+                        "example": "192.168.1.1",
+                        "nullable": true
+                    },
+                    "phone": {
+                        "description": "Telefon raqami (ixtiyoriy)",
+                        "type": "string",
+                        "example": "+998901234567",
+                        "nullable": true
+                    },
+                    "email": {
+                        "description": "Email manzil (ixtiyoriy)",
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com",
+                        "nullable": true
+                    },
+                    "rating": {
+                        "description": "Reyting (1-5)",
+                        "type": "integer",
+                        "maximum": 5,
+                        "minimum": 1,
+                        "example": 5
+                    },
+                    "comment": {
+                        "description": "Umumiy izoh (deprecated, comments array ishlating)",
+                        "type": "string",
+                        "example": "Juda zo'r restoran!",
+                        "nullable": true
+                    },
+                    "comments": {
+                        "description": "Savolga javob izohlar (open-ended questions)",
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "question_id": {
+                                    "description": "Savol ID",
+                                    "type": "integer",
+                                    "example": 8
+                                },
+                                "text": {
+                                    "description": "Javob matni",
+                                    "type": "string",
+                                    "example": "Xizmat juda yaxshi bo'ldi"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "required": [
+                    "id",
+                    "name",
+                    "login"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Foydalanuvchi ID",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "brand_id": {
+                        "description": "Brand ID (agar brand egasi bo'lsa)",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "name": {
+                        "description": "Ism-familiya",
+                        "type": "string",
+                        "example": "Alisher Navoiy"
+                    },
+                    "login": {
+                        "description": "Login (noyob)",
+                        "type": "string",
+                        "example": "admin"
+                    },
+                    "fcm_token": {
+                        "description": "Firebase Cloud Messaging token (push notifications uchun)",
+                        "type": "string",
+                        "example": "dGhpc19pc19hX2ZjbV90b2tlbl9leGFtcGxl",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "description": "Yaratilgan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Yangilangan vaqt",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
                     }
                 },
                 "type": "object"
