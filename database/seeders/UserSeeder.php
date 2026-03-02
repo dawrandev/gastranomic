@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
             [
                 'id' => 1,
                 'brand_id' => null,
-                'name' => 'Asosiy Boshqaruvchi',
+                'name' => 'Главный менеджер',
                 'login' => 'superadmin',
                 'password' => 'superadmin123',
                 'created_at' => '2026-01-29 00:44:04',
