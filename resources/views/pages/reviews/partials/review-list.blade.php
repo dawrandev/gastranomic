@@ -35,8 +35,8 @@
 
                 <span class="badge bg-dark text-white" style="font-size: 12px; font-weight: 500; padding: 6px 10px;">
                     <i class="fa fa-utensils me-1" style="font-size: 11px;"></i>
-                    <strong>{{ $review->restaurant->name }}</strong>
-                    @if($review->restaurant->branch_name)
+                    <strong>{{ $review->restaurant->brand->title ?? $review->restaurant->branch_name }}</strong>
+                    @if($review->restaurant->brand && $review->restaurant->branch_name)
                     <span class="ms-1">{{ $review->restaurant->branch_name }}</span>
                     @endif
                 </span>
@@ -47,8 +47,8 @@
                 <div class="d-flex align-items-center gap-1">
                     @for($i = 1; $i <= 5; $i++)
                         <i class="fa fa-star {{ $i <= $review->rating ? 'text-warning' : 'text-muted' }}" style="font-size: 13px;"></i>
-                    @endfor
-                    <span class="fw-semibold text-warning ms-1" style="font-size: 13px;">{{ $review->rating }}/5</span>
+                        @endfor
+                        <span class="fw-semibold text-warning ms-1" style="font-size: 13px;">{{ $review->rating }}/5</span>
                 </div>
                 <small class="text-muted" style="font-size: 12px;">{{ $review->created_at->format('d.m.Y H:i') }}</small>
             </div>
@@ -102,21 +102,21 @@
             $groupedOptions = [];
 
             foreach($review->selectedOptions as $option) {
-                // Find which question this option belongs to
-                $question = $allQuestions->first(function($q) use ($option) {
-                    return $q->options->contains($option->id);
-                });
+            // Find which question this option belongs to
+            $question = $allQuestions->first(function($q) use ($option) {
+            return $q->options->contains($option->id);
+            });
 
-                if($question) {
-                    $questionTitle = $question->getTranslatedTitle($currentLocale);
-                    if(!isset($groupedOptions[$question->id])) {
-                        $groupedOptions[$question->id] = [
-                            'title' => $questionTitle,
-                            'options' => []
-                        ];
-                    }
-                    $groupedOptions[$question->id]['options'][] = $option;
-                }
+            if($question) {
+            $questionTitle = $question->getTranslatedTitle($currentLocale);
+            if(!isset($groupedOptions[$question->id])) {
+            $groupedOptions[$question->id] = [
+            'title' => $questionTitle,
+            'options' => []
+            ];
+            }
+            $groupedOptions[$question->id]['options'][] = $option;
+            }
             }
             @endphp
 
