@@ -51,16 +51,11 @@ class DiscoveryService
     }
 
     /**
-     * Search restaurants and menu items.
+     * Search restaurants with full details including coordinates.
      */
-    public function search(string $query, int $perPage = 15): array
+    public function searchRestaurantsWithDetails(string $query, int $perPage = 15): LengthAwarePaginator
     {
-        // Search restaurants
-        $restaurants = $this->discoveryRepository->searchRestaurants($query, $perPage);
-
-        return [
-            'restaurants' => $restaurants,
-        ];
+        return $this->discoveryRepository->searchRestaurantsWithDetails($query, $perPage);
     }
 
     /**
@@ -77,5 +72,13 @@ class DiscoveryService
     public function getNearestRestaurants(float $latitude, float $longitude, int $limit = 5)
     {
         return $this->discoveryRepository->getNearestRestaurants($latitude, $longitude, $limit);
+    }
+
+    /**
+     * Autocomplete restaurants - optimized for real-time search.
+     */
+    public function autocompleteRestaurants(string $query, int $limit = 10)
+    {
+        return $this->discoveryRepository->autocompleteRestaurants($query, $limit);
     }
 }

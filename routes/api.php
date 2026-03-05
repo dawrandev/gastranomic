@@ -20,6 +20,8 @@ use App\Http\Controllers\Api\FavoriteController;
 // Restaurant Discovery
 Route::prefix('restaurants')->group(function () {
     Route::get('/', [RestaurantDiscoveryController::class, 'index']);
+    Route::get('/search', [RestaurantDiscoveryController::class, 'search']);
+    Route::get('/autocomplete', [RestaurantDiscoveryController::class, 'autocomplete']);
     Route::get('/nearest', [RestaurantDiscoveryController::class, 'nearest']);
     Route::get('/nearby', [RestaurantDiscoveryController::class, 'nearby']);
     Route::get('/map', [RestaurantDiscoveryController::class, 'map']);
@@ -49,8 +51,6 @@ Route::get('/restaurants/brand/{brand_id}', [BrandController::class, 'restaurant
 Route::get('/questions', [QuestionController::class, 'index']);
 
 Route::get('/menu-items/{id}', [MenuController::class, 'show']);
-
-Route::get('/search', [SearchController::class, 'search']);
 
 // Favorites
 Route::get('/favorites', [FavoriteController::class, 'index']);

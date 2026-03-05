@@ -1380,6 +1380,316 @@
                 }
             }
         },
+        "/api/restaurants/search": {
+            "get": {
+                "tags": [
+                    "Restoranlar"
+                ],
+                "summary": "Restoranlarni qidirish",
+                "description": "Restoran nomi yoki brend nomi bo'yicha qidiruv. Natijalar products (batafsil ma'lumotlar) va maps (xarita uchun koordinatalar) formatida qaytariladi.",
+                "operationId": "f5712faa41cbc939429e796d4d3f5421",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Qidiruv so'rovi (kamida 2 ta harf)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 2
+                        },
+                        "example": "mcdonald"
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Qidiruv natijalari",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "products": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "restaurant_name": {
+                                                                "type": "string",
+                                                                "example": "McDonald's Almaty Mall"
+                                                            },
+                                                            "category_name": {
+                                                                "type": "string",
+                                                                "example": "Fast Food"
+                                                            },
+                                                            "avg_rating": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 4.5
+                                                            },
+                                                            "reviews_count": {
+                                                                "type": "integer",
+                                                                "example": 128
+                                                            },
+                                                            "address": {
+                                                                "type": "string",
+                                                                "example": "Rozybakiev St 247A"
+                                                            },
+                                                            "operating_hours": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "day_of_week": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "opening_time": {
+                                                                            "type": "string",
+                                                                            "example": "09:00"
+                                                                        },
+                                                                        "closing_time": {
+                                                                            "type": "string",
+                                                                            "example": "22:00"
+                                                                        },
+                                                                        "is_closed": {
+                                                                            "type": "boolean",
+                                                                            "example": false
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "maps": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "restaurant_name": {
+                                                                "type": "string",
+                                                                "example": "McDonald's Almaty Mall"
+                                                            },
+                                                            "longitude": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 76.9286
+                                                            },
+                                                            "latitude": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 43.222
+                                                            },
+                                                            "avg_rating": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 4.5
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 42
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validatsiya xatosi"
+                    }
+                }
+            }
+        },
+        "/api/restaurants/autocomplete": {
+            "get": {
+                "tags": [
+                    "Restoranlar"
+                ],
+                "summary": "Restoran nomini avtomatik to'ldirish",
+                "description": "Client har bir harf yozganda, shu harfdan BOSHLANADIGAN restoran nomlari qaytariladi. Real-time search uchun optimallashtirilgan - minimal ma'lumotlar bilan tez javob beradi.",
+                "operationId": "82c098811ed059bbc76766a634d39633",
+                "parameters": [
+                    {
+                        "name": "Accept-Language",
+                        "in": "header",
+                        "description": "Til kodi (uz, ru, kk, en). Default: kk",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "kk",
+                            "enum": [
+                                "uz",
+                                "ru",
+                                "kk",
+                                "en"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Qidiruv so'rovi (kamida 1 ta harf)",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "minLength": 1
+                        },
+                        "example": "mcdo"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Natijalar soni (default: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 20,
+                            "minimum": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Autocomplete natijalari",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "McDonald's Almaty Mall"
+                                                    },
+                                                    "brand_name": {
+                                                        "type": "string",
+                                                        "example": "McDonald's"
+                                                    },
+                                                    "city_name": {
+                                                        "type": "string",
+                                                        "example": "Алматы"
+                                                    },
+                                                    "average_rating": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 4.5
+                                                    },
+                                                    "cover_image": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/storage/images/restaurant.jpg",
+                                                        "nullable": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "query": {
+                                                    "type": "string",
+                                                    "example": "mcdo"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validatsiya xatosi - q parametri bo'sh yoki noto'g'ri"
+                    }
+                }
+            }
+        },
         "/api/restaurants/{id}/reviews": {
             "get": {
                 "tags": [

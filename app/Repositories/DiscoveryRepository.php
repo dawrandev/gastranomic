@@ -183,9 +183,9 @@ class DiscoveryRepository
     }
 
     /**
-     * Search restaurants by name or brand.
+     * Search restaurants by name or brand with full details for products and maps.
      */
-    public function searchRestaurants(string $query, int $perPage = 15): LengthAwarePaginator
+    public function searchRestaurantsWithDetails(string $query, int $perPage = 15): LengthAwarePaginator
     {
         return Restaurant::query()
             ->where('is_active', true)
@@ -195,17 +195,30 @@ class DiscoveryRepository
                         $q->where('name', 'like', "%{$query}%");
                     });
             })
+            ->whereNotNull('location')
             ->with([
                 'brand:id,logo',
                 'brand.translations',
                 'city:id',
                 'city.translations',
                 'coverImage:id,restaurant_id,image_path,is_cover',
-                'categories:id,icon',
+                'categories:id',
                 'categories.translations',
+                'operatingHours:id,restaurant_id,day_of_week,opening_time,closing_time,is_closed',
             ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
+            ->select([
+                'id',
+                'branch_name',
+                'brand_id',
+                'city_id',
+                'address',
+                'is_active',
+                'location',
+                DB::raw('ST_X(location) as longitude'),
+                DB::raw('ST_Y(location) as latitude'),
+            ])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
     }
@@ -272,6 +285,39 @@ class DiscoveryRepository
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->orderBy('distance', 'asc')
+            ->limit($limit)
+            ->get();
+    }
+
+    /**
+     * Autocomplete restaurants by name (starts with query).
+     * Optimized for real-time search as user types.
+     */
+    public function autocompleteRestaurants(string $query, int $limit = 10): Collection
+    {
+        return Restaurant::query()
+            ->where('is_active', true)
+            ->where(function ($q) use ($query) {
+                // Search for restaurants that START with the query
+                $q->where('branch_name', 'like', "{$query}%")
+                    ->orWhereHas('brand.translations', function ($q) use ($query) {
+                        $q->where('name', 'like', "{$query}%");
+                    });
+            })
+            ->with([
+                'brand:id',
+                'brand.translations',
+                'city:id',
+                'city.translations',
+                'coverImage:id,restaurant_id,image_path',
+            ])
+            ->withAvg('reviews', 'rating')
+            ->select(['id', 'branch_name', 'brand_id', 'city_id'])
+            ->orderByRaw('CASE
+                WHEN branch_name LIKE ? THEN 1
+                ELSE 2
+            END', ["{$query}%"])
+            ->orderBy('branch_name', 'asc')
             ->limit($limit)
             ->get();
     }

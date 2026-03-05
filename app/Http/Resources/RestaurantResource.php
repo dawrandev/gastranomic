@@ -7,7 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class RestaurantResource extends JsonResource
 {
-    // "data" wrapper ni o'chirish
     public static $wrap = null;
 
     public function toArray(Request $request): array

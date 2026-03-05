@@ -331,4 +331,286 @@ class RestaurantDiscoveryController extends Controller
             'data' => RestaurantListResource::collection($restaurants),
         ]);
     }
+
+    #[OA\Get(
+        path: '/api/restaurants/search',
+        summary: 'Restoranlarni qidirish',
+        description: 'Restoran nomi yoki brend nomi bo\'yicha qidiruv. Natijalar products (batafsil ma\'lumotlar) va maps (xarita uchun koordinatalar) formatida qaytariladi.',
+        tags: ['Restoranlar'],
+        parameters: [
+            new OA\Parameter(
+                name: 'Accept-Language',
+                in: 'header',
+                required: false,
+                description: 'Til kodi (uz, ru, kk, en). Default: kk',
+                schema: new OA\Schema(type: 'string', enum: ['uz', 'ru', 'kk', 'en'], default: 'kk')
+            ),
+            new OA\Parameter(
+                name: 'q',
+                in: 'query',
+                required: true,
+                description: 'Qidiruv so\'rovi (kamida 2 ta harf)',
+                schema: new OA\Schema(type: 'string', minLength: 2),
+                example: 'mcdonald'
+            ),
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 15)),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Qidiruv natijalari',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(
+                                    property: 'products',
+                                    type: 'array',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'restaurant_name', type: 'string', example: 'McDonald\'s Almaty Mall'),
+                                            new OA\Property(property: 'category_name', type: 'string', example: 'Fast Food'),
+                                            new OA\Property(property: 'avg_rating', type: 'number', format: 'float', example: 4.5),
+                                            new OA\Property(property: 'reviews_count', type: 'integer', example: 128),
+                                            new OA\Property(property: 'address', type: 'string', example: 'Rozybakiev St 247A'),
+                                            new OA\Property(
+                                                property: 'operating_hours',
+                                                type: 'array',
+                                                items: new OA\Items(
+                                                    properties: [
+                                                        new OA\Property(property: 'day_of_week', type: 'integer', example: 1),
+                                                        new OA\Property(property: 'opening_time', type: 'string', example: '09:00'),
+                                                        new OA\Property(property: 'closing_time', type: 'string', example: '22:00'),
+                                                        new OA\Property(property: 'is_closed', type: 'boolean', example: false),
+                                                    ]
+                                                )
+                                            ),
+                                        ]
+                                    )
+                                ),
+                                new OA\Property(
+                                    property: 'maps',
+                                    type: 'array',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'restaurant_name', type: 'string', example: 'McDonald\'s Almaty Mall'),
+                                            new OA\Property(property: 'longitude', type: 'number', format: 'float', example: 76.9286),
+                                            new OA\Property(property: 'latitude', type: 'number', format: 'float', example: 43.2220),
+                                            new OA\Property(property: 'avg_rating', type: 'number', format: 'float', example: 4.5),
+                                        ]
+                                    )
+                                ),
+                            ]
+                        ),
+                        new OA\Property(
+                            property: 'meta',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'current_page', type: 'integer', example: 1),
+                                new OA\Property(property: 'last_page', type: 'integer', example: 3),
+                                new OA\Property(property: 'per_page', type: 'integer', example: 15),
+                                new OA\Property(property: 'total', type: 'integer', example: 42),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validatsiya xatosi'
+            )
+        ]
+    )]
+    public function search(Request $request): JsonResponse
+    {
+        $request->validate([
+            'q' => 'required|string|min:2',
+            'per_page' => 'nullable|integer|min:1|max:50',
+        ]);
+
+        $query = $request->input('q');
+        $perPage = $request->input('per_page', 15);
+        $locale = $request->header('Accept-Language', 'kk');
+
+        $restaurants = $this->discoveryService->searchRestaurantsWithDetails($query, $perPage);
+
+        // Format products data
+        $products = $restaurants->map(function ($restaurant) use ($locale) {
+            // Get category name from translations
+            $categoryName = null;
+            if ($restaurant->categories->isNotEmpty()) {
+                $category = $restaurant->categories->first();
+                if ($category && $category->translations) {
+                    $translation = $category->translations->firstWhere('lang_code', $locale);
+                    $categoryName = $translation ? $translation->name : null;
+                }
+            }
+
+            return [
+                'id' => $restaurant->id,
+                'restaurant_name' => $restaurant->branch_name,
+                'category_name' => $categoryName,
+                'avg_rating' => round($restaurant->reviews_avg_rating ?? 0, 1),
+                'reviews_count' => $restaurant->reviews_count ?? 0,
+                'address' => $restaurant->address,
+                'operating_hours' => $restaurant->operatingHours->map(function ($hour) {
+                    return [
+                        'day_of_week' => $hour->day_of_week,
+                        'opening_time' => $hour->opening_time,
+                        'closing_time' => $hour->closing_time,
+                        'is_closed' => (bool) $hour->is_closed,
+                    ];
+                }),
+            ];
+        });
+
+        // Format maps data
+        $maps = $restaurants->map(function ($restaurant) {
+            return [
+                'id' => $restaurant->id,
+                'restaurant_name' => $restaurant->branch_name,
+                'longitude' => $restaurant->longitude ? (float) $restaurant->longitude : null,
+                'latitude' => $restaurant->latitude ? (float) $restaurant->latitude : null,
+                'avg_rating' => round($restaurant->reviews_avg_rating ?? 0, 1),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'products' => $products,
+                'maps' => $maps,
+            ],
+            'meta' => [
+                'current_page' => $restaurants->currentPage(),
+                'last_page' => $restaurants->lastPage(),
+                'per_page' => $restaurants->perPage(),
+                'total' => $restaurants->total(),
+            ],
+        ]);
+    }
+
+    #[OA\Get(
+        path: '/api/restaurants/autocomplete',
+        summary: 'Restoran nomini avtomatik to\'ldirish',
+        description: 'Client har bir harf yozganda, shu harfdan BOSHLANADIGAN restoran nomlari qaytariladi. Real-time search uchun optimallashtirilgan - minimal ma\'lumotlar bilan tez javob beradi.',
+        tags: ['Restoranlar'],
+        parameters: [
+            new OA\Parameter(
+                name: 'Accept-Language',
+                in: 'header',
+                required: false,
+                description: 'Til kodi (uz, ru, kk, en). Default: kk',
+                schema: new OA\Schema(type: 'string', enum: ['uz', 'ru', 'kk', 'en'], default: 'kk')
+            ),
+            new OA\Parameter(
+                name: 'q',
+                in: 'query',
+                required: true,
+                description: 'Qidiruv so\'rovi (kamida 1 ta harf)',
+                schema: new OA\Schema(type: 'string', minLength: 1),
+                example: 'mcdo'
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                in: 'query',
+                required: false,
+                description: 'Natijalar soni (default: 10)',
+                schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 20)
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Autocomplete natijalari',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'success', type: 'boolean', example: true),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                                    new OA\Property(property: 'name', type: 'string', example: 'McDonald\'s Almaty Mall'),
+                                    new OA\Property(property: 'brand_name', type: 'string', example: 'McDonald\'s'),
+                                    new OA\Property(property: 'city_name', type: 'string', example: 'Алматы'),
+                                    new OA\Property(property: 'average_rating', type: 'number', format: 'float', example: 4.5),
+                                    new OA\Property(property: 'cover_image', type: 'string', nullable: true, example: 'https://example.com/storage/images/restaurant.jpg'),
+                                ]
+                            )
+                        ),
+                        new OA\Property(
+                            property: 'meta',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'total', type: 'integer', example: 5),
+                                new OA\Property(property: 'query', type: 'string', example: 'mcdo'),
+                            ]
+                        ),
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Validatsiya xatosi - q parametri bo\'sh yoki noto\'g\'ri'
+            )
+        ]
+    )]
+    public function autocomplete(Request $request): JsonResponse
+    {
+        $request->validate([
+            'q' => 'required|string|min:1',
+            'limit' => 'nullable|integer|min:1|max:20',
+        ]);
+
+        $query = $request->input('q');
+        $limit = $request->input('limit', 10);
+        $locale = $request->header('Accept-Language', 'kk');
+
+        $restaurants = $this->discoveryService->autocompleteRestaurants($query, $limit);
+
+        // Format lightweight response for autocomplete
+        $data = $restaurants->map(function ($restaurant) use ($locale) {
+            // Get brand name from translations
+            $brandName = null;
+            if ($restaurant->brand && $restaurant->brand->translations) {
+                $translation = $restaurant->brand->translations->firstWhere('lang_code', $locale);
+                $brandName = $translation ? $translation->name : null;
+            }
+
+            // Get city name from translations
+            $cityName = null;
+            if ($restaurant->city && $restaurant->city->translations) {
+                $translation = $restaurant->city->translations->firstWhere('lang_code', $locale);
+                $cityName = $translation ? $translation->name : null;
+            }
+
+            return [
+                'id' => $restaurant->id,
+                'name' => $restaurant->branch_name,
+                'brand_name' => $brandName,
+                'city_name' => $cityName,
+                'average_rating' => round($restaurant->reviews_avg_rating ?? 0, 1),
+                'cover_image' => $restaurant->coverImage?->image_path
+                    ? asset('storage/' . $restaurant->coverImage->image_path)
+                    : null,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'meta' => [
+                'total' => $data->count(),
+                'query' => $query,
+            ],
+        ]);
+    }
 }

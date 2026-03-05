@@ -20,7 +20,7 @@ class Restaurant extends Model
         'qr_code'
     ];
 
-    protected $appends = ['latitude', 'longitude']; // Avtomatik qo'shish uchun
+    protected $appends = ['latitude', 'longitude'];
 
     protected $casts = [
         'is_active' => 'boolean',
