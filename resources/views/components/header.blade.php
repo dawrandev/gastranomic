@@ -32,9 +32,13 @@
                       <div class="media profile-media">
                           @php
                           $user = Auth::user();
-                          $brandLogo = $user->brand && $user->brand->logo
-                              ? asset('storage/' . $user->brand->logo)
-                              : asset('assets/images/dashboard/profile.jpg');
+                          if ($user && $user->hasRole('superadmin')) {
+                              $brandLogo = asset('storage/brands/logos/QR Gastranomic logo.jpg');
+                          } else {
+                              $brandLogo = $user->brand && $user->brand->logo
+                                  ? asset('storage/' . $user->brand->logo)
+                                  : asset('assets/images/dashboard/profile.jpg');
+                          }
                           @endphp
                           <img class="b-r-10" src="{{ $brandLogo }}" alt="" style="width: 40px; height: 40px; object-fit: cover; object-position: center;">
                           <div class="media-body"><span>{{ Auth::user()->name }}</span>

@@ -30,9 +30,14 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fa fa-times me-1"></i> Закрыть
                 </button>
-                <a id="qrcode-download-link" href="" download class="btn btn-primary">
-                    <i class="fa fa-download me-1"></i> Скачать QR-код
-                </a>
+                <div class="d-flex gap-2">
+                    <a id="qrcode-print-link" href="" target="_blank" class="btn btn-success">
+                        <i class="fa fa-print me-1"></i> Печать
+                    </a>
+                    <a id="qrcode-download-link" href="" download class="btn btn-primary">
+                        <i class="fa fa-download me-1"></i> Скачать QR-код
+                    </a>
+                </div>
             </div>
         </div>
     </div>

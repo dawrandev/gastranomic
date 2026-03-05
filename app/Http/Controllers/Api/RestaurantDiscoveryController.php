@@ -517,13 +517,6 @@ class RestaurantDiscoveryController extends Controller
                 schema: new OA\Schema(type: 'string', minLength: 1),
                 example: 'mcdo'
             ),
-            new OA\Parameter(
-                name: 'limit',
-                in: 'query',
-                required: false,
-                description: 'Natijalar soni (default: 10)',
-                schema: new OA\Schema(type: 'integer', default: 10, minimum: 1, maximum: 20)
-            ),
         ],
         responses: [
             new OA\Response(
@@ -567,14 +560,12 @@ class RestaurantDiscoveryController extends Controller
     {
         $request->validate([
             'q' => 'required|string|min:1',
-            'limit' => 'nullable|integer|min:1|max:20',
         ]);
 
         $query = $request->input('q');
-        $limit = $request->input('limit', 10);
         $locale = $request->header('Accept-Language', 'kk');
 
-        $restaurants = $this->discoveryService->autocompleteRestaurants($query, $limit);
+        $restaurants = $this->discoveryService->autocompleteRestaurants($query);
 
         // Format lightweight response for autocomplete
         $data = $restaurants->map(function ($restaurant) use ($locale) {

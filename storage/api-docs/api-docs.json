@@ -1606,18 +1606,6 @@
                             "minLength": 1
                         },
                         "example": "mcdo"
-                    },
-                    {
-                        "name": "limit",
-                        "in": "query",
-                        "description": "Natijalar soni (default: 10)",
-                        "required": false,
-                        "schema": {
-                            "type": "integer",
-                            "default": 10,
-                            "maximum": 20,
-                            "minimum": 1
-                        }
                     }
                 ],
                 "responses": {

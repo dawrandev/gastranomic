@@ -77,8 +77,8 @@ class DiscoveryService
     /**
      * Autocomplete restaurants - optimized for real-time search.
      */
-    public function autocompleteRestaurants(string $query, int $limit = 10)
+    public function autocompleteRestaurants(string $query)
     {
-        return $this->discoveryRepository->autocompleteRestaurants($query, $limit);
+        return $this->discoveryRepository->autocompleteRestaurants($query);
     }
 }

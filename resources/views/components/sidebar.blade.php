@@ -4,9 +4,13 @@
             <a href="{{ route('login') }}">
                 @php
                 $user = auth()->user();
-                $brandLogo = $user && $user->brand && $user->brand->logo
-                    ? asset('storage/' . $user->brand->logo)
-                    : asset('/assets/images/logo/logo.png');
+                if ($user && $user->hasRole('superadmin')) {
+                    $brandLogo = asset('storage/brands/logos/QR Gastranomic logo.jpg');
+                } else {
+                    $brandLogo = $user && $user->brand && $user->brand->logo
+                        ? asset('storage/' . $user->brand->logo)
+                        : asset('/assets/images/logo/logo.png');
+                }
                 @endphp
                 <img class="img-fluid for-light" src="{{ $brandLogo }}" alt="" style="max-height: 50px; object-fit: contain; object-position: center;">
                 <img class="img-fluid for-dark" src="{{ $brandLogo }}" alt="" style="max-height: 50px; object-fit: contain; object-position: center;">
@@ -17,9 +21,13 @@
         <div class="logo-icon-wrapper">
             <a href="{{ route('login') }}">
                 @php
-                $iconLogo = $user && $user->brand && $user->brand->logo
-                    ? asset('storage/' . $user->brand->logo)
-                    : asset('/assets/images/logo/logo-icon.png');
+                if ($user && $user->hasRole('superadmin')) {
+                    $iconLogo = asset('storage/brands/logos/QR Gastranomic logo.jpg');
+                } else {
+                    $iconLogo = $user && $user->brand && $user->brand->logo
+                        ? asset('storage/' . $user->brand->logo)
+                        : asset('/assets/images/logo/logo-icon.png');
+                }
                 @endphp
                 <img class="img-fluid" src="{{ $iconLogo }}" alt="" style="max-height: 35px; object-fit: contain; object-position: center;">
             </a>
@@ -31,9 +39,13 @@
                     <li class="back-btn">
                         <a href="{{ route('login') }}">
                             @php
-                            $mobileIconLogo = $user && $user->brand && $user->brand->logo
-                                ? asset('storage/' . $user->brand->logo)
-                                : asset('/assets/images/logo/logo-icon.png');
+                            if ($user && $user->hasRole('superadmin')) {
+                                $mobileIconLogo = asset('storage/brands/logos/QR Gastranomic logo.jpg');
+                            } else {
+                                $mobileIconLogo = $user && $user->brand && $user->brand->logo
+                                    ? asset('storage/' . $user->brand->logo)
+                                    : asset('/assets/images/logo/logo-icon.png');
+                            }
                             @endphp
                             <img class="img-fluid" src="{{ $mobileIconLogo }}" alt="" style="max-height: 35px; object-fit: contain; object-position: center;">
                         </a>

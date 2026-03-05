@@ -176,4 +176,27 @@ class RestaurantController extends Controller
             ], 500);
         }
     }
+
+    public function qrCard(Restaurant $restaurant)
+    {
+        // Platform logo - QR Gastronomic logo
+        $platformLogo = asset('storage/QR Gastranomic logo.jpg');
+
+        // Restoran logosi (brand logo)
+        $restaurantLogo = $restaurant->brand && $restaurant->brand->logo
+            ? asset('storage/' . $restaurant->brand->logo)
+            : null;
+
+        // QR kod
+        $qrCode = $restaurant->qr_code
+            ? asset('storage/' . $restaurant->qr_code)
+            : null;
+
+        return view('pages.restaurants.qr-card', compact(
+            'platformLogo',
+            'restaurantLogo',
+            'qrCode',
+            'restaurant'
+        ));
+    }
 }

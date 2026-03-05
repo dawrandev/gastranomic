@@ -28,6 +28,7 @@ Route::prefix('/restaurants')->middleware(['auth'])->name('restaurants.')->group
     Route::put('/{restaurant}/update', [App\Http\Controllers\RestaurantController::class, 'update'])->name('update');
     Route::delete('/{restaurant}/delete', [App\Http\Controllers\RestaurantController::class, 'destroy'])->name('destroy');
     Route::delete('/images/{image}', [App\Http\Controllers\RestaurantController::class, 'deleteImage'])->name('images.delete');
+    Route::get('/{restaurant}/qr-card', [App\Http\Controllers\RestaurantController::class, 'qrCard'])->name('qr-card');
 });
 
 Route::prefix('/users')->middleware(['auth', 'role:superadmin'])->name('users.')->group(function () {

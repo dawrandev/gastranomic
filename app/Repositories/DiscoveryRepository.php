@@ -293,7 +293,7 @@ class DiscoveryRepository
      * Autocomplete restaurants by name (starts with query).
      * Optimized for real-time search as user types.
      */
-    public function autocompleteRestaurants(string $query, int $limit = 10): Collection
+    public function autocompleteRestaurants(string $query): Collection
     {
         return Restaurant::query()
             ->where('is_active', true)
@@ -318,7 +318,6 @@ class DiscoveryRepository
                 ELSE 2
             END', ["{$query}%"])
             ->orderBy('branch_name', 'asc')
-            ->limit($limit)
             ->get();
     }
 }

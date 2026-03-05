@@ -178,6 +178,7 @@
                                                     data-id="{{ $restaurant->id }}"
                                                     data-name="{{ $restaurant->branch_name }}"
                                                     data-qr="{{ $restaurant->qr_code ? asset('storage/' . $restaurant->qr_code) : '' }}"
+                                                    data-print-url="{{ route('restaurants.qr-card', $restaurant->id) }}"
                                                     style="width: 35px; height: 35px; padding: 0;"
                                                     title="QR-код">
                                                     <i class="fa fa-qrcode"></i>
@@ -994,8 +995,10 @@
     $(document).on('click', '.restaurants-page .qr-code-btn', function() {
         let restaurantName = $(this).data('name');
         let qrCodeUrl = $(this).data('qr');
+        let printUrl = $(this).data('print-url');
 
         $('#qrcode-restaurant-name').text(restaurantName);
+        $('#qrcode-print-link').attr('href', printUrl);
 
         if (qrCodeUrl) {
             $('#qrcode-image').attr('src', qrCodeUrl).show();
