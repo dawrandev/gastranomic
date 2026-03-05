@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="uz">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -50,7 +51,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: radial-gradient(ellipse at top, rgba(255,255,255,0.1) 0%, transparent 50%);
+            background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
             pointer-events: none;
         }
 
@@ -182,33 +183,40 @@
 
         /* Print styles */
         @media print {
-            body {
-                background: #fff;
-                padding: 0;
-                margin: 0;
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
             }
 
-            .qr-card {
-                box-shadow: none;
-                margin: 0 auto;
+            @page {
+                margin: 0;
+                size: auto;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+                background: white;
             }
 
             .no-print {
                 display: none !important;
             }
 
-            @page {
-                size: auto;
-                margin: 10mm;
+            .qr-card {
+                box-shadow: none !important;
+                margin: 0 auto;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="qr-card">
         {{-- Platform Logo --}}
         @if($platformLogo)
-            <img src="{{ $platformLogo }}" alt="QR Gastronomic" class="platform-logo">
+        <img src="{{ $platformLogo }}" alt="QR Gastronomic" class="platform-logo">
         @endif
 
         {{-- Platform Name --}}
@@ -220,18 +228,18 @@
         {{-- Restaurant Logo --}}
         <div class="restaurant-logo-container">
             @if($restaurantLogo)
-                <img src="{{ $restaurantLogo }}" alt="{{ $restaurant->branch_name }}" class="restaurant-logo">
+            <img src="{{ $restaurantLogo }}" alt="{{ $restaurant->branch_name }}" class="restaurant-logo">
             @else
-                <span class="restaurant-logo-placeholder">{{ substr($restaurant->branch_name, 0, 1) }}</span>
+            <span class="restaurant-logo-placeholder">{{ substr($restaurant->branch_name, 0, 1) }}</span>
             @endif
         </div>
 
         {{-- QR Code --}}
         <div class="qr-code-container">
             @if($qrCode)
-                <img src="{{ $qrCode }}" alt="QR Code" class="qr-code">
+            <img src="{{ $qrCode }}" alt="QR Code" class="qr-code">
             @else
-                <div class="qr-code-placeholder">QR kod mavjud emas</div>
+            <div class="qr-code-placeholder">QR kod mavjud emas</div>
             @endif
         </div>
 
@@ -254,4 +262,5 @@
         &larr; Назад
     </a>
 </body>
+
 </html>
