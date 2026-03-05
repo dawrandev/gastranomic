@@ -968,10 +968,141 @@
                                         "data": {
                                             "type": "array",
                                             "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "restaurant": {
+                                                        "type": "string",
+                                                        "example": "McDonald's Almaty Mall"
+                                                    },
+                                                    "branch_name": {
+                                                        "type": "string",
+                                                        "example": "McDonald's Almaty Mall"
+                                                    },
+                                                    "address": {
+                                                        "type": "string",
+                                                        "example": "Rozybakiev St 247A"
+                                                    },
+                                                    "phone": {
+                                                        "type": "string",
+                                                        "example": "+7 777 123 4567"
+                                                    },
+                                                    "brand": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "McDonald's"
+                                                            },
+                                                            "logo": {
+                                                                "type": "string",
+                                                                "example": "https://example.com/storage/brands/mcdonalds.png",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "city": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Алматы"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    },
+                                                    "cover_image": {
+                                                        "type": "string",
+                                                        "example": "https://example.com/storage/images/restaurant.jpg",
+                                                        "nullable": true
+                                                    },
+                                                    "categories": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "id": {
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "Fast Food"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "category_name": {
+                                                        "type": "string",
+                                                        "example": "Fast Food",
+                                                        "nullable": true
+                                                    },
+                                                    "average_rating": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 4.5
+                                                    },
+                                                    "reviews_count": {
+                                                        "type": "integer",
+                                                        "example": 128
+                                                    },
+                                                    "operating_hours": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "day_of_week": {
+                                                                    "description": "1=Dushanba, 7=Yakshanba",
+                                                                    "type": "integer",
+                                                                    "example": 1
+                                                                },
+                                                                "opening_time": {
+                                                                    "type": "string",
+                                                                    "example": "09:00"
+                                                                },
+                                                                "closing_time": {
+                                                                    "type": "string",
+                                                                    "example": "22:00"
+                                                                },
+                                                                "is_closed": {
+                                                                    "type": "boolean",
+                                                                    "example": false
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
                                                 "type": "object"
                                             }
                                         },
                                         "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 150
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },

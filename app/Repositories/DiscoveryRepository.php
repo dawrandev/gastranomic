@@ -24,6 +24,7 @@ class DiscoveryRepository
                 'coverImage:id,restaurant_id,image_path,is_cover',
                 'categories:id,icon',
                 'categories.translations',
+                'operatingHours:id,restaurant_id,day_of_week,opening_time,closing_time,is_closed',
             ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating');

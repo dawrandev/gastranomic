@@ -47,8 +47,72 @@ class RestaurantDiscoveryController extends Controller
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(type: 'object')),
-                        new OA\Property(property: 'meta', type: 'object'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                                    new OA\Property(property: 'restaurant', type: 'string', example: 'McDonald\'s Almaty Mall'),
+                                    new OA\Property(property: 'branch_name', type: 'string', example: 'McDonald\'s Almaty Mall'),
+                                    new OA\Property(property: 'address', type: 'string', example: 'Rozybakiev St 247A'),
+                                    new OA\Property(property: 'phone', type: 'string', example: '+7 777 123 4567'),
+                                    new OA\Property(
+                                        property: 'brand',
+                                        type: 'object',
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'name', type: 'string', example: 'McDonald\'s'),
+                                            new OA\Property(property: 'logo', type: 'string', nullable: true, example: 'https://example.com/storage/brands/mcdonalds.png'),
+                                        ]
+                                    ),
+                                    new OA\Property(
+                                        property: 'city',
+                                        type: 'object',
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'name', type: 'string', example: 'Алматы'),
+                                        ]
+                                    ),
+                                    new OA\Property(property: 'cover_image', type: 'string', nullable: true, example: 'https://example.com/storage/images/restaurant.jpg'),
+                                    new OA\Property(
+                                        property: 'categories',
+                                        type: 'array',
+                                        items: new OA\Items(
+                                            properties: [
+                                                new OA\Property(property: 'id', type: 'integer', example: 1),
+                                                new OA\Property(property: 'name', type: 'string', example: 'Fast Food'),
+                                            ]
+                                        )
+                                    ),
+                                    new OA\Property(property: 'category_name', type: 'string', nullable: true, example: 'Fast Food'),
+                                    new OA\Property(property: 'average_rating', type: 'number', format: 'float', example: 4.5),
+                                    new OA\Property(property: 'reviews_count', type: 'integer', example: 128),
+                                    new OA\Property(
+                                        property: 'operating_hours',
+                                        type: 'array',
+                                        items: new OA\Items(
+                                            properties: [
+                                                new OA\Property(property: 'day_of_week', type: 'integer', description: '1=Dushanba, 7=Yakshanba', example: 1),
+                                                new OA\Property(property: 'opening_time', type: 'string', example: '09:00'),
+                                                new OA\Property(property: 'closing_time', type: 'string', example: '22:00'),
+                                                new OA\Property(property: 'is_closed', type: 'boolean', example: false),
+                                            ]
+                                        )
+                                    ),
+                                ]
+                            )
+                        ),
+                        new OA\Property(
+                            property: 'meta',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'current_page', type: 'integer', example: 1),
+                                new OA\Property(property: 'last_page', type: 'integer', example: 10),
+                                new OA\Property(property: 'per_page', type: 'integer', example: 15),
+                                new OA\Property(property: 'total', type: 'integer', example: 150),
+                            ]
+                        ),
                     ]
                 )
             )
