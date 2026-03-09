@@ -147,4 +147,12 @@ class ReviewService
     {
         return $this->reviewRepository->getAllQuestionStats();
     }
+
+    /**
+     * Delete a review
+     */
+    public function deleteReview(Review $review): bool
+    {
+        return $this->reviewRepository->delete($review);
+    }
 }

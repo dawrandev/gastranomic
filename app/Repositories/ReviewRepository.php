@@ -192,4 +192,15 @@ class ReviewRepository
 
         return $stats;
     }
+
+    /**
+     * Delete a review.
+     */
+    public function delete(Review $review): bool
+    {
+        // Detach selected options first
+        $review->selectedOptions()->detach();
+
+        return $review->delete();
+    }
 }
