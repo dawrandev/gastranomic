@@ -1,3 +1,18 @@
+<style>
+    @media only screen and (max-width: 575.98px) {
+        .review-card {
+            flex-wrap: wrap !important;
+        }
+        .review-card .review-delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .review-card {
+            position: relative;
+        }
+    }
+</style>
 <div class="p-2">
     @forelse($reviews as $review)
     <div class="review-card d-flex align-items-start gap-3 py-3 px-3 border-bottom">
@@ -158,7 +173,7 @@
 
         {{-- Delete button --}}
         @can('delete', $review)
-        <div class="flex-shrink-0">
+        <div class="flex-shrink-0 review-delete-btn">
             <form id="delete-review-{{ $review->id }}" action="{{ route('reviews.destroy', $review->id) }}" method="POST">
                 @csrf
                 @method('DELETE')

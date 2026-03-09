@@ -857,22 +857,21 @@
         }
 
         messaging.onMessage((payload) => {
-            const notificationTitle = payload.notification.title;
-            const notificationOptions = {
-                body: payload.notification.body,
-                icon: '/favicon.ico',
-                tag: 'foreground-message-' + Date.now(),
-                data: {
-                    ...payload.data,
-                    click_action: payload.data?.click_action || '/admin/dashboard'
-                },
-                requireInteraction: true
-            };
+            // Firebase SDK automatically shows notification when there's a 'notification' payload
+            // So we DON'T show our own notification here to avoid duplicates
+            // This handler is only for foreground-specific actions (UI updates, sounds, etc.)
 
-            // Show browser notification using ServiceWorker (works on mobile)
-            // Click handling is done by the service worker's notificationclick event
-            if (Notification.permission === 'granted') {
-                showNotification(notificationTitle, notificationOptions);
+            console.log('Foreground message received:', payload);
+
+            // Optional: Play a notification sound
+            // const audio = new Audio('/assets/sounds/notification.mp3');
+            // audio.play().catch(() => {});
+
+            // Optional: Show in-app toast/alert instead of system notification
+            // This way user sees feedback without duplicate notifications
+            if (payload.notification) {
+                // You could show a toast here if desired
+                // swal(payload.notification.title, payload.notification.body, 'info');
             }
         });
 
