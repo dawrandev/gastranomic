@@ -1,3 +1,34 @@
+  <!-- Mobile profile button fix -->
+  <style>
+      @media only screen and (max-width: 575.98px) {
+          .profile-nav {
+              display: block !important;
+          }
+
+          .profile-nav .profile-media {
+              padding: 8px;
+          }
+
+          .profile-nav .profile-media img {
+              width: 32px !important;
+              height: 32px !important;
+          }
+
+          /* Fix profile dropdown width on mobile */
+          .page-header .header-wrapper .nav-right ul.profile-dropdown,
+          .profile-nav .profile-dropdown,
+          .profile-nav .onhover-show-div {
+              width: auto !important;
+              min-width: 150px !important;
+              max-width: 180px !important;
+              position: absolute !important;
+              left: unset !important;
+              right: 0 !important;
+              top: 50px !important;
+              transform: translateX(-30%) !important;
+          }
+      }
+  </style>
   <!-- Page Header Start-->
   <div class="page-header">
       <div class="header-wrapper row m-0">
@@ -33,11 +64,11 @@
                           @php
                           $user = Auth::user();
                           if ($user && $user->hasRole('superadmin')) {
-                              $brandLogo = asset('storage/brands/logos/QR Gastranomic logo.jpg');
+                          $brandLogo = asset('storage/brands/logos/QR Gastranomic logo.jpg');
                           } else {
-                              $brandLogo = $user->brand && $user->brand->logo
-                                  ? asset('storage/' . $user->brand->logo)
-                                  : asset('assets/images/dashboard/profile.jpg');
+                          $brandLogo = $user->brand && $user->brand->logo
+                          ? asset('storage/' . $user->brand->logo)
+                          : asset('assets/images/dashboard/profile.jpg');
                           }
                           @endphp
                           <img class="b-r-10" src="{{ $brandLogo }}" alt="" style="width: 40px; height: 40px; object-fit: cover; object-position: center;">
