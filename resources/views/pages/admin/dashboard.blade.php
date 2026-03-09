@@ -434,6 +434,52 @@
     let messaging = null;
     let currentToken = null; // Store current FCM token
 
+    /**
+     * Universal notification function that works on both desktop and mobile browsers.
+     * Uses ServiceWorkerRegistration.showNotification() instead of new Notification()
+     * to avoid "Illegal constructor" error on mobile devices.
+     *
+     * @param {string} title - Notification title
+     * @param {object} options - Notification options (body, icon, data, etc.)
+     * @returns {Promise<void>}
+     */
+    async function showNotification(title, options = {}) {
+        // Check if notifications are supported and permission is granted
+        if (!('Notification' in window)) {
+            console.warn('Notifications not supported');
+            return;
+        }
+
+        if (Notification.permission !== 'granted') {
+            console.warn('Notification permission not granted');
+            return;
+        }
+
+        // Check if Service Worker is supported
+        if (!('serviceWorker' in navigator)) {
+            console.warn('Service Worker not supported');
+            return;
+        }
+
+        try {
+            // Get the active Service Worker registration
+            const registration = await navigator.serviceWorker.ready;
+
+            // Use ServiceWorkerRegistration.showNotification() - works on both mobile and desktop
+            await registration.showNotification(title, {
+                body: options.body || '',
+                icon: options.icon || '/favicon.ico',
+                badge: options.badge || '/favicon.ico',
+                tag: options.tag || 'notification-' + Date.now(),
+                data: options.data || {},
+                requireInteraction: options.requireInteraction || false,
+                ...options
+            });
+        } catch (error) {
+            console.error('Failed to show notification:', error);
+        }
+    }
+
     // UI Elements (declare before using them)
     const enableBtn = document.getElementById('enable-notifications-btn');
     const disableBtn = document.getElementById('disable-notifications-btn');
@@ -684,10 +730,11 @@
                     enableBtn.style.display = 'none';
                     disableBtn.style.display = 'inline-block';
 
-                    // Show success notification
-                    new Notification('Уведомления включены!', {
+                    // Show success notification using ServiceWorker (works on mobile)
+                    showNotification('Уведомления включены!', {
                         body: 'Теперь вы будете получать уведомления о новых отзывах',
-                        icon: '/favicon.ico'
+                        icon: '/favicon.ico',
+                        tag: 'notifications-enabled'
                     });
                 }
             } else {
@@ -810,26 +857,22 @@
         }
 
         messaging.onMessage((payload) => {
-
             const notificationTitle = payload.notification.title;
             const notificationOptions = {
                 body: payload.notification.body,
                 icon: '/favicon.ico',
-                data: payload.data
+                tag: 'foreground-message-' + Date.now(),
+                data: {
+                    ...payload.data,
+                    click_action: payload.data?.click_action || '/admin/dashboard'
+                },
+                requireInteraction: true
             };
 
-            // Show browser notification
+            // Show browser notification using ServiceWorker (works on mobile)
+            // Click handling is done by the service worker's notificationclick event
             if (Notification.permission === 'granted') {
-                const notification = new Notification(notificationTitle, notificationOptions);
-
-                // Handle notification click
-                notification.onclick = function(event) {
-                    event.preventDefault();
-                    window.focus();
-                    if (payload.data.click_action) {
-                        window.location.href = payload.data.click_action;
-                    }
-                };
+                showNotification(notificationTitle, notificationOptions);
             }
         });
 
