@@ -210,7 +210,7 @@ class RestaurantDiscoveryController extends Controller
     #[OA\Get(
         path: '/api/restaurants/{id}',
         summary: 'Restoran batafsil ma\'lumotlari',
-        description: 'Restoranning to\'liq ma\'lumotlari: rasmlar, brend, menyu, operating hours, reviews statistics va hokazo',
+        description: 'Restoranning to\'liq ma\'lumotlari: rasmlar, brend, menyu, operating hours, reviews, menu_categories, menus va hokazo',
         tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
@@ -229,7 +229,149 @@ class RestaurantDiscoveryController extends Controller
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'success', type: 'boolean', example: true),
-                        new OA\Property(property: 'data', type: 'object'),
+                        new OA\Property(
+                            property: 'data',
+                            type: 'object',
+                            properties: [
+                                new OA\Property(property: 'id', type: 'integer', example: 1),
+                                new OA\Property(property: 'branch_name', type: 'string', example: 'McDonald\'s Almaty Mall'),
+                                new OA\Property(property: 'phone', type: 'string', example: '+7 777 123 45 67'),
+                                new OA\Property(property: 'description', type: 'string', nullable: true),
+                                new OA\Property(property: 'address', type: 'string', example: 'Almaty Mall, 1-qavat'),
+                                new OA\Property(property: 'latitude', type: 'number', format: 'float', example: 43.238949),
+                                new OA\Property(property: 'longitude', type: 'number', format: 'float', example: 76.945465),
+                                new OA\Property(property: 'is_active', type: 'boolean', example: true),
+                                new OA\Property(property: 'qr_code', type: 'string', nullable: true),
+                                new OA\Property(
+                                    property: 'brand',
+                                    type: 'object',
+                                    properties: [
+                                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                                        new OA\Property(property: 'name', type: 'string', example: 'McDonald\'s'),
+                                        new OA\Property(property: 'logo', type: 'string', nullable: true),
+                                        new OA\Property(property: 'image', type: 'string', nullable: true),
+                                        new OA\Property(property: 'description', type: 'string', nullable: true),
+                                    ]
+                                ),
+                                new OA\Property(
+                                    property: 'city',
+                                    type: 'object',
+                                    properties: [
+                                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                                        new OA\Property(property: 'name', type: 'string', example: 'Almaty'),
+                                    ]
+                                ),
+                                new OA\Property(
+                                    property: 'categories',
+                                    type: 'array',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'name', type: 'string', example: 'Fast Food'),
+                                            new OA\Property(property: 'icon', type: 'string', nullable: true),
+                                        ],
+                                        type: 'object'
+                                    )
+                                ),
+                                new OA\Property(
+                                    property: 'images',
+                                    type: 'array',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'image_path', type: 'string'),
+                                            new OA\Property(property: 'is_cover', type: 'boolean'),
+                                        ],
+                                        type: 'object'
+                                    )
+                                ),
+                                new OA\Property(
+                                    property: 'operating_hours',
+                                    type: 'array',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'day_of_week', type: 'integer', example: 1),
+                                            new OA\Property(property: 'opening_time', type: 'string', example: '09:00'),
+                                            new OA\Property(property: 'closing_time', type: 'string', example: '22:00'),
+                                            new OA\Property(property: 'is_closed', type: 'boolean', example: false),
+                                        ],
+                                        type: 'object'
+                                    )
+                                ),
+                                new OA\Property(property: 'average_rating', type: 'number', format: 'float', example: 4.5),
+                                new OA\Property(property: 'reviews_count', type: 'integer', example: 128),
+                                new OA\Property(property: 'is_favorited', type: 'boolean', example: false),
+                                new OA\Property(
+                                    property: 'menu_categories',
+                                    type: 'array',
+                                    description: 'Restoranga tegishli menu bo\'limlari (sectionlar)',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'name', type: 'string', example: 'Burgerlar'),
+                                            new OA\Property(property: 'sort_order', type: 'integer', example: 1),
+                                        ],
+                                        type: 'object'
+                                    )
+                                ),
+                                new OA\Property(
+                                    property: 'menus',
+                                    type: 'array',
+                                    description: 'Restoranga tegishli barcha menu itemlari',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                                            new OA\Property(property: 'name', type: 'string', example: 'Big Mac'),
+                                            new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Ikki qatlamli burger'),
+                                            new OA\Property(property: 'image', type: 'string', nullable: true),
+                                            new OA\Property(property: 'price', type: 'number', example: 3500),
+                                            new OA\Property(property: 'weight', type: 'string', nullable: true, example: '215g'),
+                                            new OA\Property(property: 'category_id', type: 'integer', example: 1, description: 'menu_categories dagi id bilan bog\'lanadi'),
+                                        ],
+                                        type: 'object'
+                                    )
+                                ),
+                                new OA\Property(
+                                    property: 'reviews',
+                                    type: 'array',
+                                    description: 'Restoranga tegishli barcha sharhlar',
+                                    items: new OA\Items(
+                                        properties: [
+                                            new OA\Property(property: 'id', type: 'integer', example: 42),
+                                            new OA\Property(property: 'rating', type: 'integer', example: 5),
+                                            new OA\Property(property: 'comment', type: 'string', nullable: true, example: 'Juda zo\'r!'),
+                                            new OA\Property(
+                                                property: 'comments',
+                                                type: 'array',
+                                                items: new OA\Items(
+                                                    properties: [
+                                                        new OA\Property(property: 'question_id', type: 'integer', example: 6),
+                                                        new OA\Property(property: 'question_title', type: 'string', example: 'Nimani yoqtirdingiz?'),
+                                                        new OA\Property(property: 'text', type: 'string', example: 'Xizmat ajoyib edi'),
+                                                    ],
+                                                    type: 'object'
+                                                )
+                                            ),
+                                            new OA\Property(
+                                                property: 'selected_answers',
+                                                type: 'array',
+                                                items: new OA\Items(
+                                                    properties: [
+                                                        new OA\Property(property: 'id', type: 'integer', example: 14),
+                                                        new OA\Property(property: 'key', type: 'string', example: 'good_service'),
+                                                        new OA\Property(property: 'text', type: 'string', example: 'Yaxshi xizmat'),
+                                                    ],
+                                                    type: 'object'
+                                                )
+                                            ),
+                                            new OA\Property(property: 'created_at', type: 'string', format: 'datetime', example: '2024-01-15 10:30:00'),
+                                        ],
+                                        type: 'object'
+                                    )
+                                ),
+                                new OA\Property(property: 'created_at', type: 'string', format: 'datetime', example: '2024-01-01 12:00:00'),
+                            ]
+                        ),
                     ]
                 )
             ),

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\MenuSection;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -75,7 +76,126 @@ class RestaurantDetailResource extends JsonResource
             // Favorite status (if client is authenticated)
             'is_favorited' => $this->when(isset($this->is_favorited), $this->is_favorited),
 
+            // Menu categories (sections)
+            'menu_categories' => $this->getMenuCategories($locale),
+
+            // Menu items
+            'menus' => $this->getMenuItems($locale),
+
+            // Reviews
+            'reviews' => $this->getReviews($locale),
+
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
+    }
+
+    /**
+     * Get menu categories (sections) for this restaurant.
+     */
+    private function getMenuCategories(string $locale): array
+    {
+        if (!$this->brand_id) {
+            return [];
+        }
+
+        $restaurantId = $this->id;
+
+        return MenuSection::where('brand_id', $this->brand_id)
+            ->with(['translations'])
+            ->whereHas('menuItems.restaurantMenuItems', function ($query) use ($restaurantId) {
+                $query->where('restaurant_id', $restaurantId)
+                    ->where('is_available', true);
+            })
+            ->orderBy('sort_order')
+            ->get()
+            ->map(function ($section) use ($locale) {
+                $translation = $section->translations->firstWhere('lang_code', $locale)
+                    ?? $section->translations->first();
+
+                return [
+                    'id' => $section->id,
+                    'name' => $translation?->name,
+                    'sort_order' => $section->sort_order,
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get menu items for this restaurant.
+     */
+    private function getMenuItems(string $locale): array
+    {
+        if (!$this->brand_id) {
+            return [];
+        }
+
+        $restaurantId = $this->id;
+
+        return MenuSection::where('brand_id', $this->brand_id)
+            ->with([
+                'menuItems.translations',
+                'menuItems.restaurantMenuItems' => function ($query) use ($restaurantId) {
+                    $query->where('restaurant_id', $restaurantId)
+                        ->where('is_available', true);
+                },
+            ])
+            ->orderBy('sort_order')
+            ->get()
+            ->flatMap(function ($section) use ($locale) {
+                return $section->menuItems
+                    ->filter(fn($item) => $item->restaurantMenuItems->isNotEmpty())
+                    ->map(function ($item) use ($locale, $section) {
+                        $restaurantItem = $item->restaurantMenuItems->first();
+                        $translation = $item->translations->firstWhere('lang_code', $locale)
+                            ?? $item->translations->first();
+
+                        return [
+                            'id' => $item->id,
+                            'name' => $translation?->name,
+                            'description' => $translation?->description,
+                            'image' => $item->image_path ? asset('storage/' . $item->image_path) : null,
+                            'price' => $restaurantItem->price ?? $item->base_price,
+                            'weight' => $item->weight,
+                            'category_id' => $section->id,
+                        ];
+                    });
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get reviews for this restaurant.
+     */
+    private function getReviews(string $locale): array
+    {
+        if (!$this->relationLoaded('reviews')) {
+            return [];
+        }
+
+        return $this->reviews->map(function ($review) use ($locale) {
+            $selectedAnswers = [];
+            if ($review->relationLoaded('selectedOptions')) {
+                $selectedAnswers = $review->selectedOptions->map(function ($option) use ($locale) {
+                    $translation = $option->translations->firstWhere('lang_code', $locale)
+                        ?? $option->translations->first();
+
+                    return [
+                        'id' => $option->id,
+                        'key' => $option->key,
+                        'text' => $translation?->text,
+                    ];
+                })->toArray();
+            }
+
+            return [
+                'id' => $review->id,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'comments' => $review->getCommentsWithQuestions($locale),
+                'selected_answers' => $selectedAnswers,
+                'created_at' => $review->created_at->format('Y-m-d H:i:s'),
+            ];
+        })->toArray();
     }
 }

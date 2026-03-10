@@ -177,6 +177,7 @@ class DiscoveryRepository
                 'categories:id,icon',
                 'categories.translations',
                 'operatingHours:id,restaurant_id,day_of_week,opening_time,closing_time,is_closed',
+                'reviews.selectedOptions.translations',
             ])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')

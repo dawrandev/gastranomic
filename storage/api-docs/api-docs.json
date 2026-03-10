@@ -1222,7 +1222,7 @@
                     "Restoranlar"
                 ],
                 "summary": "Restoran batafsil ma'lumotlari",
-                "description": "Restoranning to'liq ma'lumotlari: rasmlar, brend, menyu, operating hours, reviews statistics va hokazo",
+                "description": "Restoranning to'liq ma'lumotlari: rasmlar, brend, menyu, operating hours, reviews, menu_categories, menus va hokazo",
                 "operationId": "a791f325e147d0939ab287bb5f7a5f8a",
                 "parameters": [
                     {
@@ -1262,6 +1262,292 @@
                                             "example": true
                                         },
                                         "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "branch_name": {
+                                                    "type": "string",
+                                                    "example": "McDonald's Almaty Mall"
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+7 777 123 45 67"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "Almaty Mall, 1-qavat"
+                                                },
+                                                "latitude": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 43.238949
+                                                },
+                                                "longitude": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 76.945465
+                                                },
+                                                "is_active": {
+                                                    "type": "boolean",
+                                                    "example": true
+                                                },
+                                                "qr_code": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "brand": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "McDonald's"
+                                                        },
+                                                        "logo": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "image": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "city": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": 1
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "Almaty"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "categories": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Fast Food"
+                                                            },
+                                                            "icon": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "images": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "image_path": {
+                                                                "type": "string"
+                                                            },
+                                                            "is_cover": {
+                                                                "type": "boolean"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "operating_hours": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "day_of_week": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "opening_time": {
+                                                                "type": "string",
+                                                                "example": "09:00"
+                                                            },
+                                                            "closing_time": {
+                                                                "type": "string",
+                                                                "example": "22:00"
+                                                            },
+                                                            "is_closed": {
+                                                                "type": "boolean",
+                                                                "example": false
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "average_rating": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 4.5
+                                                },
+                                                "reviews_count": {
+                                                    "type": "integer",
+                                                    "example": 128
+                                                },
+                                                "is_favorited": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "menu_categories": {
+                                                    "description": "Restoranga tegishli menu bo'limlari (sectionlar)",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Burgerlar"
+                                                            },
+                                                            "sort_order": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "menus": {
+                                                    "description": "Restoranga tegishli barcha menu itemlari",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Big Mac"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Ikki qatlamli burger",
+                                                                "nullable": true
+                                                            },
+                                                            "image": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            },
+                                                            "price": {
+                                                                "type": "number",
+                                                                "example": 3500
+                                                            },
+                                                            "weight": {
+                                                                "type": "string",
+                                                                "example": "215g",
+                                                                "nullable": true
+                                                            },
+                                                            "category_id": {
+                                                                "description": "menu_categories dagi id bilan bog'lanadi",
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "reviews": {
+                                                    "description": "Restoranga tegishli barcha sharhlar",
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 42
+                                                            },
+                                                            "rating": {
+                                                                "type": "integer",
+                                                                "example": 5
+                                                            },
+                                                            "comment": {
+                                                                "type": "string",
+                                                                "example": "Juda zo'r!",
+                                                                "nullable": true
+                                                            },
+                                                            "comments": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "question_id": {
+                                                                            "type": "integer",
+                                                                            "example": 6
+                                                                        },
+                                                                        "question_title": {
+                                                                            "type": "string",
+                                                                            "example": "Nimani yoqtirdingiz?"
+                                                                        },
+                                                                        "text": {
+                                                                            "type": "string",
+                                                                            "example": "Xizmat ajoyib edi"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "selected_answers": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": 14
+                                                                        },
+                                                                        "key": {
+                                                                            "type": "string",
+                                                                            "example": "good_service"
+                                                                        },
+                                                                        "text": {
+                                                                            "type": "string",
+                                                                            "example": "Yaxshi xizmat"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "datetime",
+                                                                "example": "2024-01-15 10:30:00"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "datetime",
+                                                    "example": "2024-01-01 12:00:00"
+                                                }
+                                            },
                                             "type": "object"
                                         }
                                     },
