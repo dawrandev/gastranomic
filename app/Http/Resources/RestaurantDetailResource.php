@@ -82,9 +82,6 @@ class RestaurantDetailResource extends JsonResource
             // Menu items
             'menus' => $this->getMenuItems($locale),
 
-            // Reviews
-            'reviews' => $this->getReviews($locale),
-
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
@@ -164,38 +161,4 @@ class RestaurantDetailResource extends JsonResource
             ->toArray();
     }
 
-    /**
-     * Get reviews for this restaurant.
-     */
-    private function getReviews(string $locale): array
-    {
-        if (!$this->relationLoaded('reviews')) {
-            return [];
-        }
-
-        return $this->reviews->map(function ($review) use ($locale) {
-            $selectedAnswers = [];
-            if ($review->relationLoaded('selectedOptions')) {
-                $selectedAnswers = $review->selectedOptions->map(function ($option) use ($locale) {
-                    $translation = $option->translations->firstWhere('lang_code', $locale)
-                        ?? $option->translations->first();
-
-                    return [
-                        'id' => $option->id,
-                        'key' => $option->key,
-                        'text' => $translation?->text,
-                    ];
-                })->toArray();
-            }
-
-            return [
-                'id' => $review->id,
-                'rating' => $review->rating,
-                'comment' => $review->comment,
-                'comments' => $review->getCommentsWithQuestions($locale),
-                'selected_answers' => $selectedAnswers,
-                'created_at' => $review->created_at->format('Y-m-d H:i:s'),
-            ];
-        })->toArray();
-    }
 }

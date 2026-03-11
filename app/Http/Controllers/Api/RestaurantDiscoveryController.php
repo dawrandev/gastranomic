@@ -210,7 +210,7 @@ class RestaurantDiscoveryController extends Controller
     #[OA\Get(
         path: '/api/restaurants/{id}',
         summary: 'Restoran batafsil ma\'lumotlari',
-        description: 'Restoranning to\'liq ma\'lumotlari: rasmlar, brend, menyu, operating hours, reviews, menu_categories, menus va hokazo',
+        description: 'Restoranning to\'liq ma\'lumotlari: rasmlar, brend, menyu, operating hours, menu_categories, menus va hokazo',
         tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
@@ -327,44 +327,6 @@ class RestaurantDiscoveryController extends Controller
                                             new OA\Property(property: 'price', type: 'number', example: 3500),
                                             new OA\Property(property: 'weight', type: 'string', nullable: true, example: '215g'),
                                             new OA\Property(property: 'category_id', type: 'integer', example: 1, description: 'menu_categories dagi id bilan bog\'lanadi'),
-                                        ],
-                                        type: 'object'
-                                    )
-                                ),
-                                new OA\Property(
-                                    property: 'reviews',
-                                    type: 'array',
-                                    description: 'Restoranga tegishli barcha sharhlar',
-                                    items: new OA\Items(
-                                        properties: [
-                                            new OA\Property(property: 'id', type: 'integer', example: 42),
-                                            new OA\Property(property: 'rating', type: 'integer', example: 5),
-                                            new OA\Property(property: 'comment', type: 'string', nullable: true, example: 'Juda zo\'r!'),
-                                            new OA\Property(
-                                                property: 'comments',
-                                                type: 'array',
-                                                items: new OA\Items(
-                                                    properties: [
-                                                        new OA\Property(property: 'question_id', type: 'integer', example: 6),
-                                                        new OA\Property(property: 'question_title', type: 'string', example: 'Nimani yoqtirdingiz?'),
-                                                        new OA\Property(property: 'text', type: 'string', example: 'Xizmat ajoyib edi'),
-                                                    ],
-                                                    type: 'object'
-                                                )
-                                            ),
-                                            new OA\Property(
-                                                property: 'selected_answers',
-                                                type: 'array',
-                                                items: new OA\Items(
-                                                    properties: [
-                                                        new OA\Property(property: 'id', type: 'integer', example: 14),
-                                                        new OA\Property(property: 'key', type: 'string', example: 'good_service'),
-                                                        new OA\Property(property: 'text', type: 'string', example: 'Yaxshi xizmat'),
-                                                    ],
-                                                    type: 'object'
-                                                )
-                                            ),
-                                            new OA\Property(property: 'created_at', type: 'string', format: 'datetime', example: '2024-01-15 10:30:00'),
                                         ],
                                         type: 'object'
                                     )

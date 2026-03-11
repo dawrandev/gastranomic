@@ -1222,7 +1222,7 @@
                     "Restoranlar"
                 ],
                 "summary": "Restoran batafsil ma'lumotlari",
-                "description": "Restoranning to'liq ma'lumotlari: rasmlar, brend, menyu, operating hours, reviews, menu_categories, menus va hokazo",
+                "description": "Restoranning to'liq ma'lumotlari: rasmlar, brend, menyu, operating hours, menu_categories, menus va hokazo",
                 "operationId": "a791f325e147d0939ab287bb5f7a5f8a",
                 "parameters": [
                     {
@@ -1470,73 +1470,6 @@
                                                                 "description": "menu_categories dagi id bilan bog'lanadi",
                                                                 "type": "integer",
                                                                 "example": 1
-                                                            }
-                                                        },
-                                                        "type": "object"
-                                                    }
-                                                },
-                                                "reviews": {
-                                                    "description": "Restoranga tegishli barcha sharhlar",
-                                                    "type": "array",
-                                                    "items": {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "integer",
-                                                                "example": 42
-                                                            },
-                                                            "rating": {
-                                                                "type": "integer",
-                                                                "example": 5
-                                                            },
-                                                            "comment": {
-                                                                "type": "string",
-                                                                "example": "Juda zo'r!",
-                                                                "nullable": true
-                                                            },
-                                                            "comments": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "question_id": {
-                                                                            "type": "integer",
-                                                                            "example": 6
-                                                                        },
-                                                                        "question_title": {
-                                                                            "type": "string",
-                                                                            "example": "Nimani yoqtirdingiz?"
-                                                                        },
-                                                                        "text": {
-                                                                            "type": "string",
-                                                                            "example": "Xizmat ajoyib edi"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "selected_answers": {
-                                                                "type": "array",
-                                                                "items": {
-                                                                    "properties": {
-                                                                        "id": {
-                                                                            "type": "integer",
-                                                                            "example": 14
-                                                                        },
-                                                                        "key": {
-                                                                            "type": "string",
-                                                                            "example": "good_service"
-                                                                        },
-                                                                        "text": {
-                                                                            "type": "string",
-                                                                            "example": "Yaxshi xizmat"
-                                                                        }
-                                                                    },
-                                                                    "type": "object"
-                                                                }
-                                                            },
-                                                            "created_at": {
-                                                                "type": "string",
-                                                                "format": "datetime",
-                                                                "example": "2024-01-15 10:30:00"
                                                             }
                                                         },
                                                         "type": "object"
