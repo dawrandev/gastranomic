@@ -52,8 +52,9 @@ class DiscoveryService
 
     /**
      * Search restaurants with full details including coordinates.
+     * If query is null, returns all restaurants.
      */
-    public function searchRestaurantsWithDetails(string $query, int $perPage = 15): LengthAwarePaginator
+    public function searchRestaurantsWithDetails(?string $query, int $perPage = 15): LengthAwarePaginator
     {
         return $this->discoveryRepository->searchRestaurantsWithDetails($query, $perPage);
     }

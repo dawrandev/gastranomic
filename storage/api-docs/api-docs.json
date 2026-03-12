@@ -1758,8 +1758,8 @@
                     {
                         "name": "q",
                         "in": "query",
-                        "description": "Qidiruv so'rovi (kamida 2 ta harf)",
-                        "required": true,
+                        "description": "Qidiruv so'rovi (kamida 2 ta harf). Bo'sh qoldirilsa barcha restoranlar qaytariladi.",
+                        "required": false,
                         "schema": {
                             "type": "string",
                             "minLength": 2
@@ -1927,7 +1927,7 @@
                     "Restoranlar"
                 ],
                 "summary": "Restoran nomini avtomatik to'ldirish",
-                "description": "Client har bir harf yozganda, shu harfdan BOSHLANADIGAN restoran nomlari qaytariladi. Real-time search uchun optimallashtirilgan - minimal ma'lumotlar bilan tez javob beradi.",
+                "description": "Client har bir harf yozganda, shu so'zni O'Z ICHIGA OLGAN restoran nomlari qaytariladi. Real-time search uchun optimallashtirilgan - minimal ma'lumotlar bilan tez javob beradi.",
                 "operationId": "82c098811ed059bbc76766a634d39633",
                 "parameters": [
                     {

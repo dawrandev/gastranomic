@@ -186,17 +186,12 @@ class DiscoveryRepository
 
     /**
      * Search restaurants by name or brand with full details for products and maps.
+     * If query is null or empty, returns all restaurants.
      */
-    public function searchRestaurantsWithDetails(string $query, int $perPage = 15): LengthAwarePaginator
+    public function searchRestaurantsWithDetails(?string $query, int $perPage = 15): LengthAwarePaginator
     {
-        return Restaurant::query()
+        $queryBuilder = Restaurant::query()
             ->where('is_active', true)
-            ->where(function ($q) use ($query) {
-                $q->where('branch_name', 'like', "%{$query}%")
-                    ->orWhereHas('brand.translations', function ($q) use ($query) {
-                        $q->where('name', 'like', "%{$query}%");
-                    });
-            })
             ->whereNotNull('location')
             ->with([
                 'brand:id,logo',
@@ -220,8 +215,19 @@ class DiscoveryRepository
                 'location',
                 DB::raw('ST_X(location) as longitude'),
                 DB::raw('ST_Y(location) as latitude'),
-            ])
-            ->orderBy('created_at', 'desc')
+            ]);
+
+        // Apply search filter only if query is provided
+        if ($query) {
+            $queryBuilder->where(function ($q) use ($query) {
+                $q->where('branch_name', 'like', "%{$query}%")
+                    ->orWhereHas('brand.translations', function ($q) use ($query) {
+                        $q->where('name', 'like', "%{$query}%");
+                    });
+            });
+        }
+
+        return $queryBuilder->orderBy('created_at', 'desc')
             ->paginate($perPage);
     }
 
@@ -292,7 +298,7 @@ class DiscoveryRepository
     }
 
     /**
-     * Autocomplete restaurants by name (starts with query).
+     * Autocomplete restaurants by name (contains query).
      * Optimized for real-time search as user types.
      */
     public function autocompleteRestaurants(string $query): Collection
@@ -300,10 +306,10 @@ class DiscoveryRepository
         return Restaurant::query()
             ->where('is_active', true)
             ->where(function ($q) use ($query) {
-                // Search for restaurants that START with the query
-                $q->where('branch_name', 'like', "{$query}%")
+                // Search for restaurants that CONTAIN the query anywhere in the name
+                $q->where('branch_name', 'like', "%{$query}%")
                     ->orWhereHas('brand.translations', function ($q) use ($query) {
-                        $q->where('name', 'like', "{$query}%");
+                        $q->where('name', 'like', "%{$query}%");
                     });
             })
             ->with([
@@ -317,8 +323,9 @@ class DiscoveryRepository
             ->select(['id', 'branch_name', 'brand_id', 'city_id'])
             ->orderByRaw('CASE
                 WHEN branch_name LIKE ? THEN 1
-                ELSE 2
-            END', ["{$query}%"])
+                WHEN branch_name LIKE ? THEN 2
+                ELSE 3
+            END', ["{$query}%", "%{$query}%"])
             ->orderBy('branch_name', 'asc')
             ->get();
     }

@@ -516,8 +516,8 @@ class RestaurantDiscoveryController extends Controller
             new OA\Parameter(
                 name: 'q',
                 in: 'query',
-                required: true,
-                description: 'Qidiruv so\'rovi (kamida 2 ta harf)',
+                required: false,
+                description: 'Qidiruv so\'rovi (kamida 2 ta harf). Bo\'sh qoldirilsa barcha restoranlar qaytariladi.',
                 schema: new OA\Schema(type: 'string', minLength: 2),
                 example: 'mcdonald'
             ),
@@ -598,7 +598,7 @@ class RestaurantDiscoveryController extends Controller
     public function search(Request $request): JsonResponse
     {
         $request->validate([
-            'q' => 'required|string|min:2',
+            'q' => 'nullable|string|min:2',
             'per_page' => 'nullable|integer|min:1|max:50',
         ]);
 
@@ -667,7 +667,7 @@ class RestaurantDiscoveryController extends Controller
     #[OA\Get(
         path: '/api/restaurants/autocomplete',
         summary: 'Restoran nomini avtomatik to\'ldirish',
-        description: 'Client har bir harf yozganda, shu harfdan BOSHLANADIGAN restoran nomlari qaytariladi. Real-time search uchun optimallashtirilgan - minimal ma\'lumotlar bilan tez javob beradi.',
+        description: 'Client har bir harf yozganda, shu so\'zni O\'Z ICHIGA OLGAN restoran nomlari qaytariladi. Real-time search uchun optimallashtirilgan - minimal ma\'lumotlar bilan tez javob beradi.',
         tags: ['Restoranlar'],
         parameters: [
             new OA\Parameter(
