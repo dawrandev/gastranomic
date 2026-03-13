@@ -211,6 +211,7 @@ class DiscoveryRepository
                 'brand_id',
                 'city_id',
                 'address',
+                'phone',
                 'is_active',
                 'location',
                 DB::raw('ST_X(location) as longitude'),

@@ -1805,15 +1805,80 @@
                                                                 "type": "integer",
                                                                 "example": 1
                                                             },
-                                                            "restaurant_name": {
+                                                            "restaurant": {
                                                                 "type": "string",
                                                                 "example": "McDonald's Almaty Mall"
                                                             },
+                                                            "branch_name": {
+                                                                "type": "string",
+                                                                "example": "McDonald's Almaty Mall"
+                                                            },
+                                                            "address": {
+                                                                "type": "string",
+                                                                "example": "Rozybakiev St 247A"
+                                                            },
+                                                            "phone": {
+                                                                "type": "string",
+                                                                "example": "+7 777 123 4567"
+                                                            },
+                                                            "brand": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "McDonald's"
+                                                                    },
+                                                                    "logo": {
+                                                                        "type": "string",
+                                                                        "example": "https://example.com/storage/brands/mcdonalds.png",
+                                                                        "nullable": true
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "city": {
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "type": "integer",
+                                                                        "example": 1
+                                                                    },
+                                                                    "name": {
+                                                                        "type": "string",
+                                                                        "example": "Almaty"
+                                                                    }
+                                                                },
+                                                                "type": "object"
+                                                            },
+                                                            "cover_image": {
+                                                                "type": "string",
+                                                                "example": "https://example.com/storage/images/restaurant.jpg",
+                                                                "nullable": true
+                                                            },
+                                                            "categories": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string",
+                                                                            "example": "Fast Food"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            },
                                                             "category_name": {
                                                                 "type": "string",
-                                                                "example": "Fast Food"
+                                                                "example": "Fast Food",
+                                                                "nullable": true
                                                             },
-                                                            "avg_rating": {
+                                                            "average_rating": {
                                                                 "type": "number",
                                                                 "format": "float",
                                                                 "example": 4.5
@@ -1822,25 +1887,22 @@
                                                                 "type": "integer",
                                                                 "example": 128
                                                             },
-                                                            "address": {
-                                                                "type": "string",
-                                                                "example": "Rozybakiev St 247A"
-                                                            },
                                                             "operating_hours": {
                                                                 "type": "array",
                                                                 "items": {
                                                                     "properties": {
                                                                         "day_of_week": {
+                                                                            "description": "0=Yakshanba, 6=Shanba",
                                                                             "type": "integer",
                                                                             "example": 1
                                                                         },
                                                                         "opening_time": {
                                                                             "type": "string",
-                                                                            "example": "09:00"
+                                                                            "example": "09:00:00"
                                                                         },
                                                                         "closing_time": {
                                                                             "type": "string",
-                                                                            "example": "22:00"
+                                                                            "example": "22:00:00"
                                                                         },
                                                                         "is_closed": {
                                                                             "type": "boolean",

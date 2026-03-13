@@ -541,19 +541,49 @@ class RestaurantDiscoveryController extends Controller
                                     items: new OA\Items(
                                         properties: [
                                             new OA\Property(property: 'id', type: 'integer', example: 1),
-                                            new OA\Property(property: 'restaurant_name', type: 'string', example: 'McDonald\'s Almaty Mall'),
-                                            new OA\Property(property: 'category_name', type: 'string', example: 'Fast Food'),
-                                            new OA\Property(property: 'avg_rating', type: 'number', format: 'float', example: 4.5),
-                                            new OA\Property(property: 'reviews_count', type: 'integer', example: 128),
+                                            new OA\Property(property: 'restaurant', type: 'string', example: 'McDonald\'s Almaty Mall'),
+                                            new OA\Property(property: 'branch_name', type: 'string', example: 'McDonald\'s Almaty Mall'),
                                             new OA\Property(property: 'address', type: 'string', example: 'Rozybakiev St 247A'),
+                                            new OA\Property(property: 'phone', type: 'string', example: '+7 777 123 4567'),
+                                            new OA\Property(
+                                                property: 'brand',
+                                                type: 'object',
+                                                properties: [
+                                                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                                                    new OA\Property(property: 'name', type: 'string', example: 'McDonald\'s'),
+                                                    new OA\Property(property: 'logo', type: 'string', nullable: true, example: 'https://example.com/storage/brands/mcdonalds.png'),
+                                                ]
+                                            ),
+                                            new OA\Property(
+                                                property: 'city',
+                                                type: 'object',
+                                                properties: [
+                                                    new OA\Property(property: 'id', type: 'integer', example: 1),
+                                                    new OA\Property(property: 'name', type: 'string', example: 'Almaty'),
+                                                ]
+                                            ),
+                                            new OA\Property(property: 'cover_image', type: 'string', nullable: true, example: 'https://example.com/storage/images/restaurant.jpg'),
+                                            new OA\Property(
+                                                property: 'categories',
+                                                type: 'array',
+                                                items: new OA\Items(
+                                                    properties: [
+                                                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                                                        new OA\Property(property: 'name', type: 'string', example: 'Fast Food'),
+                                                    ]
+                                                )
+                                            ),
+                                            new OA\Property(property: 'category_name', type: 'string', nullable: true, example: 'Fast Food'),
+                                            new OA\Property(property: 'average_rating', type: 'number', format: 'float', example: 4.5),
+                                            new OA\Property(property: 'reviews_count', type: 'integer', example: 128),
                                             new OA\Property(
                                                 property: 'operating_hours',
                                                 type: 'array',
                                                 items: new OA\Items(
                                                     properties: [
-                                                        new OA\Property(property: 'day_of_week', type: 'integer', example: 1),
-                                                        new OA\Property(property: 'opening_time', type: 'string', example: '09:00'),
-                                                        new OA\Property(property: 'closing_time', type: 'string', example: '22:00'),
+                                                        new OA\Property(property: 'day_of_week', type: 'integer', description: '0=Yakshanba, 6=Shanba', example: 1),
+                                                        new OA\Property(property: 'opening_time', type: 'string', example: '09:00:00'),
+                                                        new OA\Property(property: 'closing_time', type: 'string', example: '22:00:00'),
                                                         new OA\Property(property: 'is_closed', type: 'boolean', example: false),
                                                     ]
                                                 )
@@ -608,25 +638,49 @@ class RestaurantDiscoveryController extends Controller
 
         $restaurants = $this->discoveryService->searchRestaurantsWithDetails($query, $perPage);
 
-        // Format products data
+        // Format products data (same as /api/restaurants endpoint)
         $products = $restaurants->map(function ($restaurant) use ($locale) {
-            // Get category name from translations
-            $categoryName = null;
-            if ($restaurant->categories->isNotEmpty()) {
-                $category = $restaurant->categories->first();
-                if ($category && $category->translations) {
-                    $translation = $category->translations->firstWhere('lang_code', $locale);
-                    $categoryName = $translation ? $translation->name : null;
-                }
-            }
-
             return [
                 'id' => $restaurant->id,
-                'restaurant_name' => $restaurant->branch_name,
-                'category_name' => $categoryName,
-                'avg_rating' => round($restaurant->reviews_avg_rating ?? 0, 1),
-                'reviews_count' => $restaurant->reviews_count ?? 0,
+                'restaurant' => $restaurant->branch_name,
+                'branch_name' => $restaurant->branch_name,
                 'address' => $restaurant->address,
+                'phone' => $restaurant->phone,
+
+                // Brand info
+                'brand' => [
+                    'id' => $restaurant->brand->id,
+                    'name' => $restaurant->brand->getTranslatedName($locale),
+                    'logo' => $restaurant->brand->logo ? asset('storage/' . $restaurant->brand->logo) : null,
+                ],
+
+                // City
+                'city' => [
+                    'id' => $restaurant->city->id,
+                    'name' => $restaurant->city->getTranslatedName($locale),
+                ],
+
+                // Cover image
+                'cover_image' => $restaurant->coverImage
+                    ? asset('storage/' . $restaurant->coverImage->image_path)
+                    : null,
+
+                // Categories
+                'categories' => $restaurant->categories->map(function ($category) use ($locale) {
+                    return [
+                        'id' => $category->id,
+                        'name' => $category->getTranslatedName($locale),
+                    ];
+                }),
+
+                // Primary category name (for UI display)
+                'category_name' => $restaurant->categories->first()?->getTranslatedName($locale) ?? null,
+
+                // Rating info
+                'average_rating' => round($restaurant->reviews_avg_rating ?? 0, 1),
+                'reviews_count' => $restaurant->reviews_count ?? 0,
+
+                // Operating hours
                 'operating_hours' => $restaurant->operatingHours->map(function ($hour) {
                     return [
                         'day_of_week' => $hour->day_of_week,
